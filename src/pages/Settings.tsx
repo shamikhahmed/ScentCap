@@ -1,13 +1,15 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ProfileEditor } from '@/components/settings/ProfileEditor';
 import { useApp } from '@/context/AppContext';
 import { exportAllData, importAllData } from '@/db';
+import { exitDemo, loadDemoData } from '@/services/demo';
 import { getDailyWeather, requestLocation } from '@/services/weather';
 
 export function SettingsPage() {
   const { profile, prefs, setPrefs, setProfile, refresh } = useApp();
+  const navigate = useNavigate();
 
   const exportData = async () => {
     const json = await exportAllData();
@@ -76,6 +78,48 @@ export function SettingsPage() {
         <p className="font-medium">Weather & location</p>
         <Button variant="ghost" className="w-full" onClick={refreshLocation}>Update location & weather</Button>
         {profile?.cityLabel && <p className="text-xs text-stone-500">{profile.cityLabel}</p>}
+      </Card>
+
+      <Card className="space-y-3">
+        <p className="font-medium">Demo wardrobe</p>
+        {prefs.demoMode ? (
+          <>
+            <p className="text-xs text-stone-500">You&apos;re using sample data. Start fresh to build your own wardrobe.</p>
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={async () => {
+                await exitDemo();
+                await refresh();
+                navigate('/onboarding');
+              }}
+            >
+              Start my own wardrobe
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full"
+              onClick={async () => {
+                await loadDemoData();
+                await refresh();
+              }}
+            >
+              Reset demo data
+            </Button>
+          </>
+        ) : (
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={async () => {
+              await loadDemoData();
+              await refresh();
+              navigate('/');
+            }}
+          >
+            Load demo wardrobe
+          </Button>
+        )}
       </Card>
 
       <Card className="space-y-3">

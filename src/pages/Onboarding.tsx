@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useApp } from '@/context/AppContext';
+import { loadDemoData } from '@/services/demo';
 import { requestLocation } from '@/services/weather';
 import type { UserProfile } from '@/types';
 import { MistBackground } from '@/components/home/MistBackground';
@@ -32,12 +33,25 @@ const STEPS = [
 ] as const;
 
 export function Onboarding() {
-  const { setProfile } = useApp();
+  const { setProfile, refresh } = useApp();
   const navigate = useNavigate();
+  const [welcome, setWelcome] = useState(true);
   const [step, setStep] = useState(0);
   const [data, setData] = useState<Partial<UserProfile>>({});
+  const [loadingDemo, setLoadingDemo] = useState(false);
 
   const current = STEPS[step];
+
+  const tryDemo = async () => {
+    setLoadingDemo(true);
+    try {
+      await loadDemoData();
+      await refresh();
+      navigate('/');
+    } finally {
+      setLoadingDemo(false);
+    }
+  };
 
   const pick = async (value: string) => {
     const key = current.key;
@@ -66,6 +80,37 @@ export function Onboarding() {
     navigate('/');
   };
 
+  if (welcome) {
+    return (
+      <div className="relative min-h-dvh gradient-hero flex flex-col safe-pt safe-pb px-6">
+        <MistBackground />
+        <div className="flex-1 flex flex-col justify-center max-w-md mx-auto w-full text-center">
+          <div className="welcome-orb mx-auto mb-8" />
+          <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-accent)] mb-2">ScentCap</p>
+          <h1 className="text-4xl font-semibold tracking-tight">Your fragrance OS</h1>
+          <p className="text-stone-400 mt-4 leading-relaxed">
+            Build a wardrobe, get daily picks, and track what you wear — all on your device.
+          </p>
+          <div className="flex flex-col gap-3 mt-10">
+            <Button size="lg" className="w-full" onClick={() => setWelcome(false)}>
+              Get started
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="w-full"
+              onClick={tryDemo}
+              disabled={loadingDemo}
+            >
+              {loadingDemo ? 'Loading demo…' : 'Explore with sample wardrobe'}
+            </Button>
+          </div>
+          <p className="text-xs text-stone-500 mt-4">Try demo loads 12 bottles and 30 days of wear history — no account needed.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative min-h-dvh gradient-hero flex flex-col safe-pt safe-pb px-6">
       <MistBackground />
@@ -87,8 +132,10 @@ export function Onboarding() {
             </div>
           </motion.div>
         </AnimatePresence>
-        {step > 0 && (
+        {step > 0 ? (
           <Button variant="outline" className="mt-8" onClick={() => setStep(step - 1)}>Back</Button>
+        ) : (
+          <Button variant="ghost" className="mt-8" onClick={() => setWelcome(true)}>Back to welcome</Button>
         )}
       </div>
     </div>

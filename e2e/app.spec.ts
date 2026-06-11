@@ -12,6 +12,8 @@ const ONBOARDING_STEPS = [
 
 async function completeOnboarding(page: Page) {
   await page.goto('./onboarding');
+  await expect(page.getByRole('heading', { name: /Your fragrance OS/i })).toBeVisible();
+  await page.getByRole('button', { name: 'Get started', exact: true }).click();
   await expect(page.getByRole('heading', { name: ONBOARDING_STEPS[0].heading })).toBeVisible();
 
   for (const step of ONBOARDING_STEPS) {
@@ -63,6 +65,17 @@ test.describe('ScentCap PWA', () => {
   test('onboarding flow completes', async ({ page }) => {
     await completeOnboarding(page);
     await expect(page).toHaveURL(/\/ScentCap\/?$/);
+  });
+
+  test('demo flow loads sample wardrobe on home', async ({ page }) => {
+    await page.goto('./onboarding');
+    await expect(page.getByRole('heading', { name: /Your fragrance OS/i })).toBeVisible();
+    await page.getByRole('button', { name: /Explore with sample wardrobe/i }).click();
+
+    await expect(page).not.toHaveURL(/onboarding/, { timeout: 30_000 });
+    await expect(page.getByText(/You're viewing a demo wardrobe/i)).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText('Bottles', { exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: /Wear this today/i })).toBeVisible({ timeout: 20_000 });
   });
 
   test('add fragrance via search and home shows content', async ({ page }) => {

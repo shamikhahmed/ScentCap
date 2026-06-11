@@ -87,6 +87,7 @@ export interface Preferences {
   officeSafeMode: boolean;
   theme: 'dark' | 'light' | 'system';
   signatures: Partial<Record<SignatureRole, string>>;
+  demoMode?: boolean;
 }
 
 export const CONCENTRATIONS: Concentration[] = ['Cologne', 'EDT', 'EDP', 'Parfum', 'Extrait'];

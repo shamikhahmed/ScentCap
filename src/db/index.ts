@@ -186,3 +186,19 @@ export async function getLastWearForFragrance(fragranceId: string): Promise<Wear
   const all = await (await getDb()).getAllFromIndex('wear_history', 'by-fragrance', fragranceId);
   return all.sort((a, b) => b.wornAt.localeCompare(a.wornAt))[0];
 }
+
+const USER_STORES = [
+  'collection',
+  'wear_history',
+  'user_profile',
+  'preferences',
+  'weather_cache',
+  'layering_profiles',
+  'statistics',
+  'photos',
+] as const;
+
+export async function clearUserData() {
+  const db = await getDb();
+  await Promise.all(USER_STORES.map((store) => db.clear(store)));
+}

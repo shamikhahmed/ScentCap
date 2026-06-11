@@ -1,6 +1,7 @@
 import { Link, NavLink, Outlet } from 'react-router-dom';
 import { Calendar, Droplets, Home, Layers, Plus, Settings, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { DemoBanner } from '@/components/layout/DemoBanner';
 
 const nav = [
   { to: '/', icon: Home, label: 'Today' },
@@ -43,6 +44,7 @@ export function AppShell() {
       </aside>
 
       <main className="flex-1 overflow-y-auto pb-24 md:pb-8 md:px-8 md:max-w-4xl">
+        <DemoBanner />
         <Outlet />
       </main>
 
