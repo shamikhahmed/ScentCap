@@ -1,73 +1,49 @@
-# React + TypeScript + Vite
+# ScentCap — Fragrance OS
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Offline-first PWA for fragrance wardrobe management. Build a collection, get daily weather-aware picks, layer with confidence, and track every wear — all on your device.
 
-Currently, two official plugins are available:
+**Live demo:** [https://shamikhahmed.github.io/ScentCap/](https://shamikhahmed.github.io/ScentCap/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+**Marketing:** [Landing](https://shamikhahmed.github.io/ScentCap/landing.html) · [Pitch](https://shamikhahmed.github.io/ScentCap/pitch.html) · [Presentation](https://shamikhahmed.github.io/ScentCap/presentation.html) · [Privacy](https://shamikhahmed.github.io/ScentCap/privacy.html)
 
-## React Compiler
+## Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Today dashboard** — weather context, daily advisor pick, wear logging, occasion presets
+- **Wardrobe** — bottle catalog with concentration, level tracking, favorites, signature scent
+- **Smart Advisor** — rules-based recommendations (office, date, weekend, gala) — no external API
+- **Layering Lab** — experiment with base + top fragrance combos
+- **Calendar & Analytics** — wear heatmap, rotation health, family breakdown charts
+- **Travel Kit** — pack decants and travel-friendly bottles for trips
+- **Demo mode** — 12 sample bottles and 30 days of wear history to explore instantly
+- **IndexedDB** persistence via `idb`
+- **PWA** with offline support; optional Open-Meteo weather when location is granted
 
-## Expanding the ESLint configuration
+## Quick start
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev        # http://localhost:5173/ScentCap/
+npm run build
+npm run preview    # production preview
+npm run generate-icons
+npm run test:e2e   # Playwright tests
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Deploy
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+GitHub Pages workflow deploys from `main` to `https://shamikhahmed.github.io/ScentCap/`.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Set `base: '/ScentCap/'` in `vite.config.ts` (already configured). Marketing pages live in `public/` and ship with the build.
+
+## Tech stack
+
+- React 19 + TypeScript + Vite 8
+- Tailwind CSS v4
+- React Router · Framer Motion · Lucide React · Recharts
+- IndexedDB (`idb`) · vite-plugin-pwa · Playwright
+
+## Privacy
+
+Your wardrobe stays on your device. See [PRIVACY.md](./PRIVACY.md) and [privacy.html](./public/privacy.html).
+
+Built by [Shamikh Ahmed](https://shamikhahmed.github.io/) — part of the Cap portfolio alongside Capricorn Systems.

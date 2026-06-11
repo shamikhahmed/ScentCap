@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ScentCap — Pitch Deck</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--amber:#c9a87c;--gold:#8b6914;--warm:#e8d4b8;
+  --muted:rgba(245,240,232,.55);--dim:rgba(245,240,232,.25);font-size:16px}
+html{scroll-behavior:smooth}
+body{font-family:Inter,-apple-system,sans-serif;background:#1a1614;color:#f5f0e8;overflow-x:hidden}
+.slide{min-height:100svh;display:flex;align-items:center;justify-content:center;padding:72px 40px;position:relative;text-align:center;overflow:hidden}
+@media(max-width:600px){.slide{padding:64px 22px}}
+.reveal{opacity:0;transform:translateY(40px);transition:opacity .8s cubic-bezier(.22,1,.36,1),transform .8s cubic-bezier(.22,1,.36,1)}
+.reveal.visible{opacity:1;transform:none}
+.reveal-left{opacity:0;transform:translateX(-50px);transition:opacity .8s,transform .8s}
+.reveal-left.visible{opacity:1;transform:none}
+.reveal-right{opacity:0;transform:translateX(50px);transition:opacity .8s,transform .8s}
+.reveal-right.visible{opacity:1;transform:none}
+.delay-1{transition-delay:.1s}.delay-2{transition-delay:.2s}.delay-3{transition-delay:.35s}.delay-4{transition-delay:.5s}
+#nav-dots{position:fixed;right:16px;top:50%;transform:translateY(-50%);z-index:100;display:flex;flex-direction:column;gap:8px}
+.nav-dot{width:8px;height:8px;border-radius:50%;border:none;background:rgba(255,255,255,.25);cursor:pointer;transition:all .3s}
+.nav-dot.active{background:var(--amber);transform:scale(1.4)}
+#export-btn{position:fixed;top:16px;right:16px;z-index:100;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;padding:8px 16px;border-radius:99px;font-size:12px;cursor:pointer;font-family:inherit}
+h1{font-size:clamp(3rem,12vw,7rem);font-weight:900;letter-spacing:-.05em;line-height:1}
+h2{font-size:clamp(1.6rem,4.5vw,2.8rem);font-weight:800;letter-spacing:-.03em;margin-bottom:1rem}
+.sub{color:var(--muted);font-size:clamp(1rem,2.2vw,1.2rem);max-width:580px;line-height:1.7;margin:0 auto 2rem}
+.badges{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.badge{background:rgba(201,168,124,.1);border:1px solid rgba(201,168,124,.3);border-radius:99px;padding:10px 18px;font-size:.85rem;font-weight:600}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;max-width:760px;width:100%;margin-top:2rem;text-align:left}
+@media(max-width:600px){.cards{grid-template-columns:1fr}}
+.card{background:rgba(255,255,255,.04);border:1px solid rgba(201,168,124,.15);border-radius:18px;padding:20px;transition:border-color .3s,transform .3s}
+.card:hover{border-color:rgba(201,168,124,.4);transform:translateY(-4px)}
+.card h3{font-size:1rem;margin-bottom:.4rem;color:var(--amber)}
+.card p{font-size:.85rem;color:var(--muted);line-height:1.55}
+.btn-row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:2rem}
+.btn{padding:16px 28px;border-radius:99px;font-weight:700;font-size:.95rem;text-decoration:none;border:none;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:8px}
+.btn-p{background:linear-gradient(135deg,var(--amber),var(--gold));color:#1a1614;box-shadow:0 8px 28px rgba(201,168,124,0.35)}
+.btn-s{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:#fff}
+.section-title{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:800;margin-bottom:2rem}
+.phone{width:min(100%,280px);border-radius:24px;overflow:hidden;border:2px solid rgba(201,168,124,.3);
+  box-shadow:0 20px 50px rgba(201,168,124,0.15);background:#252019;text-align:left;color:#f5f0e8;margin:0 auto}
+.phone-h{padding:10px;background:linear-gradient(90deg,#2a2218,#252019);font-size:11px;font-weight:800;color:var(--amber);text-align:center}
+.phone-b{padding:14px;position:relative;min-height:260px}
+.big-num{font-size:3.5rem;font-weight:800;color:var(--amber);text-align:center;line-height:1}
+.scent-row{display:flex;gap:6px;margin:10px 0;flex-wrap:wrap}
+.scent-pill{padding:6px 12px;border-radius:99px;font-size:9px;font-weight:800;background:rgba(201,168,124,.15);color:var(--amber);border:1px solid rgba(201,168,124,.25)}
+.wear{border-radius:10px;padding:8px 10px;margin-bottom:6px;background:rgba(255,255,255,.04);font-size:10px;font-weight:700;border-left:4px solid var(--amber)}
+.mock-fab{position:absolute;right:12px;bottom:12px;width:44px;height:44px;border-radius:50%;background:var(--amber);
+  color:#1a1614;font-size:1.4rem;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(201,168,124,.4)}
+.steps{display:flex;flex-wrap:wrap;gap:0;justify-content:center;max-width:800px}
+.step{flex:1;min-width:180px;max-width:220px;padding:24px 16px;text-align:center}
+.step-num{font-size:3rem;font-weight:900;color:var(--amber);opacity:.3;line-height:1}
+.step h3{font-size:1rem;font-weight:700;margin:.5rem 0}
+.step p{font-size:.85rem;color:var(--muted);line-height:1.5}
+.persona-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;max-width:720px;width:100%}
+@media(max-width:600px){.persona-grid{grid-template-columns:1fr}}
+#s1{background:#1a1614}
+#s1-grad{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(201,168,124,.15) 0%,transparent 70%)}
+.s1-logo{font-size:clamp(4rem,10vw,6rem);animation:float 4s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.s1-text{font-size:clamp(3.5rem,12vw,8rem);font-weight:900;letter-spacing:-.05em;
+  background:linear-gradient(135deg,#fff 30%,var(--amber) 70%,var(--gold) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.trust{max-width:560px;margin:2rem auto 0;padding:20px 24px;border-radius:20px;
+  background:rgba(201,168,124,.06);border:1px solid rgba(201,168,124,.2);font-weight:600;line-height:1.6}
+@media print{#nav-dots,#export-btn{display:none!important}.slide{page-break-after:always;min-height:100vh}.reveal,.reveal-left,.reveal-right{opacity:1!important;transform:none!important}}
+</style>
+</head>
+<body>
+<div id="nav-dots"></div>
+<button id="export-btn" onclick="window.print()">⬇ Export PDF</button>
+
+<section class="slide" id="s1">
+  <div id="s1-grad"></div>
+  <div style="position:relative;z-index:2">
+    <div class="s1-logo reveal">💧</div>
+    <h1 class="s1-text reveal delay-1">ScentCap</h1>
+    <p class="sub reveal delay-2">Your personal fragrance operating system</p>
+    <p class="reveal delay-3" style="color:var(--dim);font-size:.8rem;letter-spacing:.12em;text-transform:uppercase">Scroll to explore ↓</p>
+  </div>
+</section>
+
+<section class="slide" id="s2">
+  <div style="max-width:800px;width:100%">
+    <h2 class="reveal">Fragrance life is <span style="color:var(--amber)">scattered.</span></h2>
+    <p class="sub reveal delay-1">Bottles in drawers. Wear history in memory. Layering experiments forgotten. Weather ignored.</p>
+    <div class="cards">
+      <div class="card reveal-left delay-1"><h3>📱 No wardrobe OS</h3><p>Notes apps can't track bottle levels, concentration, or rotation health.</p></div>
+      <div class="card reveal-right delay-2"><h3>🌡️ Weather blind</h3><p>Heavy oud on a humid day — no advisor connects climate to projection.</p></div>
+      <div class="card reveal-left delay-3"><h3>🧪 Layering lost</h3><p>Great combos tried once, never saved or repeated.</p></div>
+      <div class="card reveal-right delay-4"><h3>☁️ Cloud creep</h3><p>Beauty apps want accounts, ads, and your scent profile on their servers.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="s3">
+  <div style="max-width:700px;width:100%">
+    <h2 class="reveal section-title" id="s3-cycler">Spreadsheets don't smell.</h2>
+    <p class="sub reveal delay-2" style="color:var(--amber);font-weight:700">Collectors deserve a wardrobe OS — not another grid.</p>
+  </div>
+</section>
+
+<section class="slide" id="s4">
+  <div style="max-width:720px;width:100%">
+    <div class="reveal" style="font-size:clamp(1.2rem,3vw,1.8rem);font-weight:700;line-height:1.5;margin-bottom:.75rem">What if your wardrobe lived in one <span style="color:var(--amber)">amber vault</span>?</div>
+    <div class="reveal delay-2" style="font-size:clamp(1.2rem,3vw,1.8rem);font-weight:700;line-height:1.5;margin-bottom:.75rem">What if weather shaped your <span style="color:var(--warm)">daily pick</span>?</div>
+    <div class="reveal delay-3" style="font-size:clamp(1.2rem,3vw,1.8rem);font-weight:700;line-height:1.5">What if layering combos <span style="color:var(--gold)">stayed saved</span> forever?</div>
+  </div>
+</section>
+
+<section class="slide" id="s5">
+  <div style="max-width:800px;width:100%">
+    <div class="reveal" style="font-size:4rem;margin-bottom:.5rem">💧</div>
+    <h1 class="reveal delay-1" style="font-size:clamp(3rem,10vw,6rem)">ScentCap</h1>
+    <p class="sub reveal delay-2">Warm · Offline-first · Private · Zero servers</p>
+    <div class="badges reveal delay-3">
+      <span class="badge">✨ PWA</span><span class="badge">🔒 Private</span><span class="badge">📴 Offline</span><span class="badge">🌡️ Weather-aware</span>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="s6">
+  <div style="max-width:900px;width:100%">
+    <h2 class="reveal section-title">Simple by design.</h2>
+    <div class="steps">
+      <div class="step reveal-left delay-1"><div class="step-num">01</div><div style="font-size:1.8rem">💧</div><h3>Build</h3><p>Add bottles · search seed DB · track levels</p></div>
+      <div class="step reveal delay-2"><div class="step-num">02</div><div style="font-size:1.8rem">✨</div><h3>Wear</h3><p>Daily advisor · log wears · rate longevity</p></div>
+      <div class="step reveal-right delay-3"><div class="step-num">03</div><div style="font-size:1.8rem">📊</div><h3>Refine</h3><p>Calendar heatmap · rotation · layering lab</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="s7">
+  <div style="max-width:900px;width:100%">
+    <h2 class="reveal section-title">Today at a glance.</h2>
+    <div class="phone reveal delay-1" style="margin-bottom:1.5rem">
+      <div class="phone-h">🏠 Today</div>
+      <div class="phone-b">
+        <div style="font-size:11px;color:var(--muted);font-weight:700">Good morning — 18°C, clear</div>
+        <div class="big-num">92</div>
+        <div style="text-align:center;font-size:10px;font-weight:700;color:var(--muted)">advisor match score</div>
+        <div class="wear" style="margin-top:10px">Creed Aventus · Office preset · Wear today</div>
+        <div class="scent-row"><span class="scent-pill">Woody</span><span class="scent-pill">Fresh</span><span class="scent-pill">12 bottles</span></div>
+        <div class="mock-fab">+</div>
+      </div>
+    </div>
+    <p class="sub reveal delay-2">Weather context · advisor score · one-tap wear logging · rotation health</p>
+  </div>
+</section>
+
+<section class="slide" id="s8">
+  <div style="max-width:900px;width:100%">
+    <h2 class="reveal section-title">Wardrobe intelligence.</h2>
+    <div class="cards">
+      <div class="card reveal delay-1"><h3>🔍 Seed database</h3><p>Search thousands of fragrances — add with concentration and bottle level.</p></div>
+      <div class="card reveal delay-2"><h3>⭐ Signature scent</h3><p>Mark favorites and your daily signature — advisor weights accordingly.</p></div>
+      <div class="card reveal delay-3"><h3>📅 Wear calendar</h3><p>Heatmap shows gaps — rediscover bottles you forgot.</p></div>
+      <div class="card reveal delay-4"><h3>🧪 Layering Lab</h3><p>Save base + top combos that work on your skin chemistry.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="s9">
+  <div style="max-width:800px;width:100%">
+    <h2 class="reveal section-title">Smart Advisor — no cloud AI.</h2>
+    <p class="sub reveal delay-1">Rules engine weighs weather, occasion, dress code, projection comfort, and rotation gaps.</p>
+    <div class="badges reveal delay-2">
+      <span class="badge">💼 Office</span><span class="badge">🌹 Date</span><span class="badge">☕ Weekend</span><span class="badge">✨ Gala</span>
+    </div>
+    <div class="trust reveal delay-3">Honest marketing: Smart Assistant logic — not an LLM. Your profile shapes picks locally.</div>
+  </div>
+</section>
+
+<section class="slide" id="s10">
+  <div style="max-width:800px;width:100%">
+    <h2 class="reveal section-title">Built for fragrance lovers.</h2>
+    <div class="persona-grid">
+      <div class="card reveal-left delay-1"><h3>🧴 Collectors</h3><p>Track 50+ bottles with levels and wear history.</p></div>
+      <div class="card reveal-right delay-2"><h3>💼 Professionals</h3><p>Office-safe picks with projection comfort settings.</p></div>
+      <div class="card reveal-left delay-3"><h3>✈️ Travelers</h3><p>Travel Kit packs decants for trips — offline.</p></div>
+      <div class="card reveal-right delay-4"><h3>🔒 Privacy-first</h3><p>No accounts. No cloud wardrobe. IndexedDB only.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="s11">
+  <div style="max-width:800px;width:100%">
+    <h2 class="reveal section-title">Device sovereignty</h2>
+    <div class="cards reveal delay-1">
+      <div class="card"><h3>📴 Offline PWA</h3><p>Works after first load — fragrance fairs, flights, no signal.</p></div>
+      <div class="card"><h3>🔐 Local storage</h3><p>IndexedDB wardrobe — we have no servers to breach.</p></div>
+      <div class="card"><h3>🌡️ Optional weather</h3><p>Open-Meteo only when you grant location — never required.</p></div>
+      <div class="card"><h3>📋 PRIVACY.md</h3><p>Plain-language policy at privacy.html.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="s12">
+  <div style="max-width:700px;width:100%">
+    <div style="width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,var(--amber),var(--gold));
+      display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:800;margin:0 auto 1.5rem;
+      box-shadow:0 0 40px rgba(201,168,124,.3)" class="reveal">SA</div>
+    <h2 class="reveal delay-1">Shamikh Ahmed</h2>
+    <p class="sub reveal delay-2" style="font-style:italic;border-left:3px solid var(--amber);padding-left:16px;text-align:left">
+      "I built ScentCap because fragrance collectors deserve a private wardrobe OS — not another beauty app harvesting scent profiles."
+    </p>
+    <p class="sub reveal delay-3" style="font-size:.9rem">Cap portfolio · Capricorn Systems · AuraCap</p>
+  </div>
+</section>
+
+<section class="slide" id="s13">
+  <div style="max-width:800px;width:100%;position:relative">
+    <div style="position:absolute;inset:-72px -40px;background:radial-gradient(ellipse 80% 80% at 50% 50%,rgba(201,168,124,.12) 0%,transparent 70%);pointer-events:none"></div>
+    <h1 class="reveal" style="font-size:clamp(2.5rem,8vw,5rem);position:relative">Your wardrobe awaits 💧</h1>
+    <p class="sub reveal delay-1" style="position:relative">Warm. Private. Offline. Yours.</p>
+    <div class="btn-row reveal delay-2" style="position:relative">
+      <a class="btn btn-p" href="https://shamikhahmed.github.io/ScentCap/" target="_blank" rel="noopener">💧 Open ScentCap</a>
+      <a class="btn btn-s" href="presentation.html">📊 Presentation</a>
+      <a class="btn btn-s" href="landing.html">🌐 Landing</a>
+      <a class="btn btn-s" href="privacy.html">🔒 Privacy</a>
+    </div>
+    <p class="reveal delay-3" style="margin-top:2.5rem;font-size:.75rem;color:var(--dim);position:relative">© 2026 Shamikh Ahmed · shamikhahmed.github.io/ScentCap</p>
+  </div>
+</section>
+
+<script>
+const slides=document.querySelectorAll('.slide'),navDots=document.getElementById('nav-dots');
+let currentSlide=0;
+slides.forEach((_,i)=>{const d=document.createElement('button');d.className='nav-dot'+(i===0?' active':'');d.onclick=()=>slides[i].scrollIntoView({behavior:'smooth'});navDots.appendChild(d)});
+function updateDots(){let idx=0;slides.forEach((s,i)=>{if(Math.abs(s.getBoundingClientRect().top)<innerHeight/2)idx=i});currentSlide=idx;navDots.querySelectorAll('.nav-dot').forEach((d,i)=>d.classList.toggle('active',i===idx))}
+addEventListener('scroll',updateDots,{passive:true});
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowDown'||e.key==='PageDown'){e.preventDefault();if(currentSlide<slides.length-1)slides[currentSlide+1].scrollIntoView({behavior:'smooth'})}
+  if(e.key==='ArrowUp'||e.key==='PageUp'){e.preventDefault();if(currentSlide>0)slides[currentSlide-1].scrollIntoView({behavior:'smooth'})}
+});
+const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.15});
+document.querySelectorAll('.reveal,.reveal-left,.reveal-right').forEach(el=>obs.observe(el));
+const cyclerTexts=['Spreadsheets don\'t smell.','Notes apps forget layers.','Weather changes everything.','Collectors deserve a wardrobe OS.'];
+let ci=0,cyclerOn=false;
+const secObs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting&&e.target.id==='s3'&&!cyclerOn){cyclerOn=true;setInterval(()=>{const el=document.getElementById('s3-cycler');if(!el)return;el.style.opacity='0';setTimeout(()=>{ci=(ci+1)%cyclerTexts.length;el.textContent=cyclerTexts[ci];el.style.opacity='1'},400)},2500)}}),{threshold:.3});
+slides.forEach(s=>secObs.observe(s));
+setTimeout(()=>document.querySelectorAll('#s1 .reveal').forEach(el=>el.classList.add('visible')),100);
+</script>
+</body>
+</html>

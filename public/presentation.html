@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ScentCap — Presentation</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --amber:#c9a87c;--gold:#8b6914;--warm:#e8d4b8;
+  --bg:#1a1614;--bg2:#252019;--text:#f5f0e8;--muted:#a89888;
+  --border:rgba(201,168,124,0.15);--glass:rgba(255,255,255,0.04);
+}
+html,body{width:100%;height:100%;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',system-ui,sans-serif;
+  overflow:hidden;user-select:none}
+#mist-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.3}
+#progress{position:fixed;top:0;left:0;height:3px;z-index:200;width:10%;
+  background:linear-gradient(90deg,var(--amber),var(--gold));
+  box-shadow:0 0 12px rgba(201,168,124,0.5);transition:width .5s}
+#deck{position:fixed;inset:0;z-index:10}
+.slide{position:absolute;inset:0;opacity:0;transform:translateX(100%);
+  transition:opacity .5s,transform .5s;pointer-events:none;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:56px 40px 80px;overflow:hidden;text-align:center}
+.slide.active{opacity:1;transform:translateX(0);pointer-events:auto}
+.slide.active .a1{animation:fadeUp .6s .1s both}
+.slide.active .a2{animation:fadeUp .6s .2s both}
+.slide.active .a3{animation:fadeUp .6s .3s both}
+.slide.active .a4{animation:fadeUp .6s .4s both}
+.slide.active .a5{animation:fadeUp .6s .5s both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%,100%{box-shadow:0 0 30px rgba(201,168,124,0.2)}50%{box-shadow:0 0 60px rgba(201,168,124,0.4)}}
+#counter{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:200;
+  font-size:13px;color:var(--muted);background:rgba(26,22,20,0.85);padding:6px 14px;
+  border-radius:20px;border:1px solid var(--border)}
+#arrow-left,#arrow-right{position:fixed;bottom:20px;z-index:200;width:44px;height:44px;
+  border-radius:50%;border:1px solid var(--border);background:rgba(26,22,20,0.85);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+#arrow-left{left:20px}#arrow-right{right:20px}
+#arrow-left:hover,#arrow-right:hover{border-color:var(--amber);color:var(--amber)}
+#fullscreen-btn{position:fixed;top:14px;right:14px;z-index:200;width:36px;height:36px;
+  border-radius:10px;border:1px solid var(--border);background:rgba(26,22,20,0.85);
+  cursor:pointer;color:var(--muted)}
+.overline{font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--amber);font-weight:600;margin-bottom:14px}
+.headline{font-size:clamp(1.6rem,4vw,2.8rem);font-weight:800;letter-spacing:-.03em;margin-bottom:10px}
+.grad{background:linear-gradient(135deg,var(--amber),var(--warm));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sub{font-size:clamp(.95rem,2vw,1.15rem);color:var(--muted);max-width:560px;line-height:1.55;margin-bottom:16px}
+.phone{width:min(100%,300px);border-radius:28px;overflow:hidden;
+  border:3px solid rgba(201,168,124,0.25);box-shadow:0 24px 60px rgba(201,168,124,0.12);
+  background:#252019;text-align:left;color:var(--text);position:relative}
+.phone-bar{height:28px;background:linear-gradient(90deg,#2a2218,#252019);
+  display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--amber)}
+.phone-body{padding:14px;position:relative;min-height:300px}
+.big-num{font-size:4rem;font-weight:800;color:var(--amber);text-align:center;line-height:1}
+.scent-pill{display:inline-block;padding:5px 10px;border-radius:99px;font-size:10px;font-weight:800;background:rgba(201,168,124,.15);color:var(--amber);margin:3px}
+.wear{border-radius:12px;padding:10px 12px;margin-bottom:8px;background:rgba(255,255,255,.04);
+  font-size:11px;font-weight:700;border-left:5px solid var(--amber)}
+.mock-fab{position:absolute;right:14px;bottom:14px;width:48px;height:48px;border-radius:50%;
+  background:var(--amber);color:#1a1614;border:none;font-size:1.6rem;font-weight:300;
+  box-shadow:0 8px 24px rgba(201,168,124,0.35);display:flex;align-items:center;justify-content:center}
+.mock-nav{display:flex;justify-content:space-around;padding:8px 4px 4px;
+  border-top:2px solid rgba(201,168,124,.15);margin-top:8px;font-size:8px;font-weight:700;color:var(--muted)}
+.mock-nav .on{color:var(--amber)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:680px;width:100%}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:720px;width:100%}
+.card{background:var(--glass);border:1px solid var(--border);border-radius:16px;padding:18px;text-align:left}
+.card h3{font-size:14px;font-weight:700;margin-bottom:6px;color:var(--amber)}
+.card p{font-size:12px;color:var(--muted);line-height:1.45}
+.pain{display:flex;flex-direction:column;gap:10px;max-width:580px;width:100%}
+.pain-item{display:flex;gap:12px;padding:14px;background:var(--glass);
+  border:1px solid var(--border);border-radius:14px;text-align:left;font-size:13px;color:var(--muted)}
+.pain-item span{font-size:20px;flex-shrink:0}
+.stat-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.stat{background:rgba(201,168,124,0.08);border:1px solid var(--border);border-radius:14px;
+  padding:18px 22px;min-width:100px}
+.stat .n{font-size:1.8rem;font-weight:900;color:var(--amber)}
+.stat .l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:4px}
+.split{display:flex;gap:28px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:900px;width:100%}
+.link-btn{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:14px;
+  font-size:15px;font-weight:700;text-decoration:none;border:none;cursor:pointer}
+.link-amber{background:linear-gradient(135deg,var(--amber),var(--gold));color:#1a1614;
+  box-shadow:0 8px 28px rgba(201,168,124,0.35)}
+.glow-ring{position:absolute;width:360px;height:360px;border-radius:50%;
+  background:radial-gradient(circle,rgba(201,168,124,0.08) 0%,transparent 70%);pointer-events:none}
+.s1-title{font-size:clamp(3rem,7vw,5rem);font-weight:900;letter-spacing:-.04em;
+  background:linear-gradient(135deg,var(--amber),var(--warm),var(--amber));
+  background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+@media(max-width:600px){.grid2,.grid3{grid-template-columns:1fr}.split{flex-direction:column}}
+</style>
+</head>
+<body>
+<canvas id="mist-canvas"></canvas>
+<div id="progress"></div>
+<button id="fullscreen-btn" title="Fullscreen" onclick="document.documentElement.requestFullscreen?.()">⛶</button>
+<div id="counter">1 / 10</div>
+<button id="arrow-left" onclick="prev()">←</button>
+<button id="arrow-right" onclick="next()">→</button>
+<div id="deck">
+
+<div class="slide active" id="s1" style="background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(201,168,124,0.1) 0%,transparent 70%)">
+  <div class="glow-ring"></div>
+  <div class="overline a1">2026 · Fragrance OS</div>
+  <div class="s1-title a2">ScentCap 💧</div>
+  <div class="sub a3">Your personal fragrance operating system — offline, private, weather-aware</div>
+  <div class="sub a4" style="font-size:13px">Wardrobe · Advisor · Layering · Calendar · Analytics</div>
+  <div class="a5" style="font-size:13px;color:rgba(201,168,124,0.6);margin-top:20px">Press → to begin</div>
+</div>
+
+<div class="slide" id="s2">
+  <div class="overline a1">Why We Built This</div>
+  <div class="headline a2">The <span class="grad">Problem</span></div>
+  <div class="pain a3">
+    <div class="pain-item"><span>📱</span><div><strong style="color:#fff">No wardrobe OS</strong><br>Bottles in drawers, wear history in memory — no single home.</div></div>
+    <div class="pain-item"><span>🌡️</span><div><strong style="color:#fff">Weather ignored</strong><br>Heavy scents on humid days — no advisor connects climate to wear.</div></div>
+    <div class="pain-item"><span>🧪</span><div><strong style="color:#fff">Layering lost</strong><br>Great combos tried once, never saved or repeated.</div></div>
+    <div class="pain-item"><span>☁️</span><div><strong style="color:#fff">Cloud beauty apps</strong><br>Accounts, ads, and scent profiles on someone else's server.</div></div>
+  </div>
+</div>
+
+<div class="slide" id="s3">
+  <div class="overline a1">Our Answer</div>
+  <div class="headline a2">The <span class="grad">Solution</span></div>
+  <div class="sub a3">A warm amber PWA that feels like a private perfumery — not a spreadsheet.</div>
+  <div class="stat-row a4">
+    <div class="stat"><div class="n">0</div><div class="l">Servers</div></div>
+    <div class="stat"><div class="n">12+</div><div class="l">Demo bottles</div></div>
+    <div class="stat"><div class="n">100%</div><div class="l">Offline</div></div>
+    <div class="stat"><div class="n">PWA</div><div class="l">Install</div></div>
+  </div>
+</div>
+
+<div class="slide" id="s4">
+  <div class="overline a1">Home Screen</div>
+  <div class="headline a2"><span class="grad">Today</span> — Daily Pick</div>
+  <div class="split a3">
+    <div class="phone">
+      <div class="phone-bar">🏠 Today</div>
+      <div class="phone-body">
+        <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:4px">18°C · Clear · Moderate humidity</div>
+        <div class="big-num">92</div>
+        <div style="text-align:center;font-size:11px;font-weight:700;color:var(--muted)">advisor match</div>
+        <div class="wear a4">Creed Aventus · Office · Wear today</div>
+        <div style="margin-top:8px"><span class="scent-pill">Woody</span><span class="scent-pill">12 bottles</span><span class="scent-pill">7-day streak</span></div>
+        <button class="mock-fab">+</button>
+      </div>
+      <div class="mock-nav"><span class="on">Today</span><span>Wardrobe</span><span>Advisor</span><span>Layer</span><span>Calendar</span></div>
+    </div>
+    <div style="text-align:left;max-width:280px">
+      <div class="card a4" style="margin-bottom:10px"><h3>Weather-aware advisor</h3><p>Temperature and humidity shape daily recommendations.</p></div>
+      <div class="card a5"><h3>One-tap wear log</h3><p>Rate longevity and projection after wearing.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" id="s5">
+  <div class="overline a1">Wardrobe</div>
+  <div class="headline a2">Your bottles. <span class="grad">Organized.</span></div>
+  <div class="grid3 a3" style="max-width:520px">
+    <div class="card"><h3>Aventus</h3><p>EDP · 25% left · ⭐ Signature</p></div>
+    <div class="card"><h3>Sauvage</h3><p>EDP · 75% · Favorite</p></div>
+    <div class="card"><h3>Baccarat 540</h3><p>Extrait · 25% · Date nights</p></div>
+  </div>
+  <div class="sub a4" style="margin-top:16px">Search seed DB · track levels · favorites · signature scent · family tags</div>
+</div>
+
+<div class="slide" id="s6">
+  <div class="overline a1">Smart Advisor</div>
+  <div class="headline a2">Rules-based. <span class="grad">Not cloud AI.</span></div>
+  <div class="grid2 a3">
+    <div class="card"><h3>💼 Office preset</h3><p>Subtle projection, professional dress code, work occasion.</p></div>
+    <div class="card"><h3>🌹 Date preset</h3><p>Romantic vibe, smart casual, moderate projection.</p></div>
+    <div class="card"><h3>☕ Weekend</h3><p>Casual confidence — rotation gaps weighted.</p></div>
+    <div class="card"><h3>✨ Gala</h3><p>Bold projection, formal dress, event occasion.</p></div>
+  </div>
+  <div class="sub a4" style="margin-top:14px">Smart Assistant logic — honest, local, no LLM required</div>
+</div>
+
+<div class="slide" id="s7">
+  <div class="overline a1">Layering & Travel</div>
+  <div class="headline a2">Experiment. <span class="grad">Remember.</span></div>
+  <div class="phone a3" style="max-width:280px">
+    <div class="phone-bar">🧪 Layering Lab</div>
+    <div class="phone-body" style="min-height:240px">
+      <div class="wear">Base: Baccarat 540</div>
+      <div class="wear" style="border-color:var(--gold)">Top: Aventus</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:10px">Saved combo · Rated 9/10 longevity</div>
+    </div>
+  </div>
+  <div class="sub a4" style="margin-top:14px">Layering Lab saves combos · Travel Kit packs decants for trips</div>
+</div>
+
+<div class="slide" id="s8">
+  <div class="overline a1">Analytics</div>
+  <div class="headline a2">Rotation <span class="grad">intelligence</span></div>
+  <div class="stat-row a3">
+    <div class="stat"><div class="n">30</div><div class="l">Day heatmap</div></div>
+    <div class="stat"><div class="n">85%</div><div class="l">Rotation health</div></div>
+    <div class="stat"><div class="n">4</div><div class="l">Families worn</div></div>
+  </div>
+  <div class="sub a4" style="margin-top:16px">Calendar heatmap · family breakdown charts · neglected bottle alerts</div>
+</div>
+
+<div class="slide" id="s9">
+  <div class="overline a1">Privacy</div>
+  <div class="headline a2">Device <span class="grad">Sovereignty</span></div>
+  <div class="grid2 a3">
+    <div class="card"><h3>📴 Offline PWA</h3><p>Works after first load — no mandatory sync.</p></div>
+    <div class="card"><h3>🔐 IndexedDB</h3><p>Wardrobe and wear history stay on your phone.</p></div>
+    <div class="card"><h3>🌡️ Optional weather</h3><p>Open-Meteo only when you grant location.</p></div>
+    <div class="card"><h3>📋 Export</h3><p>JSON backup generated locally — you control sharing.</p></div>
+  </div>
+</div>
+
+<div class="slide" id="s10">
+  <div class="overline a1">Get Started</div>
+  <div class="headline a2">Your wardrobe <span class="grad">awaits</span></div>
+  <div class="sub a3">Warm amber chrome · demo mode with 12 bottles · install to home screen</div>
+  <div class="a4" style="margin-top:24px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
+    <a class="link-btn link-amber" href="https://shamikhahmed.github.io/ScentCap/" target="_blank" rel="noopener">💧 Open ScentCap</a>
+    <a class="link-btn" style="background:rgba(255,255,255,.06);border:1px solid var(--border);color:#fff" href="pitch.html">Pitch deck</a>
+    <a class="link-btn" style="background:rgba(255,255,255,.06);border:1px solid var(--border);color:#fff" href="landing.html">Landing</a>
+  </div>
+  <div class="sub a5" style="margin-top:28px;font-size:12px">© 2026 Shamikh Ahmed · Cap portfolio</div>
+</div>
+
+</div>
+
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+let idx=0;
+const total=slides.length;
+const progress=document.getElementById('progress');
+const counter=document.getElementById('counter');
+function show(i){
+  idx=Math.max(0,Math.min(total-1,i));
+  slides.forEach((s,j)=>s.classList.toggle('active',j===idx));
+  progress.style.width=((idx+1)/total*100)+'%';
+  counter.textContent=(idx+1)+' / '+total;
+}
+function next(){show(idx+1)}
+function prev(){show(idx-1)}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' ')next();
+  if(e.key==='ArrowLeft'||e.key==='PageUp')prev();
+});
+let tx=0;document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+document.addEventListener('touchend',e=>{const dx=tx-e.changedTouches[0].clientX;if(Math.abs(dx)>50){if(dx>0)next();else prev()}},{passive:true});
+const c=document.getElementById('mist-canvas'),ctx=c.getContext('2d');
+function resize(){c.width=innerWidth;c.height=innerHeight}
+resize();addEventListener('resize',resize);
+(function draw(){
+  ctx.clearRect(0,0,c.width,c.height);
+  for(let i=0;i<40;i++){
+    const x=(Math.sin(Date.now()/3000+i)*.5+.5)*c.width;
+    const y=(Math.cos(Date.now()/4000+i*1.3)*.5+.5)*c.height;
+    ctx.beginPath();ctx.arc(x,y,2,0,Math.PI*2);
+    ctx.fillStyle='rgba(201,168,124,'+(0.1+Math.random()*0.15)+')';ctx.fill();
+  }
+  requestAnimationFrame(draw);
+})();
+</script>
+</body>
+</html>
