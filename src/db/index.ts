@@ -245,3 +245,20 @@ export async function clearUserData() {
   const db = await getDb();
   await Promise.all(USER_STORES.map((store) => db.clear(store)));
 }
+
+export interface TravelKitPlan {
+  tripName: string;
+  startDate: string;
+  endDate: string;
+}
+
+export async function getTravelKitPlan(): Promise<TravelKitPlan | null> {
+  const row = await (await getDb()).get('statistics', 'travel_kit');
+  if (!row?.data) return null;
+  const d = row.data as unknown as TravelKitPlan;
+  return d.tripName || d.startDate || d.endDate ? d : null;
+}
+
+export async function saveTravelKitPlan(plan: TravelKitPlan) {
+  await (await getDb()).put('statistics', { key: 'travel_kit', data: { ...plan } });
+}

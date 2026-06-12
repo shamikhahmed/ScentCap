@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  Cloud, Droplets, Flame, Layers, Sparkles, Sun, Wind, ChevronRight, Check, MapPin,
+  Cloud, Droplets, Flame, Layers, Sparkles, Sun, Wind, ChevronRight, Check, MapPin, Share2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useApp } from '@/context/AppContext';
@@ -16,6 +16,7 @@ import { timeGreeting, scentMood } from '@/lib/greetings';
 import { FAMILY_COLORS, rotationHealth, wearStreak, wearsThisMonth, daysSinceWear } from '@/lib/stats';
 import { weatherUnavailableMessage } from '@/services/weather';
 import { uid } from '@/lib/utils';
+import { advisorToShareInput, downloadBlob, exportShareCardPng, shareWearCard } from '@/lib/shareCard';
 
 const PRESETS = [
   { label: 'Office', icon: '💼', occasion: 'work' as const, dress: 'professional' as const, vibe: 'subtle' as const },
@@ -36,6 +37,7 @@ export function Home() {
   const [ratingOpen, setRatingOpen] = useState(false);
   const [pendingWear, setPendingWear] = useState<{ id: string; name: string; wornAt: string } | null>(null);
   const [neglectedDetails, setNeglectedDetails] = useState<{ id: string; f: Fragrance; days: number | null }[]>([]);
+  const [shareMsg, setShareMsg] = useState<string | null>(null);
 
   const greeting = timeGreeting();
   const streak = wearStreak(history);
@@ -95,6 +97,22 @@ export function Home() {
     });
     setRatingOpen(true);
     setTimeout(() => setLogged(false), 2500);
+  };
+
+  const shareToday = async () => {
+    if (!result) return;
+    try {
+      const input = advisorToShareInput(result);
+      const outcome = await shareWearCard(input, familyColor);
+      const msg = outcome === 'shared' ? 'Shared!' : outcome === 'copied' ? 'Copied to clipboard' : 'Saved as PNG';
+      setShareMsg(msg);
+      setTimeout(() => setShareMsg(null), 2500);
+    } catch {
+      const blob = await exportShareCardPng(advisorToShareInput(result), familyColor);
+      downloadBlob(blob, 'scentcap-today.png');
+      setShareMsg('Saved as PNG');
+      setTimeout(() => setShareMsg(null), 2500);
+    }
   };
 
   const saveRating = async (rating: number, compliment: boolean) => {
@@ -220,12 +238,16 @@ export function Home() {
               <Button className="flex-1" onClick={wearToday} disabled={logged}>
                 {logged ? <><Check size={16} /> Logged</> : 'Wear this today'}
               </Button>
+              <Button variant="ghost" className="border border-white/15 bg-white/5 px-4" onClick={shareToday} aria-label="Share today's pick">
+                <Share2 size={16} />
+              </Button>
               <Link to="/advisor" className="flex-1">
                 <Button variant="ghost" className="w-full border border-white/15 bg-white/5">
                   <Sparkles size={16} /> Customize
                 </Button>
               </Link>
             </div>
+            {shareMsg && <p className="relative z-10 text-center text-xs text-[var(--color-accent)] mt-2">{shareMsg}</p>}
           </motion.div>
         ) : null}
 

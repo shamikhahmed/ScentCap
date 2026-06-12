@@ -14,8 +14,8 @@ const nav = [
 
 export function AppShell() {
   return (
-    <div className="min-h-dvh flex flex-col md:flex-row gradient-hero">
-      <aside className="hidden md:flex md:w-64 md:flex-col md:border-r md:border-white/10 md:safe-pt md:p-6 md:gap-2">
+    <div className="min-h-dvh flex flex-col md:flex-row gradient-hero md:max-w-[1440px] md:mx-auto md:w-full">
+      <aside className="hidden md:flex md:w-64 md:flex-shrink-0 md:flex-col md:border-r md:border-white/10 md:safe-pt md:p-6 md:gap-2 md:sticky md:top-0 md:h-dvh md:overflow-y-auto">
         <div className="mb-8">
           <p className="text-xs uppercase tracking-[0.2em] text-[var(--color-accent)]">ScentCap</p>
           <h1 className="text-2xl font-semibold tracking-tight mt-1">Fragrance OS</h1>
@@ -43,9 +43,11 @@ export function AppShell() {
         </NavLink>
       </aside>
 
-      <main className="flex-1 overflow-y-auto pb-24 md:pb-8 md:px-8 md:max-w-4xl">
-        <DemoBanner />
-        <Outlet />
+      <main className="flex-1 overflow-y-auto pb-24 md:pb-8 md:px-6 lg:px-10 xl:px-12 w-full min-w-0">
+        <div className="mx-auto w-full max-w-2xl lg:max-w-3xl xl:max-w-4xl">
+          <DemoBanner />
+          <Outlet />
+        </div>
       </main>
 
       <Link

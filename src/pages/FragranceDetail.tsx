@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Star, Camera, Sparkles } from 'lucide-react';
+import { Star, Camera, Sparkles, Share2 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { getAllCollection, getCollectionByParent, getFragrance, getPhoto, savePhoto } from '@/db';
@@ -8,6 +8,7 @@ import type { CollectionItem, Fragrance, SignatureRole } from '@/types';
 import { getDb, getPreferences, savePreferences } from '@/db';
 import { FAMILY_COLORS } from '@/lib/stats';
 import { estimateWearsRemaining, formatCurrency } from '@/lib/utils';
+import { downloadBlob, exportShareCardPng, fragranceToShareInput, shareWearCard } from '@/lib/shareCard';
 
 const LEVELS = ['full', '75', '50', '25', '10', 'empty'] as const;
 const SIG_ROLES: { role: SignatureRole; label: string }[] = [
@@ -28,6 +29,7 @@ export function FragranceDetail() {
   const [parentItem, setParentItem] = useState<CollectionItem | null>(null);
   const [parentFragrance, setParentFragrance] = useState<Fragrance | null>(null);
   const [childDecants, setChildDecants] = useState<{ item: CollectionItem; f?: Fragrance }[]>([]);
+  const [shareMsg, setShareMsg] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -106,6 +108,19 @@ export function FragranceDetail() {
 
   const aura = FAMILY_COLORS[fragrance.family] ?? '#c9a87c';
 
+  const shareBottle = async () => {
+    try {
+      const outcome = await shareWearCard(fragranceToShareInput(fragrance), aura);
+      const msg = outcome === 'shared' ? 'Shared!' : outcome === 'copied' ? 'Copied to clipboard' : 'Saved as PNG';
+      setShareMsg(msg);
+    } catch {
+      const blob = await exportShareCardPng(fragranceToShareInput(fragrance), aura);
+      downloadBlob(blob, `scentcap-${fragrance.brand}-${fragrance.name}.png`.replace(/\s+/g, '-').toLowerCase());
+      setShareMsg('Saved as PNG');
+    }
+    setTimeout(() => setShareMsg(null), 2500);
+  };
+
   return (
     <div className="safe-pt pb-8 max-w-lg mx-auto">
       <div
@@ -168,6 +183,10 @@ export function FragranceDetail() {
           <Button size="sm" variant={item.isFavorite ? 'default' : 'ghost'} onClick={toggleFavorite}>
             <Star size={14} fill={item.isFavorite ? 'currentColor' : 'none'} /> Favorite
           </Button>
+          <Button size="sm" variant="ghost" onClick={shareBottle}>
+            <Share2 size={14} /> Share
+          </Button>
+          {shareMsg && <span className="text-xs text-[var(--color-accent)] self-center">{shareMsg}</span>}
           {item.purchasePrice != null && (
             <span className="text-sm text-stone-500 self-center ml-auto">{formatCurrency(item.purchasePrice)}</span>
           )}
