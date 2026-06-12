@@ -1,4 +1,6 @@
 {
-  "version": "1.0.2",
-  "name": "ScentCap"
+  "name": "ScentCap",
+  "version": "1.0.3",
+  "swCache": "scentcap-v103",
+  "updated": "2026-06-12"
 }

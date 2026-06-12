@@ -31,7 +31,7 @@ export default defineConfig({
           {
             urlPattern: /^https:\/\/api\.open-meteo\.com\/.*/i,
             handler: 'NetworkFirst',
-            options: { cacheName: 'weather-cache', networkTimeoutSeconds: 5, expiration: { maxEntries: 5, maxAgeSeconds: 86400 } },
+            options: { cacheName: 'weather-cache-v103', networkTimeoutSeconds: 5, expiration: { maxEntries: 5, maxAgeSeconds: 86400 } },
           },
         ],
       },

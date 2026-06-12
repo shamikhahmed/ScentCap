@@ -87,6 +87,20 @@ test.describe('ScentCap PWA', () => {
     await expect(page.getByRole('button', { name: /Wear this today/i })).toBeVisible({ timeout: 20_000 });
   });
 
+  test('travel kit persists trip name after reload', async ({ page }) => {
+    await page.goto('./onboarding');
+    await page.getByRole('button', { name: /Explore with sample wardrobe/i }).click();
+    await expect(page).not.toHaveURL(/onboarding/, { timeout: 30_000 });
+
+    await page.goto('./travel');
+    await expect(page.getByRole('heading', { name: 'Travel kit' })).toBeVisible({ timeout: 10_000 });
+    await page.getByLabel(/Trip name/i).fill('Dubai work trip');
+    await page.waitForTimeout(600);
+
+    await page.reload();
+    await expect(page.getByLabel(/Trip name/i)).toHaveValue('Dubai work trip', { timeout: 10_000 });
+  });
+
   test('navigate to advisor and get recommendation', async ({ page }) => {
     await completeOnboarding(page);
     await addFragranceFromSearch(page, 'Bleu');

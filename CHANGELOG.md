@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.0.3] - 2026-06-12
+- Phase P4: Playwright e2e for travel kit trip name persistence across reload.
+
 ## [1.0.0] - 2026-06-12
 
 ### P1 polish
