@@ -11,7 +11,7 @@ import type {
 
 export interface ScentCapDB extends DBSchema {
   fragrances: { key: string; value: Fragrance };
-  collection: { key: string; value: CollectionItem; indexes: { 'by-fragrance': string } };
+  collection: { key: string; value: CollectionItem; indexes: { 'by-fragrance': string; 'by-parent': string } };
   wear_history: { key: string; value: WearRecord; indexes: { 'by-date': string; 'by-fragrance': string } };
   weather_cache: { key: string; value: WeatherCache };
   user_profile: { key: string; value: UserProfile };
@@ -25,20 +25,44 @@ let dbPromise: Promise<IDBPDatabase<ScentCapDB>> | null = null;
 
 export function getDb() {
   if (!dbPromise) {
-    dbPromise = openDB<ScentCapDB>('scentcap-v1', 1, {
-      upgrade(db) {
-        db.createObjectStore('fragrances', { keyPath: 'id' });
-        const col = db.createObjectStore('collection', { keyPath: 'id' });
-        col.createIndex('by-fragrance', 'fragranceId');
-        const wear = db.createObjectStore('wear_history', { keyPath: 'id' });
-        wear.createIndex('by-date', 'wornAt');
-        wear.createIndex('by-fragrance', 'fragranceId');
-        db.createObjectStore('weather_cache', { keyPath: 'id' });
-        db.createObjectStore('user_profile', { keyPath: 'id' });
-        db.createObjectStore('preferences', { keyPath: 'id' });
-        db.createObjectStore('layering_profiles', { keyPath: 'id' });
-        db.createObjectStore('statistics', { keyPath: 'key' });
-        db.createObjectStore('photos', { keyPath: 'id' });
+    dbPromise = openDB<ScentCapDB>('scentcap-v1', 2, {
+      upgrade(db, oldVersion, _newVersion, transaction) {
+        if (!db.objectStoreNames.contains('fragrances')) {
+          db.createObjectStore('fragrances', { keyPath: 'id' });
+        }
+        if (!db.objectStoreNames.contains('collection')) {
+          const col = db.createObjectStore('collection', { keyPath: 'id' });
+          col.createIndex('by-fragrance', 'fragranceId');
+          col.createIndex('by-parent', 'parentCollectionId');
+        } else if (oldVersion < 2 && transaction) {
+          const col = transaction.objectStore('collection');
+          if (!col.indexNames.contains('by-parent')) {
+            col.createIndex('by-parent', 'parentCollectionId');
+          }
+        }
+        if (!db.objectStoreNames.contains('wear_history')) {
+          const wear = db.createObjectStore('wear_history', { keyPath: 'id' });
+          wear.createIndex('by-date', 'wornAt');
+          wear.createIndex('by-fragrance', 'fragranceId');
+        }
+        if (!db.objectStoreNames.contains('weather_cache')) {
+          db.createObjectStore('weather_cache', { keyPath: 'id' });
+        }
+        if (!db.objectStoreNames.contains('user_profile')) {
+          db.createObjectStore('user_profile', { keyPath: 'id' });
+        }
+        if (!db.objectStoreNames.contains('preferences')) {
+          db.createObjectStore('preferences', { keyPath: 'id' });
+        }
+        if (!db.objectStoreNames.contains('layering_profiles')) {
+          db.createObjectStore('layering_profiles', { keyPath: 'id' });
+        }
+        if (!db.objectStoreNames.contains('statistics')) {
+          db.createObjectStore('statistics', { keyPath: 'key' });
+        }
+        if (!db.objectStoreNames.contains('photos')) {
+          db.createObjectStore('photos', { keyPath: 'id' });
+        }
       },
     });
   }
@@ -121,6 +145,23 @@ export async function addToCollection(item: CollectionItem) {
   await (await getDb()).put('collection', item);
 }
 
+export async function getCollectionByParent(parentId: string): Promise<CollectionItem[]> {
+  return (await getDb()).getAllFromIndex('collection', 'by-parent', parentId);
+}
+
+export async function saveLayeringProfile(profile: LayeringProfile) {
+  await (await getDb()).put('layering_profiles', profile);
+}
+
+export async function getSavedLayeringProfiles(): Promise<LayeringProfile[]> {
+  const rows = await (await getDb()).getAll('layering_profiles');
+  return rows.sort((a, b) => (b.savedAt ?? '').localeCompare(a.savedAt ?? ''));
+}
+
+export async function deleteLayeringProfile(id: string) {
+  await (await getDb()).delete('layering_profiles', id);
+}
+
 export async function getWearHistory(): Promise<WearRecord[]> {
   return (await getDb()).getAllFromIndex('wear_history', 'by-date');
 }
@@ -157,6 +198,7 @@ export async function exportAllData(): Promise<string> {
     version: 2,
     fragrances: await db.getAll('fragrances'),
     collection: await db.getAll('collection'),
+    layering_profiles: await db.getAll('layering_profiles'),
     wear_history: await db.getAll('wear_history'),
     user_profile: await db.getAll('user_profile'),
     preferences: await db.getAll('preferences'),
@@ -170,6 +212,7 @@ export async function importAllData(json: string) {
   const db = await getDb();
   for (const f of data.fragrances ?? []) await db.put('fragrances', f);
   for (const c of data.collection ?? []) await db.put('collection', c);
+  for (const lp of data.layering_profiles ?? []) await db.put('layering_profiles', lp);
   for (const w of data.wear_history ?? []) await db.put('wear_history', w);
   for (const p of data.user_profile ?? []) await db.put('user_profile', p);
   for (const p of data.preferences ?? []) await db.put('preferences', { officeSafeMode: false, ...p });

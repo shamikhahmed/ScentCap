@@ -30,10 +30,15 @@ export function BottleCard({ c, f }: { c: CollectionItem; f?: Fragrance }) {
             {c.isFavorite && <Star size={14} className="text-[var(--color-accent)] mb-auto" fill="currentColor" />}
             <p className="text-[10px] text-stone-400 uppercase tracking-wider">{f?.brand}</p>
             <p className="font-semibold leading-tight">{f?.name ?? '…'}</p>
-            <div className="flex justify-between items-center mt-2 gap-2">
+            <div className="flex justify-between items-center mt-2 gap-2 flex-wrap">
               {f?.concentration && (
                 <span className="text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-[var(--color-accent)]/20 text-[var(--color-accent)]">
                   {f.concentration}
+                </span>
+              )}
+              {(c.bottleType === 'decant' || c.bottleType === 'travel') && (
+                <span className="text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-white/10 text-stone-300">
+                  {c.bottleType === 'decant' ? 'Decant' : 'Travel'}
                 </span>
               )}
               <span className="text-[10px] text-stone-500 ml-auto">{c.bottleLevel === 'full' ? 'Full' : `${c.bottleLevel}%`}</span>

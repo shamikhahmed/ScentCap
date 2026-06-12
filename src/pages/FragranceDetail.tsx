@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Star, Camera, Sparkles } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { getAllCollection, getFragrance, getPhoto, savePhoto } from '@/db';
+import { getAllCollection, getCollectionByParent, getFragrance, getPhoto, savePhoto } from '@/db';
 import type { CollectionItem, Fragrance, SignatureRole } from '@/types';
 import { getDb, getPreferences, savePreferences } from '@/db';
 import { FAMILY_COLORS } from '@/lib/stats';
@@ -25,6 +25,9 @@ export function FragranceDetail() {
   const [fragrance, setFragrance] = useState<Fragrance | null>(null);
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [sigRole, setSigRole] = useState<SignatureRole | undefined>();
+  const [parentItem, setParentItem] = useState<CollectionItem | null>(null);
+  const [parentFragrance, setParentFragrance] = useState<Fragrance | null>(null);
+  const [childDecants, setChildDecants] = useState<{ item: CollectionItem; f?: Fragrance }[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -39,6 +42,21 @@ export function FragranceDetail() {
         const blob = await getPhoto(c.photoBlobId);
         if (blob) setPhotoUrl(URL.createObjectURL(blob));
       }
+      if (c.parentCollectionId) {
+        const parent = col.find((x) => x.id === c.parentCollectionId);
+        if (parent) {
+          setParentItem(parent);
+          setParentFragrance((await getFragrance(parent.fragranceId)) ?? null);
+        }
+      } else {
+        setParentItem(null);
+        setParentFragrance(null);
+      }
+      const children = await getCollectionByParent(c.id);
+      const childRows = await Promise.all(
+        children.map(async (child) => ({ item: child, f: await getFragrance(child.fragranceId) })),
+      );
+      setChildDecants(childRows);
     })();
   }, [id]);
 
@@ -116,10 +134,36 @@ export function FragranceDetail() {
           <Link to="/collection" className="text-xs text-[var(--color-accent)]">← Wardrobe</Link>
           <p className="text-stone-400 text-sm">{fragrance.brand}</p>
           <h1 className="text-2xl font-semibold">{fragrance.name}</h1>
+          {(item.bottleType === 'decant' || item.bottleType === 'travel') && (
+            <span className="inline-block mt-1 text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-[var(--color-accent)]/20 text-[var(--color-accent)]">
+              {item.bottleType === 'decant' ? 'Decant' : 'Travel bottle'}
+            </span>
+          )}
         </div>
       </div>
 
       <div className="px-5 space-y-5 -mt-2">
+        {parentItem && parentFragrance && (
+          <Card className="text-sm">
+            <p className="text-xs uppercase text-stone-500 mb-1">Linked to parent bottle</p>
+            <Link to={`/fragrance/${parentItem.id}`} className="text-[var(--color-accent)] font-medium">
+              {parentFragrance.brand} — {parentFragrance.name}
+            </Link>
+          </Card>
+        )}
+        {childDecants.length > 0 && (
+          <Card>
+            <p className="text-xs uppercase text-stone-500 mb-2">Decants & travel sizes</p>
+            <div className="space-y-2">
+              {childDecants.map(({ item: child, f }) => (
+                <Link key={child.id} to={`/fragrance/${child.id}`} className="flex justify-between items-center text-sm hover:text-[var(--color-accent)]">
+                  <span>{f?.name ?? '…'} · {child.bottleType === 'travel' ? 'Travel' : 'Decant'}</span>
+                  <span className="text-stone-500 text-xs">{child.bottleSizeMl ?? '—'}ml</span>
+                </Link>
+              ))}
+            </div>
+          </Card>
+        )}
         <div className="flex gap-2">
           <Button size="sm" variant={item.isFavorite ? 'default' : 'ghost'} onClick={toggleFavorite}>
             <Star size={14} fill={item.isFavorite ? 'currentColor' : 'none'} /> Favorite
@@ -139,7 +183,8 @@ export function FragranceDetail() {
         </Card>
 
         <Card>
-          <p className="font-medium mb-3">Bottle level</p>
+          <p className="font-medium mb-1">Bottle level</p>
+          <p className="text-xs text-stone-500 mb-3">Tap to update</p>
           <div className="flex gap-1.5 overflow-x-auto scrollbar-none">
             {LEVELS.map((l) => (
               <button

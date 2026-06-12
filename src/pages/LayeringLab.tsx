@@ -1,19 +1,33 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Layers, ArrowRight } from 'lucide-react';
+import { Bookmark, Layers, ArrowRight, Trash2 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useApp } from '@/context/AppContext';
-import { getFragrance } from '@/db';
+import { deleteLayeringProfile, getFragrance, getSavedLayeringProfiles, saveLayeringProfile } from '@/db';
 import { findBestLayering } from '@/engines/layering';
-import type { Fragrance } from '@/types';
+import type { Fragrance, LayeringProfile } from '@/types';
 import { FAMILY_COLORS } from '@/lib/stats';
+import { uid } from '@/lib/utils';
 
 export function LayeringLab() {
   const { collection } = useApp();
   const [items, setItems] = useState<{ id: string; f: Fragrance }[]>([]);
   const [primaryId, setPrimaryId] = useState<string | null>(null);
   const [result, setResult] = useState<ReturnType<typeof findBestLayering> | null>(null);
+  const [saved, setSaved] = useState<LayeringProfile[]>([]);
+  const [savedLabels, setSavedLabels] = useState<Record<string, { primary: string; secondary: string }>>({});
+
+  const loadSaved = async () => {
+    const profiles = await getSavedLayeringProfiles();
+    setSaved(profiles);
+    const labels: Record<string, { primary: string; secondary: string }> = {};
+    await Promise.all(profiles.map(async (p) => {
+      const [a, b] = await Promise.all([getFragrance(p.primaryId), getFragrance(p.secondaryId)]);
+      labels[p.id] = { primary: a?.name ?? 'Unknown', secondary: b?.name ?? 'Unknown' };
+    }));
+    setSavedLabels(labels);
+  };
 
   useEffect(() => {
     Promise.all(
@@ -22,6 +36,7 @@ export function LayeringLab() {
         return f ? { id: c.fragranceId, f } : null;
       }),
     ).then((rows) => setItems(rows.filter(Boolean) as { id: string; f: Fragrance }[]));
+    loadSaved();
   }, [collection]);
 
   const primary = items.find((i) => i.id === primaryId)?.f;
@@ -30,6 +45,37 @@ export function LayeringLab() {
     if (!primary) return;
     const others = items.filter((i) => i.id !== primaryId).map((i) => i.f);
     setResult(findBestLayering(primary, others));
+  };
+
+  const saveCombo = async () => {
+    if (!result || !primaryId) return;
+    const profile: LayeringProfile = {
+      id: uid(),
+      primaryId,
+      secondaryId: result.secondary.id,
+      score: result.score,
+      order: result.order,
+      guidance: result.guidance,
+      savedAt: new Date().toISOString(),
+      name: `${primary?.name ?? 'Base'} + ${result.secondary.name}`,
+    };
+    await saveLayeringProfile(profile);
+    await loadSaved();
+  };
+
+  const removeCombo = async (id: string) => {
+    await deleteLayeringProfile(id);
+    await loadSaved();
+  };
+
+  const loadCombo = async (p: LayeringProfile) => {
+    setPrimaryId(p.primaryId);
+    setResult({
+      secondary: (await getFragrance(p.secondaryId))!,
+      score: p.score,
+      order: p.order,
+      guidance: p.guidance,
+    });
   };
 
   return (
@@ -41,6 +87,26 @@ export function LayeringLab() {
         </h1>
         <p className="text-stone-400 text-sm mt-2">Pick a base from your wardrobe — we&apos;ll find the best partner.</p>
       </div>
+
+      {saved.length > 0 && (
+        <Card>
+          <p className="font-medium mb-3">Saved combos</p>
+          <div className="space-y-2">
+            {saved.map((p) => (
+              <div key={p.id} className="flex items-center gap-2 p-2 rounded-xl bg-white/5 border border-white/10">
+                <button type="button" className="flex-1 text-left text-sm" onClick={() => loadCombo(p)}>
+                  <span className="text-[var(--color-accent)] font-semibold">{p.score}%</span>
+                  {' · '}
+                  {savedLabels[p.id]?.primary ?? '…'} + {savedLabels[p.id]?.secondary ?? '…'}
+                </button>
+                <button type="button" className="p-2 text-stone-500 hover:text-red-400" onClick={() => removeCombo(p.id)} aria-label="Delete combo">
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
 
       <div className="grid grid-cols-2 gap-3 max-h-[40vh] overflow-y-auto">
         {items.map(({ id, f }) => (
@@ -90,6 +156,9 @@ export function LayeringLab() {
               </div>
               <p className="text-sm text-stone-300">{result.order}</p>
               <p className="text-sm text-stone-400">{result.guidance}</p>
+              <Button variant="ghost" className="w-full" onClick={saveCombo}>
+                <Bookmark size={16} /> Save combo
+              </Button>
             </Card>
           </motion.div>
         )}

@@ -4,6 +4,7 @@ export type Longevity = 'short' | 'medium' | 'long' | 'eternal';
 export type DayNight = 'day' | 'night' | 'versatile';
 export type GenderLean = 'masculine' | 'feminine' | 'unisex';
 export type BottleLevel = 'full' | '75' | '50' | '25' | '10' | 'empty';
+export type BottleType = 'full' | 'decant' | 'travel';
 export type Season = 'spring' | 'summer' | 'fall' | 'winter';
 export type LayeringTag = 'citrus' | 'woody' | 'amber' | 'vanilla' | 'musky' | 'clean' | 'fresh' | 'spicy' | 'sweet' | 'oud' | 'floral' | 'leather' | 'smoky';
 
@@ -37,6 +38,10 @@ export interface CollectionItem {
   id: string;
   fragranceId: string;
   bottleLevel: BottleLevel;
+  /** Full bottle, decant sample, or travel-size linked to a parent bottle */
+  bottleType?: BottleType;
+  /** Parent collection item ID when bottleType is decant or travel */
+  parentCollectionId?: string;
   bottleSizeMl?: number;
   purchaseDate?: string;
   purchasePrice?: number;
@@ -109,6 +114,8 @@ export interface LayeringProfile {
   score: number;
   order: string;
   guidance: string;
+  savedAt?: string;
+  name?: string;
 }
 
 export interface AdvisorInput {

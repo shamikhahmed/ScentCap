@@ -1,18 +1,24 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Camera } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { FamilyIcon } from '@/components/ui/FamilyIcon';
-import { addToCollection, putFragrance, savePhoto, searchFragranceGroups } from '@/db';
+import { addToCollection, getAllCollection, getFragrance, putFragrance, savePhoto, searchFragranceGroups } from '@/db';
 import { enrichFragranceOnce } from '@/services/seed';
 import { useApp } from '@/context/AppContext';
-import type { Concentration, Fragrance, GenderLean, Longevity, Projection } from '@/types';
+import type { BottleType, Concentration, Fragrance, GenderLean, Longevity, Projection } from '@/types';
 import { CONCENTRATIONS } from '@/types';
 import { estimateWearsRemaining, uid } from '@/lib/utils';
 
+const BOTTLE_TYPES: { id: BottleType; label: string }[] = [
+  { id: 'full', label: 'Full bottle' },
+  { id: 'decant', label: 'Decant' },
+  { id: 'travel', label: 'Travel' },
+];
+
 export function AddFragrance() {
-  const { refresh } = useApp();
+  const { collection, refresh } = useApp();
   const navigate = useNavigate();
   const [tab, setTab] = useState<'search' | 'manual'>('search');
   const [q, setQ] = useState('');
@@ -20,6 +26,24 @@ export function AddFragrance() {
   const [picked, setPicked] = useState<Fragrance | null>(null);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [meta, setMeta] = useState({ sizeMl: '100', price: '', opened: '', purchase: '' });
+  const [bottleType, setBottleType] = useState<BottleType>('full');
+  const [parentCollectionId, setParentCollectionId] = useState('');
+  const [parentOptions, setParentOptions] = useState<{ id: string; label: string }[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      const col = await getAllCollection();
+      const opts = await Promise.all(
+        col
+          .filter((c) => (c.bottleType ?? 'full') === 'full')
+          .map(async (c) => {
+            const f = await getFragrance(c.fragranceId);
+            return { id: c.id, label: f ? `${f.brand} — ${f.name}` : c.id };
+          }),
+      );
+      setParentOptions(opts);
+    })();
+  }, [collection]);
 
   const search = async (query: string) => {
     setQ(query);
@@ -28,6 +52,7 @@ export function AddFragrance() {
   };
 
   const confirmAdd = async (f: Fragrance) => {
+    if ((bottleType === 'decant' || bottleType === 'travel') && !parentCollectionId) return;
     await enrichFragranceOnce(f);
     const colId = uid();
     let photoBlobId: string | undefined;
@@ -35,11 +60,14 @@ export function AddFragrance() {
       photoBlobId = `photo-${colId}`;
       await savePhoto(photoBlobId, photoFile);
     }
+    const defaultSize = bottleType === 'decant' ? '10' : bottleType === 'travel' ? '30' : meta.sizeMl;
     await addToCollection({
       id: colId,
       fragranceId: f.id,
       bottleLevel: 'full',
-      bottleSizeMl: Number(meta.sizeMl) || 100,
+      bottleType,
+      parentCollectionId: bottleType === 'full' ? undefined : parentCollectionId,
+      bottleSizeMl: Number(defaultSize) || (bottleType === 'decant' ? 10 : 100),
       purchasePrice: meta.price ? Number(meta.price) : undefined,
       purchaseDate: meta.purchase || undefined,
       openedDate: meta.opened || undefined,
@@ -74,6 +102,9 @@ export function AddFragrance() {
     await confirmAdd(f);
   };
 
+  const needsParent = bottleType === 'decant' || bottleType === 'travel';
+  const canAdd = !needsParent || Boolean(parentCollectionId);
+
   return (
     <div className="safe-pt px-5 py-6 max-w-lg mx-auto space-y-6">
       <h1 className="text-3xl font-semibold">Add bottle</h1>
@@ -83,9 +114,45 @@ export function AddFragrance() {
       </div>
 
       <Card className="space-y-3">
+        <p className="text-xs uppercase text-stone-500">Bottle type</p>
+        <div className="flex gap-2 flex-wrap">
+          {BOTTLE_TYPES.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => { setBottleType(t.id); if (t.id === 'full') setParentCollectionId(''); }}
+              className={`px-3 py-2 rounded-xl text-xs font-semibold ${
+                bottleType === t.id ? 'bg-[var(--color-accent)] text-stone-950' : 'bg-white/5 text-stone-400'
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+        {needsParent && (
+          <div className="space-y-1">
+            <label className="text-xs text-stone-500">Link to parent bottle</label>
+            <select
+              className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm"
+              value={parentCollectionId}
+              onChange={(e) => setParentCollectionId(e.target.value)}
+            >
+              <option value="">Select parent bottle…</option>
+              {parentOptions.map((p) => (
+                <option key={p.id} value={p.id}>{p.label}</option>
+              ))}
+            </select>
+            {!parentOptions.length && (
+              <p className="text-xs text-amber-400">Add a full bottle first to link decants or travel sizes.</p>
+            )}
+          </div>
+        )}
+      </Card>
+
+      <Card className="space-y-3">
         <p className="text-xs uppercase text-stone-500">Bottle details (optional)</p>
         <div className="grid grid-cols-2 gap-2">
-          <input className="rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm" placeholder="Size (ml)" value={meta.sizeMl} onChange={(e) => setMeta({ ...meta, sizeMl: e.target.value })} />
+          <input className="rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm" placeholder={bottleType === 'decant' ? 'Size (ml)' : 'Size (ml)'} value={meta.sizeMl} onChange={(e) => setMeta({ ...meta, sizeMl: e.target.value })} />
           <input className="rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm" placeholder="Price $" value={meta.price} onChange={(e) => setMeta({ ...meta, price: e.target.value })} />
           <input type="date" className="rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm" title="Purchased" value={meta.purchase} onChange={(e) => setMeta({ ...meta, purchase: e.target.value })} />
           <input type="date" className="rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm" title="Opened" value={meta.opened} onChange={(e) => setMeta({ ...meta, opened: e.target.value })} />
@@ -116,7 +183,7 @@ export function AddFragrance() {
                   <p className="text-sm text-[var(--color-accent)]">{picked.concentration}</p>
                 </div>
               </div>
-              <Button className="w-full" onClick={() => confirmAdd(picked)}>Add to wardrobe</Button>
+              <Button className="w-full" onClick={() => confirmAdd(picked)} disabled={!canAdd}>Add to wardrobe</Button>
               <Button variant="ghost" className="w-full" onClick={() => setPicked(null)}>Back</Button>
             </Card>
           ) : (
@@ -155,7 +222,7 @@ export function AddFragrance() {
           <select className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3" value={manual.concentration} onChange={(e) => setManual({ ...manual, concentration: e.target.value as Concentration })}>
             {CONCENTRATIONS.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
-          <Button className="w-full" onClick={addManual} disabled={!manual.name || !manual.brand}>Save to wardrobe</Button>
+          <Button className="w-full" onClick={addManual} disabled={!manual.name || !manual.brand || !canAdd}>Save to wardrobe</Button>
         </Card>
       )}
     </div>
