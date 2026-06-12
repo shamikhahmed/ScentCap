@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { MapPin } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useApp } from '@/context/AppContext';
@@ -12,6 +13,7 @@ import { WearRatingModal } from '@/components/ui/WearRatingModal';
 import { SprayBodyMap } from '@/components/advisor/SprayBodyMap';
 import { ScoreRing } from '@/components/home/ScoreRing';
 import { FAMILY_COLORS } from '@/lib/stats';
+import { weatherUnavailableMessage } from '@/services/weather';
 
 const FIELDS: { key: keyof AdvisorInput; label: string; options: { v: string; l: string }[] }[] = [
   { key: 'timeOfDay', label: 'Time', options: [
@@ -29,9 +31,10 @@ const FIELDS: { key: keyof AdvisorInput; label: string; options: { v: string; l:
 ];
 
 export function AdvisorPage() {
-  const { profile, prefs, collection, history, weather, refresh } = useApp();
+  const { profile, prefs, collection, history, weather, weatherUnavailable, refresh } = useApp();
   const location = useLocation();
   const preset = location.state as { occasion?: AdvisorInput['occasion']; dress?: AdvisorInput['dressLevel']; vibe?: AdvisorInput['vibe'] } | null;
+  const weatherNotice = !weather ? weatherUnavailableMessage(weatherUnavailable) : null;
 
   const [input, setInput] = useState<AdvisorInput>(() => {
     const d = defaultAdvisorInput();
@@ -100,6 +103,19 @@ export function AdvisorPage() {
   return (
     <div className="safe-pt px-5 py-6 max-w-2xl mx-auto space-y-6">
       <h1 className="text-3xl font-semibold">Scent Advisor</h1>
+
+      {weatherNotice && (
+        <Card className="flex items-start gap-3 border-white/5 bg-white/[0.02]">
+          <MapPin className="text-stone-400 shrink-0 mt-0.5" size={18} />
+          <div>
+            <p className="text-sm font-medium text-stone-300">No weather data</p>
+            <p className="text-sm text-stone-500 mt-1">{weatherNotice}</p>
+            <Link to="/settings" className="text-[var(--color-accent)] text-sm font-medium mt-2 inline-block">
+              Update location
+            </Link>
+          </div>
+        </Card>
+      )}
 
       {FIELDS.map((field) => (
         <div key={field.key}>

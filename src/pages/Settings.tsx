@@ -36,8 +36,11 @@ export function SettingsPage() {
   const refreshLocation = async () => {
     if (!profile) return;
     const loc = await requestLocation();
-    if (loc) await setProfile({ ...profile, lat: loc.lat, lon: loc.lon, cityLabel: loc.label });
-    await getDailyWeather({ ...profile!, lat: loc?.lat, lon: loc?.lon }, true);
+    const nextProfile = loc
+      ? { ...profile, lat: loc.lat, lon: loc.lon, cityLabel: loc.label }
+      : profile;
+    if (loc) await setProfile(nextProfile);
+    await getDailyWeather(nextProfile, true);
     await refresh();
   };
 

@@ -2,6 +2,24 @@ import { getWeatherCache, saveWeatherCache } from '@/db';
 import type { UserProfile, WeatherCache } from '@/types';
 import { todayKey } from '@/lib/utils';
 
+export type WeatherUnavailableReason = 'no_location' | 'fetch_failed' | 'unsupported';
+
+export interface WeatherResult {
+  weather: WeatherCache | null;
+  unavailableReason?: WeatherUnavailableReason;
+}
+
+export const WEATHER_UNAVAILABLE_MESSAGES: Record<WeatherUnavailableReason, string> = {
+  no_location: 'Enable location in Settings to tailor picks to today’s weather.',
+  fetch_failed: 'Weather is temporarily unavailable — recommendations still work without it.',
+  unsupported: 'This browser can’t access location — add your city in Settings for weather-aware picks.',
+};
+
+export function weatherUnavailableMessage(reason?: WeatherUnavailableReason): string | null {
+  if (!reason) return null;
+  return WEATHER_UNAVAILABLE_MESSAGES[reason];
+}
+
 function classifyWeather(tempC: number, humidity: number, wind: number, code: number): WeatherCache['condition'] {
   if (code >= 51 && code <= 67) return 'rain';
   if (code >= 71) return 'snow';
@@ -12,17 +30,27 @@ function classifyWeather(tempC: number, humidity: number, wind: number, code: nu
   return 'clear';
 }
 
-export async function getDailyWeather(profile: UserProfile, force = false): Promise<WeatherCache | null> {
+export async function getDailyWeather(profile: UserProfile, force = false): Promise<WeatherResult> {
   const date = todayKey();
   const cached = await getWeatherCache(date);
-  if (cached && !force) return cached;
+  if (cached && !force) return { weather: cached };
 
-  if (profile.lat == null || profile.lon == null) return cached ?? null;
+  if (profile.lat == null || profile.lon == null) {
+    return {
+      weather: cached ?? null,
+      unavailableReason: cached ? undefined : 'no_location',
+    };
+  }
 
   try {
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${profile.lat}&longitude=${profile.lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&timezone=auto`;
     const res = await fetch(url);
-    if (!res.ok) return cached ?? null;
+    if (!res.ok) {
+      return {
+        weather: cached ?? null,
+        unavailableReason: cached ? undefined : 'fetch_failed',
+      };
+    }
     const data = await res.json();
     const c = data.current;
     const entry: WeatherCache = {
@@ -35,9 +63,12 @@ export async function getDailyWeather(profile: UserProfile, force = false): Prom
       fetchedAt: new Date().toISOString(),
     };
     await saveWeatherCache(entry);
-    return entry;
+    return { weather: entry };
   } catch {
-    return cached ?? null;
+    return {
+      weather: cached ?? null,
+      unavailableReason: cached ? undefined : 'fetch_failed',
+    };
   }
 }
 

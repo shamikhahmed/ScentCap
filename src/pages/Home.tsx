@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  Cloud, Droplets, Flame, Layers, Sparkles, Sun, Wind, ChevronRight, Check,
+  Cloud, Droplets, Flame, Layers, Sparkles, Sun, Wind, ChevronRight, Check, MapPin,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useApp } from '@/context/AppContext';
@@ -14,6 +14,7 @@ import { MistBackground } from '@/components/home/MistBackground';
 import { ScoreRing } from '@/components/home/ScoreRing';
 import { timeGreeting, scentMood } from '@/lib/greetings';
 import { FAMILY_COLORS, rotationHealth, wearStreak, wearsThisMonth, daysSinceWear } from '@/lib/stats';
+import { weatherUnavailableMessage } from '@/services/weather';
 import { uid } from '@/lib/utils';
 
 const PRESETS = [
@@ -28,7 +29,7 @@ const WEATHER_ICON: Record<string, typeof Sun> = {
 };
 
 export function Home() {
-  const { profile, prefs, collection, history, weather, refresh } = useApp();
+  const { profile, prefs, collection, history, weather, weatherUnavailable, refresh } = useApp();
   const [result, setResult] = useState<AdvisorResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [logged, setLogged] = useState(false);
@@ -117,6 +118,7 @@ export function Home() {
     : '#c9a87c';
 
   const WIcon = weather ? (WEATHER_ICON[weather.condition] ?? Cloud) : Cloud;
+  const weatherNotice = !weather ? weatherUnavailableMessage(weatherUnavailable) : null;
 
   if (!collection.length) {
     return (
@@ -274,7 +276,7 @@ export function Home() {
       </section>
 
       {/* Weather detail */}
-      {weather && (
+      {weather ? (
         <section className="px-5 md:px-0 mt-6">
           <div className="glass-card rounded-2xl p-4 flex items-center gap-4">
             <div className="w-12 h-12 rounded-2xl bg-[var(--color-accent)]/15 flex items-center justify-center">
@@ -289,7 +291,22 @@ export function Home() {
             <Link to="/layering" className="text-[var(--color-accent)] text-sm font-medium">Layer lab</Link>
           </div>
         </section>
-      )}
+      ) : weatherNotice ? (
+        <section className="px-5 md:px-0 mt-6">
+          <div className="glass-card rounded-2xl p-4 flex items-start gap-3 border border-white/5">
+            <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center shrink-0">
+              <MapPin className="text-stone-400" size={18} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-stone-300">Weather unavailable</p>
+              <p className="text-sm text-stone-500 mt-1 leading-relaxed">{weatherNotice}</p>
+              <Link to="/settings" className="inline-block text-[var(--color-accent)] text-sm font-medium mt-2">
+                Open Settings
+              </Link>
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       {/* Neglected carousel */}
       {neglectedDetails.length > 0 && (

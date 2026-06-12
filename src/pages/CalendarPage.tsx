@@ -9,7 +9,7 @@ import { FAMILY_COLORS } from '@/lib/stats';
 export function CalendarPage() {
   const { history } = useApp();
   const [labels, setLabels] = useState<Record<string, { name: string; family: string }>>({});
-  const month = new Date();
+  const month = useMemo(() => new Date(), []);
   const days = eachDayOfInterval({ start: startOfMonth(month), end: endOfMonth(month) });
 
   const byDay = useMemo(() => {

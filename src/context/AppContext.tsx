@@ -8,7 +8,7 @@ import {
   saveProfile,
 } from '@/db';
 import { ensureSeedLoaded } from '@/services/seed';
-import { getDailyWeather } from '@/services/weather';
+import { getDailyWeather, type WeatherUnavailableReason } from '@/services/weather';
 import type { CollectionItem, Preferences, UserProfile, WearRecord, WeatherCache } from '@/types';
 
 interface AppState {
@@ -18,6 +18,7 @@ interface AppState {
   collection: CollectionItem[];
   history: WearRecord[];
   weather: WeatherCache | null;
+  weatherUnavailable?: WeatherUnavailableReason;
   refresh: () => Promise<void>;
   setProfile: (p: UserProfile) => Promise<void>;
   setPrefs: (p: Preferences) => Promise<void>;
@@ -32,6 +33,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [collection, setCollection] = useState<CollectionItem[]>([]);
   const [history, setHistory] = useState<WearRecord[]>([]);
   const [weather, setWeather] = useState<WeatherCache | null>(null);
+  const [weatherUnavailable, setWeatherUnavailable] = useState<WeatherUnavailableReason | undefined>();
 
   const refresh = useCallback(async () => {
     await ensureSeedLoaded();
@@ -46,8 +48,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setCollection(col);
     setHistory(hist);
     if (p?.onboardingComplete) {
-      const w = await getDailyWeather(p);
+      const { weather: w, unavailableReason } = await getDailyWeather(p);
       setWeather(w);
+      setWeatherUnavailable(unavailableReason);
+    } else {
+      setWeather(null);
+      setWeatherUnavailable(undefined);
     }
     setReady(true);
   }, []);
@@ -64,8 +70,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     await saveProfile(p);
     setProfileState(p);
     if (p.onboardingComplete) {
-      const w = await getDailyWeather(p);
+      const { weather: w, unavailableReason } = await getDailyWeather(p);
       setWeather(w);
+      setWeatherUnavailable(unavailableReason);
     }
   }, []);
 
@@ -75,8 +82,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ ready, profile, prefs, collection, history, weather, refresh, setProfile, setPrefs }),
-    [ready, profile, prefs, collection, history, weather, refresh, setProfile, setPrefs],
+    () => ({ ready, profile, prefs, collection, history, weather, weatherUnavailable, refresh, setProfile, setPrefs }),
+    [ready, profile, prefs, collection, history, weather, weatherUnavailable, refresh, setProfile, setPrefs],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
