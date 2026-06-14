@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.9] - 2026-06-14
+- Fix fragrance catalog fetch using `BASE_URL` (broken on deep GitHub Pages routes).
+- Add `BottleVisual` SVG bottle placeholders with family color + brand initials on wardrobe, detail, and Today pick.
+- Generate missing PWA icons (`icon-192.png`, `icon-512.png`).
+
 ## [1.0.8] - 2026-06-14
 - Pre-launch: Playwright App Store screenshot automation (`docs/screenshots/`), Terms/Support legal pages, IAP service (`src/lib/iap.ts`) wired to PaywallModal.
 - iOS: Info.plist camera/photo/location strings, app icon script outputs 1024px iOS asset, Xcode version 1.0.8 (8).
