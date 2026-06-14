@@ -5,6 +5,7 @@ import { BottleVisual } from '@/components/ui/BottleVisual';
 import { usePhotoUrl } from '@/hooks/usePhotoUrl';
 import type { CollectionItem, Fragrance } from '@/types';
 import { FAMILY_COLORS } from '@/lib/stats';
+import { chipInactive, textSubtle } from '@/lib/ui-classes';
 
 export function BottleCard({ c, f }: { c: CollectionItem; f?: Fragrance }) {
   const photoUrl = usePhotoUrl(c.photoBlobId);
@@ -24,7 +25,7 @@ export function BottleCard({ c, f }: { c: CollectionItem; f?: Fragrance }) {
           {photoUrl ? (
             <>
               <img src={photoUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+              <div className="absolute inset-0 photo-card-scrim-dark" />
             </>
           ) : (
             <div className="absolute inset-0 flex items-center justify-center pb-10">
@@ -42,11 +43,11 @@ export function BottleCard({ c, f }: { c: CollectionItem; f?: Fragrance }) {
                 </span>
               )}
               {(c.bottleType === 'decant' || c.bottleType === 'travel') && (
-                <span className="text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-white/10 text-stone-300">
+                <span className={`text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full ${chipInactive}`}>
                   {c.bottleType === 'decant' ? 'Decant' : 'Travel'}
                 </span>
               )}
-              <span className="text-[10px] text-stone-500 ml-auto">{c.bottleLevel === 'full' ? 'Full' : `${c.bottleLevel}%`}</span>
+              <span className={`text-[10px] ml-auto ${textSubtle}`}>{c.bottleLevel === 'full' ? 'Full' : `${c.bottleLevel}%`}</span>
             </div>
           </div>
         </div>

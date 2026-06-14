@@ -256,3 +256,56 @@ body.light aside a[class*="bg-"] { background: var(--color-accent-muted); color:
 body.light .text-stone-400 { color: var(--color-text-secondary); }
 body.light .text-stone-500 { color: var(--color-text-tertiary); }
 body.light .text-stone-300 { color: var(--color-text-primary); }
+body.light .text-stone-600 { color: var(--color-text-tertiary); }
+
+/* Light mode: fix hardcoded dark-surface Tailwind utilities */
+body.light .bg-white\/5,
+body.light .bg-white\/10 {
+  background: var(--color-bg-secondary) !important;
+}
+
+body.light .border-white\/10,
+body.light .border-white\/20 {
+  border-color: var(--color-border) !important;
+}
+
+body.light .hover\:text-stone-200:hover {
+  color: var(--color-text-primary) !important;
+}
+
+body.light .hero-pick-card,
+body.light .surface-card,
+body.light .stat-chip,
+body.light .preset-tile,
+body.light .neglected-card,
+body.light .explore-tile,
+body.light .rotation-banner {
+  border-color: var(--color-border);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+body.light .photo-card-scrim {
+  background: linear-gradient(to top, var(--color-bg) 0%, rgba(255, 255, 255, 0.55) 45%, transparent 100%) !important;
+}
+
+body.light .photo-card-scrim-dark {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.72) 0%, rgba(0, 0, 0, 0.2) 50%, transparent 100%) !important;
+}
+
+body:not(.light) .photo-card-scrim {
+  background: linear-gradient(to top, var(--color-bg) 0%, transparent 70%) !important;
+}
+
+body:not(.light) .photo-card-scrim-dark {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.25) 50%, transparent 100%) !important;
+}
+
+.detail-hero {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--hero-aura, var(--color-accent)) 18%, transparent), var(--color-bg));
+}
+
+/* Active pills on accent — white text in both themes */
+.pill-accent-active {
+  background: var(--color-accent);
+  color: #ffffff;
+}

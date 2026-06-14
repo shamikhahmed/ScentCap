@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.0] - 2026-06-14
+- Light mode: fix card contrast, borders, inputs, photo scrims, and hardcoded dark Tailwind utilities.
+- Catalog v2: ~1,000 real fragrance names (Dior, Chanel, Creed, Lattafa, etc.) replacing synthetic filler.
+- Optional online search via Fraganty API (`VITE_FRAGANTY_API_KEY`) when local results are sparse.
+
 ## [1.0.9] - 2026-06-14
 - Fix fragrance catalog fetch using `BASE_URL` (broken on deep GitHub Pages routes).
 - Add `BottleVisual` SVG bottle placeholders with family color + brand initials on wardrobe, detail, and Today pick.

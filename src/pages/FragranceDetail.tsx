@@ -22,6 +22,7 @@ import { useApp } from '@/context/AppContext';
 import { FAMILY_COLORS } from '@/lib/stats';
 import { estimateWearsRemaining, formatCurrency } from '@/lib/utils';
 import { downloadBlob, exportShareCardPng, fragranceToShareInput, shareWearCard } from '@/lib/shareCard';
+import { scrim, textMuted } from '@/lib/ui-classes';
 import { format } from 'date-fns';
 
 const LEVELS = ['full', '75', '50', '25', '10', 'empty'] as const;
@@ -191,8 +192,8 @@ export function FragranceDetail() {
   return (
     <div className="safe-pt pb-8 max-w-lg mx-auto">
       <div
-        className="relative h-56 md:h-64 rounded-b-[2rem] overflow-hidden"
-        style={{ background: `linear-gradient(180deg, ${aura}33, #0c0a09)` }}
+        className="relative h-56 md:h-64 rounded-b-[2rem] overflow-hidden detail-hero"
+        style={{ '--hero-aura': aura } as React.CSSProperties}
       >
         {photoUrl ? (
           <img src={photoUrl} alt="" className="w-full h-full object-cover opacity-80" />
@@ -212,9 +213,9 @@ export function FragranceDetail() {
           const f = e.target.files?.[0];
           if (f) onPhoto(f);
         }} />
-        <div className="absolute bottom-0 inset-x-0 p-5 bg-gradient-to-t from-[#0c0a09] to-transparent">
+        <div className="absolute bottom-0 inset-x-0 p-5 photo-card-scrim">
           <Link to="/collection" className="text-xs text-[var(--color-accent)]">← Wardrobe</Link>
-          <p className="text-stone-400 text-sm">{fragrance.brand}</p>
+          <p className={`text-sm ${textMuted}`}>{fragrance.brand}</p>
           <h1 className="text-2xl font-semibold">{fragrance.name}</h1>
           {(item.bottleType === 'decant' || item.bottleType === 'travel') && (
             <span className="inline-block mt-1 text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-[var(--color-accent)]/20 text-[var(--color-accent)]">
@@ -365,7 +366,7 @@ export function FragranceDetail() {
       <AnimatePresence>
         {deleteOpen && (
           <motion.div
-            className="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-black/60 p-4"
+            className={`fixed inset-0 z-[100] flex items-end md:items-center justify-center ${scrim} p-4`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}

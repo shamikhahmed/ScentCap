@@ -11,6 +11,7 @@ import type { Fragrance, WishlistItem } from '@/types';
 import { formatCurrency } from '@/lib/utils';
 import { BottleCard } from '@/components/collection/BottleCard';
 import { FAMILY_COLORS } from '@/lib/stats';
+import { chipActive, chipInactive, inputFieldLg, segmentActive, segmentBar, segmentInactive, textMuted, textSubtle } from '@/lib/ui-classes';
 
 type WardrobeTab = 'owned' | 'want' | 'tested';
 
@@ -91,7 +92,7 @@ export function CollectionPage() {
             {tab === 'owned' ? `${collection.length} bottles` : `${countLabel} ${tab === 'want' ? 'on wishlist' : 'tested'}`}
           </h1>
           {tab === 'owned' && (
-            <p className="text-stone-400 text-sm">{formatCurrency(totalValue)} collection value</p>
+            <p className={`text-sm ${textMuted}`}>{formatCurrency(totalValue)} collection value</p>
           )}
         </div>
         <Link to={tab === 'owned' ? '/add' : `/add?list=${tab}`}>
@@ -99,14 +100,14 @@ export function CollectionPage() {
         </Link>
       </div>
 
-      <div className="flex gap-2 p-1 rounded-2xl bg-white/5 border border-white/10">
+      <div className={segmentBar}>
         {TABS.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
             type="button"
             onClick={() => switchTab(id)}
             className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${
-              tab === id ? 'bg-[var(--color-accent)] text-stone-950' : 'text-stone-400 hover:text-stone-200'
+              tab === id ? segmentActive : segmentInactive
             }`}
           >
             <Icon size={14} />
@@ -116,9 +117,9 @@ export function CollectionPage() {
       </div>
 
       <div className="relative">
-        <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-500" />
+        <Search size={16} className={`absolute left-4 top-1/2 -translate-y-1/2 ${textSubtle}`} />
         <input
-          className="w-full rounded-2xl bg-white/5 border border-white/10 pl-11 pr-4 py-3 outline-none focus:border-[var(--color-accent)]"
+          className={`${inputFieldLg} pl-11`}
           placeholder={tab === 'owned' ? 'Search your wardrobe…' : `Search ${tab} list…`}
           value={q}
           onChange={(e) => setQ(e.target.value)}
@@ -127,13 +128,13 @@ export function CollectionPage() {
 
       {tab === 'owned' && (
         <div className="flex gap-2 overflow-x-auto scrollbar-none pb-1">
-          <button type="button" onClick={() => setFamily(null)} className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium ${!family ? 'bg-[var(--color-accent)] text-stone-950' : 'bg-white/5'}`}>All</button>
+          <button type="button" onClick={() => setFamily(null)} className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium ${!family ? chipActive : chipInactive}`}>All</button>
           {families.map((fam) => (
             <button
               key={fam}
               type="button"
               onClick={() => setFamily(fam)}
-              className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium ${family === fam ? 'bg-[var(--color-accent)] text-stone-950' : 'bg-white/5'}`}
+              className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium ${family === fam ? chipActive : chipInactive}`}
               style={family === fam ? {} : { borderLeft: `3px solid ${FAMILY_COLORS[fam] ?? '#c9a87c'}` }}
             >
               {fam}
@@ -157,9 +158,9 @@ export function CollectionPage() {
               <Card className="flex items-center gap-3 py-3">
                 <FamilyIcon family={f?.family} size={18} />
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs text-stone-500">{f?.brand ?? 'Unknown brand'}</p>
-                  <p className="font-medium truncate">{f?.name ?? w.fragranceId}</p>
-                  {f && <p className="text-xs text-stone-500">{f.concentration}</p>}
+                  <p className={`text-xs ${textSubtle}`}>{f?.brand ?? 'Unknown brand'}</p>
+                  <p className="font-medium truncate text-[var(--color-text-primary)]">{f?.name ?? w.fragranceId}</p>
+                  {f && <p className={`text-xs ${textSubtle}`}>{f.concentration}</p>}
                 </div>
                 <button
                   type="button"
@@ -183,17 +184,17 @@ export function CollectionPage() {
 
       {tab === 'owned' && !collection.length && (
         <Card className="text-center py-12">
-          <p className="text-stone-400 mb-4">Your wardrobe is empty</p>
+          <p className={`${textMuted} mb-4`}>Your wardrobe is empty</p>
           <Link to="/add"><Button>Add your first bottle</Button></Link>
         </Card>
       )}
 
       {tab !== 'owned' && !wishlist.length && (
         <Card className="text-center py-12">
-          <p className="text-stone-400 mb-2">
+          <p className={`${textMuted} mb-2`}>
             {tab === 'want' ? 'Nothing on your wishlist yet' : 'No tested fragrances logged'}
           </p>
-          <p className="text-xs text-stone-500 mb-4">Search the catalog and save fragrances you want to try or have sampled.</p>
+          <p className={`text-xs ${textSubtle} mb-4`}>Search the catalog and save fragrances you want to try or have sampled.</p>
           <Link to={`/add?list=${tab}`}><Button>Add to {tab === 'want' ? 'Want list' : 'Tested'}</Button></Link>
         </Card>
       )}

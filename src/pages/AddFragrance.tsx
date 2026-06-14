@@ -16,12 +16,14 @@ import {
   searchFragranceGroups,
 } from '@/db';
 import { enrichFragranceOnce } from '@/services/seed';
+import { hasOnlineCatalog, searchOnlineCatalog } from '@/services/onlineCatalog';
 import { useApp } from '@/context/AppContext';
 import { usePro } from '@/context/ProContext';
 import type { BottleType, Concentration, Fragrance, GenderLean, Longevity, Projection, WishlistList } from '@/types';
 import { CONCENTRATIONS } from '@/types';
 import { estimateWearsRemaining, uid } from '@/lib/utils';
 import { FREE_BOTTLE_LIMIT } from '@/lib/pro';
+import { segmentBar, textSubtle } from '@/lib/ui-classes';
 
 const BOTTLE_TYPES: { id: BottleType; label: string }[] = [
   { id: 'full', label: 'Full bottle' },
@@ -70,7 +72,15 @@ export function AddFragrance() {
       return;
     }
     setRecents([]);
-    setGroups(await searchFragranceGroups(query));
+    let groups = await searchFragranceGroups(query);
+    if (groups.length < 5 && hasOnlineCatalog()) {
+      const online = await searchOnlineCatalog(query, 15);
+      for (const f of online) {
+        await putFragrance(f);
+      }
+      if (online.length) groups = await searchFragranceGroups(query);
+    }
+    setGroups(groups);
   };
 
   useEffect(() => {
@@ -206,7 +216,7 @@ export function AddFragrance() {
         )}
       </div>
 
-      <div className="flex gap-2 p-1 rounded-2xl bg-white/5 border border-white/10">
+      <div className={segmentBar}>
         <Button
           variant={tab === 'search' ? 'default' : 'ghost'}
           className="flex-1 gap-2"
@@ -340,7 +350,7 @@ export function AddFragrance() {
                 </>
               )}
               {!q && !recents.length && (
-                <p className="text-sm text-stone-500 text-center py-6">Search 2,300+ fragrances or add manually</p>
+                <p className={`text-sm ${textSubtle} text-center py-6`}>Search 1,000+ real fragrances or add manually</p>
               )}
               {q && !groups.length && (
                 <p className="text-sm text-stone-500 text-center py-6">No matches — try fewer letters or add manually</p>

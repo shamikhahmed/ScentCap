@@ -5,6 +5,7 @@
 import { writeFileSync, mkdirSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
+import { REAL_BY_BRAND } from './real-fragrances.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT = join(__dirname, '../public/data/fragrances.seed.json');
@@ -60,10 +61,10 @@ function slug(brand, name) {
   return `${brand}-${name}`.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 }
 
-function makeFragrance(i, brand, category) {
+function makeFragrance(i, brand, category, nameOverride) {
   const genderLean = pick(GENDER);
   const parts = NAME_PARTS[genderLean];
-  const name = `${pick(parts)} ${pick(['', pick(parts)])}`.trim().replace(/\s+/g, ' ');
+  const name = nameOverride ?? `${pick(parts)} ${pick(['', pick(parts)])}`.trim().replace(/\s+/g, ' ');
   const fam = pick(FAMILIES);
   const subfamily = pick(fam.subfamilies);
   const concentration = pick(CONCENTRATIONS);
@@ -118,14 +119,17 @@ const seen = new Set(ICONS.map((f) => f.id));
 let idx = 0;
 
 for (const [category, brands] of Object.entries(BRANDS)) {
-  const perBrand = category === 'middleEastern' ? 45 : category === 'niche' ? 35 : 30;
+  const perBrand = category === 'middleEastern' ? 20 : category === 'niche' ? 15 : 12;
   for (const brand of brands) {
-    for (let j = 0; j < perBrand; j++) {
+    const realNames = REAL_BY_BRAND[brand] ?? [];
+    const total = Math.max(perBrand, realNames.length);
+    for (let j = 0; j < total; j++) {
       idx++;
-      let f = makeFragrance(idx, brand, category);
+      const useReal = j < realNames.length;
+      let f = makeFragrance(idx, brand, category, useReal ? realNames[j] : undefined);
       while (seen.has(f.id)) {
         idx++;
-        f = makeFragrance(idx, brand, category);
+        f = makeFragrance(idx, brand, category, useReal ? `${realNames[j]} ${CONCENTRATIONS[j % CONCENTRATIONS.length]}` : undefined);
       }
       seen.add(f.id);
       fragrances.push(f);
@@ -134,5 +138,5 @@ for (const [category, brands] of Object.entries(BRANDS)) {
 }
 
 mkdirSync(dirname(OUT), { recursive: true });
-writeFileSync(OUT, JSON.stringify({ version: 1, count: fragrances.length, fragrances }, null, 0));
+writeFileSync(OUT, JSON.stringify({ version: 2, count: fragrances.length, fragrances }, null, 0));
 console.log(`Wrote ${fragrances.length} fragrances to ${OUT}`);

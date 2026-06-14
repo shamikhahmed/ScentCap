@@ -103,6 +103,8 @@ export interface Preferences {
   theme: 'dark' | 'light' | 'system';
   signatures: Partial<Record<SignatureRole, string>>;
   demoMode?: boolean;
+  /** Bumped when bundled catalog is regenerated — triggers merge reload */
+  seedVersion?: number;
   /** Last 5 fragrance IDs added to collection (for catalog recents) */
   recentAdditions?: string[];
 }
