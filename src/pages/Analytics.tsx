@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, PieChart, Pie, Cell } from 'recharts';
 import { Card } from '@/components/ui/card';
+import { ChartFrame } from '@/components/ui/ChartFrame';
 import { useApp } from '@/context/AppContext';
 import { getFragrance } from '@/db';
 import { formatCurrency } from '@/lib/utils';
@@ -97,47 +98,47 @@ export function AnalyticsPage() {
       {stats.mostWorn.length > 0 && (
         <Card>
           <p className="font-medium mb-4">Most worn</p>
-          <div className="h-48">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={stats.mostWorn}>
-                <XAxis dataKey="name" tick={{ fill: '#a8a29e', fontSize: 10 }} />
-                <YAxis tick={{ fill: '#a8a29e', fontSize: 10 }} />
-                <Bar dataKey="count" fill="#c9a87c" radius={[6, 6, 0, 0]} />
+          <ChartFrame height={192}>
+            {(w, h) => (
+              <BarChart width={w} height={h} data={stats.mostWorn}>
+                <XAxis dataKey="name" tick={{ fill: 'var(--color-text-tertiary)', fontSize: 10 }} />
+                <YAxis tick={{ fill: 'var(--color-text-tertiary)', fontSize: 10 }} />
+                <Bar dataKey="count" fill="var(--color-accent)" radius={[6, 6, 0, 0]} />
               </BarChart>
-            </ResponsiveContainer>
-          </div>
+            )}
+          </ChartFrame>
         </Card>
       )}
 
       {stats.leastWorn.length > 0 && (
         <Card>
           <p className="font-medium mb-4">Least worn</p>
-          <div className="h-48">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={stats.leastWorn}>
-                <XAxis dataKey="name" tick={{ fill: '#a8a29e', fontSize: 10 }} />
-                <YAxis tick={{ fill: '#a8a29e', fontSize: 10 }} />
-                <Bar dataKey="count" fill="#6b5b45" radius={[6, 6, 0, 0]} />
+          <ChartFrame height={192}>
+            {(w, h) => (
+              <BarChart width={w} height={h} data={stats.leastWorn}>
+                <XAxis dataKey="name" tick={{ fill: 'var(--color-text-tertiary)', fontSize: 10 }} />
+                <YAxis tick={{ fill: 'var(--color-text-tertiary)', fontSize: 10 }} />
+                <Bar dataKey="count" fill="var(--color-text-secondary)" radius={[6, 6, 0, 0]} />
               </BarChart>
-            </ResponsiveContainer>
-          </div>
+            )}
+          </ChartFrame>
         </Card>
       )}
 
       {stats.pie.length > 0 && (
         <Card>
           <p className="font-medium mb-4">Family breakdown</p>
-          <div className="h-48">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie data={stats.pie} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={70} label={({ name, value }) => `${name} (${value})`}>
+          <ChartFrame height={192}>
+            {(w, h) => (
+              <PieChart width={w} height={h}>
+                <Pie data={stats.pie} dataKey="value" nameKey="name" cx={w / 2} cy={h / 2} outerRadius={70} label={({ name, value }) => `${name} (${value})`}>
                   {stats.pie.map((entry, i) => (
                     <Cell key={entry.name} fill={FAMILY_COLORS[entry.name] ?? COLORS[i % COLORS.length]} />
                   ))}
                 </Pie>
               </PieChart>
-            </ResponsiveContainer>
-          </div>
+            )}
+          </ChartFrame>
         </Card>
       )}
     </div>

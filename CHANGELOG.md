@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.1] - 2026-06-14
+- iOS: adopt UIScene lifecycle (`SceneDelegate`, Info.plist manifest) for iOS 26+ / future SDK.
+- Fix Analytics charts crashing WKWebView in Capacitor (measured chart sizes vs ResponsiveContainer).
+
 ## [1.1.0] - 2026-06-14
 - Light mode: fix card contrast, borders, inputs, photo scrims, and hardcoded dark Tailwind utilities.
 - Catalog v2: ~1,000 real fragrance names (Dior, Chanel, Creed, Lattafa, etc.) replacing synthetic filler.

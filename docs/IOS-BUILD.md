@@ -127,6 +127,9 @@ Validate receipts server-side before production (optional for v1; client-only ac
 | Blank white screen in simulator | Ensure `npm run build:cap` was used (base must be `/`) |
 | `ios/` folder missing | Run `npx cap add ios` after `npm install` |
 | CocoaPods errors | `cd ios/App && pod install` |
+| UIScene lifecycle warning in Xcode | Fixed in v1.1.1 — `SceneDelegate.swift` + `UIApplicationSceneManifest` in Info.plist |
+| WebContent process crash (signal 9) in Simulator | Often Recharts + WKWebView; fixed chart sizing in v1.1.1. If it persists: Simulator → Device → Erase All Content; avoid opening Analytics immediately on cold launch |
+| Harmless simulator noise | `RTIInputSystemClient`, `WebPrivacy`, `CA Event` — ignore; not app bugs |
 | Routing 404 on deep links | Capacitor uses `BrowserRouter` with `basename` from `import.meta.env.BASE_URL` |
 | IAP products empty | Products must be "Ready to Submit" and bundle ID must match |
 | Missing app icon in Xcode | Run `npm run generate-icons` |
