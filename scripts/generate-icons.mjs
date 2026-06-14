@@ -5,6 +5,8 @@ import sharp from 'sharp';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const publicDir = join(__dirname, '..', 'public');
+const iosIconDir = join(__dirname, '..', 'ios', 'App', 'App', 'Assets.xcassets', 'AppIcon.appiconset');
+
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
     <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -22,3 +24,7 @@ for (const size of [192, 512]) {
   writeFileSync(join(publicDir, `icon-${size}.png`), buf);
   console.log(`Wrote icon-${size}.png`);
 }
+
+const appIcon = await sharp(Buffer.from(svg)).resize(1024, 1024).png().toBuffer();
+writeFileSync(join(iosIconDir, 'AppIcon-512@2x.png'), appIcon);
+console.log('Wrote ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png');

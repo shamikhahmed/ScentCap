@@ -1,6 +1,15 @@
 # ScentCap — App Store Listing Draft
 
-> Version 1.0.7 · Cap Neutral · Local-first PWA + Capacitor iOS scaffold
+> Version 1.0.8 · Cap Neutral · Local-first PWA + Capacitor iOS scaffold
+
+## Required URLs (GitHub Pages)
+
+| Field | URL |
+|-------|-----|
+| **Privacy Policy** | https://shamikhahmed.github.io/ScentCap/privacy.html |
+| **Terms of Use (EULA)** | https://shamikhahmed.github.io/ScentCap/terms.html |
+| **Support** | https://shamikhahmed.github.io/ScentCap/support.html |
+| **Marketing (optional)** | https://shamikhahmed.github.io/ScentCap/landing.html |
 
 ## App Name
 
@@ -96,6 +105,13 @@ Built for collectors who want clarity, not clutter.
 | Offline PWA | ✅ | ❌ | ❌ |
 
 **Tagline for marketing:** _The fragrance OS that respects your nose — and your privacy._
+
+## What's New (1.0.8)
+
+- Pre-launch: App Store screenshots automation, Terms/Support legal pages, IAP service scaffold
+- iOS polish: privacy usage strings, app icon generation, version 1.0.8 sync
+- E2E: delete bottle test, IAP unavailable message test
+- Docs: PRE-LAUNCH.md day-1 checklist, SCREENSHOTS.md, expanded IOS-BUILD.md
 
 ## What's New (1.0.7)
 

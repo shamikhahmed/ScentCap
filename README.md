@@ -4,7 +4,9 @@ Offline-first PWA for fragrance wardrobe management. Build a collection, get dai
 
 **Live demo:** [https://shamikhahmed.github.io/ScentCap/](https://shamikhahmed.github.io/ScentCap/)
 
-**Marketing:** [Landing](https://shamikhahmed.github.io/ScentCap/landing.html) · [Pitch](https://shamikhahmed.github.io/ScentCap/pitch.html) · [Presentation](https://shamikhahmed.github.io/ScentCap/presentation.html) · [Privacy](https://shamikhahmed.github.io/ScentCap/privacy.html)
+**Marketing:** [Landing](https://shamikhahmed.github.io/ScentCap/landing.html) · [Pitch](https://shamikhahmed.github.io/ScentCap/pitch.html) · [Presentation](https://shamikhahmed.github.io/ScentCap/presentation.html) · [Privacy](https://shamikhahmed.github.io/ScentCap/privacy.html) · [Terms](https://shamikhahmed.github.io/ScentCap/terms.html) · [Support](https://shamikhahmed.github.io/ScentCap/support.html)
+
+**Pre-launch:** See [docs/PRE-LAUNCH.md](docs/PRE-LAUNCH.md) for App Store day-1 checklist.
 
 ## Features
 

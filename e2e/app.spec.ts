@@ -1,64 +1,13 @@
-import { test, expect, type Page } from '@playwright/test';
-
-const ONBOARDING_STEPS = [
-  { heading: /Where do you spend most days/i, choice: 'Office daily' },
-  { heading: /How bold should scents be/i, choice: 'Moderate' },
-] as const;
-
-async function completeOnboarding(page: Page) {
-  await page.goto('./onboarding');
-  await expect(page.getByRole('heading', { name: /Your fragrance OS/i })).toBeVisible();
-  await page.getByRole('button', { name: /Quick setup/i }).click();
-  await expect(page.getByRole('heading', { name: ONBOARDING_STEPS[0].heading })).toBeVisible();
-
-  for (const step of ONBOARDING_STEPS) {
-    await expect(page.getByRole('heading', { name: step.heading })).toBeVisible();
-    await page.getByRole('button', { name: step.choice, exact: true }).click();
-  }
-
-  await expect(page.getByRole('heading', { name: /Office Safe/i })).toBeVisible();
-  await page.locator('button').filter({ hasText: /Office Safe is ON/i }).click();
-  await page.getByRole('button', { name: /Get started/i }).click();
-
-  await expect(page).not.toHaveURL(/onboarding/, { timeout: 30_000 });
-  await expect(page.getByRole('heading', { name: /Your wardrobe awaits|Keep it airy|Balanced weather|Rich scents|Let longevity/i })).toBeVisible({ timeout: 15_000 });
-}
-
-async function addFragranceFromSearch(page: Page, query: string) {
-  await page.getByRole('link', { name: /Add first bottle|Add bottle/i }).first().click();
-  await expect(page.getByRole('heading', { name: /Add fragrance/i })).toBeVisible();
-
-  await page.getByPlaceholder(/Search by brand or name/i).fill(query);
-  await expect(page.locator('button').filter({ hasText: /^(EDT|EDP|Parfum|Cologne|Extrait)$/ }).first()).toBeVisible({ timeout: 20_000 });
-
-  await page.locator('button').filter({ hasText: /^(EDT|EDP|Parfum|Cologne|Extrait)$/ }).first().click();
-  await page.getByRole('button', { name: 'Add to wardrobe' }).click();
-  await expect(page).toHaveURL(/\/collection/, { timeout: 15_000 });
-}
+import { test, expect } from '@playwright/test';
+import {
+  addFragranceFromSearch,
+  completeOnboarding,
+  installTestMocks,
+} from './helpers';
 
 test.describe('ScentCap PWA', () => {
-  test.beforeEach(async ({ context }) => {
-    await context.addInitScript(() => {
-      localStorage.setItem('scentcap_pro', 'true');
-
-      navigator.geolocation.getCurrentPosition = (success) => {
-        success({
-          coords: { latitude: 40.7128, longitude: -74.006, accuracy: 1, altitude: null, altitudeAccuracy: null, heading: null, speed: null },
-          timestamp: Date.now(),
-        } as GeolocationPosition);
-      };
-
-      const originalFetch = window.fetch.bind(window);
-      window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
-        const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
-        if (url.includes('open-meteo.com')) {
-          return new Response(JSON.stringify({
-            current: { temperature_2m: 20, relative_humidity_2m: 50, wind_speed_10m: 10, weather_code: 0 },
-          }), { headers: { 'Content-Type': 'application/json' } });
-        }
-        return originalFetch(input, init);
-      };
-    });
+  test.beforeEach(async ({ context, page }) => {
+    await installTestMocks(page, { pro: true });
     await context.grantPermissions(['geolocation']);
     await context.setGeolocation({ latitude: 40.7128, longitude: -74.006 });
   });
@@ -86,6 +35,21 @@ test.describe('ScentCap PWA', () => {
     await expect(page.getByText(/1 bottles/i)).toBeVisible();
     await page.getByRole('link', { name: 'Today' }).click();
     await expect(page.getByRole('button', { name: /Wear this today/i })).toBeVisible({ timeout: 20_000 });
+  });
+
+  test('delete bottle removes it from wardrobe', async ({ page }) => {
+    await completeOnboarding(page);
+    await addFragranceFromSearch(page, 'Dior');
+
+    await page.getByRole('link', { name: 'Wardrobe' }).click();
+    await expect(page.getByText(/1 bottles/i)).toBeVisible();
+    await page.locator('a[href*="/fragrance/"]').first().click();
+    await expect(page.getByRole('button', { name: 'Delete' })).toBeVisible({ timeout: 10_000 });
+
+    await page.getByRole('button', { name: 'Delete' }).click();
+    await page.getByRole('button', { name: 'Delete' }).last().click();
+    await expect(page).toHaveURL(/\/collection/, { timeout: 15_000 });
+    await expect(page.getByText(/0 bottles/i)).toBeVisible();
   });
 
   test('travel kit persists trip name after reload', async ({ page }) => {
@@ -145,10 +109,10 @@ test.describe('ScentCap PWA', () => {
 });
 
 test.describe('ScentCap Pro paywall', () => {
-  test.beforeEach(async ({ context }) => {
-    await context.addInitScript(() => {
-      localStorage.removeItem('scentcap_pro');
-    });
+  test.beforeEach(async ({ context, page }) => {
+    await installTestMocks(page, { pro: false });
+    await context.grantPermissions(['geolocation']);
+    await context.setGeolocation({ latitude: 40.7128, longitude: -74.006 });
   });
 
   test('gated feature shows paywall when not Pro', async ({ page }) => {
@@ -178,5 +142,16 @@ test.describe('ScentCap Pro paywall', () => {
     await page.getByRole('button', { name: 'Add to wardrobe' }).click();
 
     await expect(page.getByTestId('paywall-modal')).toBeVisible({ timeout: 10_000 });
+  });
+
+  test('web purchase shows App Store unavailable message', async ({ page }) => {
+    await page.goto('./onboarding');
+    await page.getByRole('button', { name: /Try demo collection/i }).click();
+    await expect(page).not.toHaveURL(/onboarding/, { timeout: 30_000 });
+
+    await page.goto('./travel');
+    await expect(page.getByTestId('paywall-modal')).toBeVisible({ timeout: 10_000 });
+    await page.getByTestId('paywall-plan-yearly').click();
+    await expect(page.getByTestId('iap-status')).toContainText(/App Store version/i);
   });
 });

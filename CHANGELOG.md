@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.8] - 2026-06-14
+- Pre-launch: Playwright App Store screenshot automation (`docs/screenshots/`), Terms/Support legal pages, IAP service (`src/lib/iap.ts`) wired to PaywallModal.
+- iOS: Info.plist camera/photo/location strings, app icon script outputs 1024px iOS asset, Xcode version 1.0.8 (8).
+- E2E: delete bottle test, IAP web fallback test, shared `e2e/helpers.ts`.
+- Docs: `PRE-LAUNCH.md`, `SCREENSHOTS.md`, expanded `IOS-BUILD.md` day-1 IAP steps, `APP-STORE.md` legal URLs.
+
 ## [1.0.7] - 2026-06-14
 - Phase 4: Fuzzy catalog search (brand/name), Recent additions on empty query, wishlist tabs (Owned/Want/Tested) in IndexedDB.
 - Phase 5: Capacitor iOS scaffold (`cap:sync`, `cap:ios`), dual base path for GH Pages vs native, Pro paywall (12-bottle free limit, gated Analytics/Layering/Travel/Export), IAP stub with price placeholders.

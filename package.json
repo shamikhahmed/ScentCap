@@ -1,7 +1,7 @@
 {
   "name": "scentcap",
   "private": true,
-  "version": "1.0.7",
+  "version": "1.0.8",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -14,7 +14,8 @@
     "preview": "vite preview",
     "generate-seed": "node scripts/generate-seed.mjs",
     "generate-icons": "node scripts/generate-icons.mjs",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "screenshots": "playwright test e2e/screenshots.spec.ts"
   },
   "dependencies": {
     "@capacitor/cli": "^8.4.0",
