@@ -14,7 +14,7 @@
     "preview": "vite preview",
     "generate-seed": "node scripts/generate-seed.mjs",
     "generate-icons": "node scripts/generate-icons.mjs",
-    "test:e2e": "playwright test",
+    "test:e2e": "npm run build && playwright test",
     "screenshots": "playwright test e2e/screenshots.spec.ts"
   },
   "dependencies": {
