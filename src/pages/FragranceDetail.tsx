@@ -1,14 +1,27 @@
 import { useEffect, useRef, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { Star, Camera, Sparkles, Share2 } from 'lucide-react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { Star, Camera, Sparkles, Share2, Pencil, Trash2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { getAllCollection, getCollectionByParent, getFragrance, getPhoto, savePhoto } from '@/db';
-import type { CollectionItem, Fragrance, SignatureRole } from '@/types';
-import { getDb, getPreferences, savePreferences } from '@/db';
+import { WearRatingModal } from '@/components/ui/WearRatingModal';
+import {
+  deleteCollectionItem,
+  getAllCollection,
+  getCollectionByParent,
+  getFragrance,
+  getPhoto,
+  savePhoto,
+  updateCollectionItem,
+  updateWearRecord,
+} from '@/db';
+import type { CollectionItem, Fragrance, SignatureRole, WearRecord } from '@/types';
+import { getPreferences, savePreferences } from '@/db';
+import { useApp } from '@/context/AppContext';
 import { FAMILY_COLORS } from '@/lib/stats';
 import { estimateWearsRemaining, formatCurrency } from '@/lib/utils';
 import { downloadBlob, exportShareCardPng, fragranceToShareInput, shareWearCard } from '@/lib/shareCard';
+import { format } from 'date-fns';
 
 const LEVELS = ['full', '75', '50', '25', '10', 'empty'] as const;
 const SIG_ROLES: { role: SignatureRole; label: string }[] = [
@@ -21,6 +34,8 @@ const SIG_ROLES: { role: SignatureRole; label: string }[] = [
 
 export function FragranceDetail() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { history, refresh } = useApp();
   const fileRef = useRef<HTMLInputElement>(null);
   const [item, setItem] = useState<CollectionItem | null>(null);
   const [fragrance, setFragrance] = useState<Fragrance | null>(null);
@@ -30,40 +45,55 @@ export function FragranceDetail() {
   const [parentFragrance, setParentFragrance] = useState<Fragrance | null>(null);
   const [childDecants, setChildDecants] = useState<{ item: CollectionItem; f?: Fragrance }[]>([]);
   const [shareMsg, setShareMsg] = useState<string | null>(null);
+  const [editing, setEditing] = useState(false);
+  const [editMeta, setEditMeta] = useState({ sizeMl: '', price: '', opened: '', purchase: '' });
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteCascade, setDeleteCascade] = useState(false);
+  const [editWear, setEditWear] = useState<WearRecord | null>(null);
+
+  const loadItem = async () => {
+    const col = await getAllCollection();
+    const c = col.find((x) => x.id === id);
+    if (!c) return;
+    setItem(c);
+    setSigRole(c.signatureRole);
+    setEditMeta({
+      sizeMl: c.bottleSizeMl != null ? String(c.bottleSizeMl) : '',
+      price: c.purchasePrice != null ? String(c.purchasePrice) : '',
+      opened: c.openedDate ?? '',
+      purchase: c.purchaseDate ?? '',
+    });
+    const f = await getFragrance(c.fragranceId);
+    setFragrance(f ?? null);
+    if (c.photoBlobId) {
+      const blob = await getPhoto(c.photoBlobId);
+      if (blob) setPhotoUrl(URL.createObjectURL(blob));
+    } else {
+      setPhotoUrl(null);
+    }
+    if (c.parentCollectionId) {
+      const parent = col.find((x) => x.id === c.parentCollectionId);
+      if (parent) {
+        setParentItem(parent);
+        setParentFragrance((await getFragrance(parent.fragranceId)) ?? null);
+      }
+    } else {
+      setParentItem(null);
+      setParentFragrance(null);
+    }
+    const children = await getCollectionByParent(c.id);
+    const childRows = await Promise.all(
+      children.map(async (child) => ({ item: child, f: await getFragrance(child.fragranceId) })),
+    );
+    setChildDecants(childRows);
+  };
 
   useEffect(() => {
-    (async () => {
-      const col = await getAllCollection();
-      const c = col.find((x) => x.id === id);
-      if (!c) return;
-      setItem(c);
-      setSigRole(c.signatureRole);
-      const f = await getFragrance(c.fragranceId);
-      setFragrance(f ?? null);
-      if (c.photoBlobId) {
-        const blob = await getPhoto(c.photoBlobId);
-        if (blob) setPhotoUrl(URL.createObjectURL(blob));
-      }
-      if (c.parentCollectionId) {
-        const parent = col.find((x) => x.id === c.parentCollectionId);
-        if (parent) {
-          setParentItem(parent);
-          setParentFragrance((await getFragrance(parent.fragranceId)) ?? null);
-        }
-      } else {
-        setParentItem(null);
-        setParentFragrance(null);
-      }
-      const children = await getCollectionByParent(c.id);
-      const childRows = await Promise.all(
-        children.map(async (child) => ({ item: child, f: await getFragrance(child.fragranceId) })),
-      );
-      setChildDecants(childRows);
-    })();
+    loadItem();
   }, [id]);
 
   const save = async (next: CollectionItem) => {
-    await (await getDb()).put('collection', next);
+    await updateCollectionItem(next);
     setItem(next);
   };
 
@@ -102,6 +132,42 @@ export function FragranceDetail() {
     await savePhoto(photoId, file);
     await save({ ...item, photoBlobId: photoId });
     setPhotoUrl(URL.createObjectURL(file));
+  };
+
+  const saveEdits = async () => {
+    if (!item || !fragrance) return;
+    await save({
+      ...item,
+      bottleSizeMl: editMeta.sizeMl ? Number(editMeta.sizeMl) : undefined,
+      purchasePrice: editMeta.price ? Number(editMeta.price) : undefined,
+      purchaseDate: editMeta.purchase || undefined,
+      openedDate: editMeta.opened || undefined,
+    });
+    setEditing(false);
+  };
+
+  const confirmDelete = async () => {
+    if (!item) return;
+    try {
+      await deleteCollectionItem(item.id, { cascadeChildren: deleteCascade || childDecants.length === 0 });
+      await refresh();
+      navigate('/collection');
+    } catch (e) {
+      if (e instanceof Error && e.message === 'HAS_CHILDREN') {
+        setDeleteCascade(true);
+      }
+    }
+  };
+
+  const wearHistory = item
+    ? history.filter((h) => h.collectionId === item.id).sort((a, b) => b.wornAt.localeCompare(a.wornAt))
+    : [];
+
+  const saveWearEdit = async (rating: number, compliment: boolean, notes?: string) => {
+    if (!editWear || !item) return;
+    await updateWearRecord({ ...editWear, rating, compliment, notes });
+    await refresh();
+    setEditWear(null);
   };
 
   if (!item || !fragrance) return <p className="p-8 text-stone-400">Loading…</p>;
@@ -179,18 +245,37 @@ export function FragranceDetail() {
             </div>
           </Card>
         )}
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <Button size="sm" variant={item.isFavorite ? 'default' : 'ghost'} onClick={toggleFavorite}>
             <Star size={14} fill={item.isFavorite ? 'currentColor' : 'none'} /> Favorite
           </Button>
           <Button size="sm" variant="ghost" onClick={shareBottle}>
             <Share2 size={14} /> Share
           </Button>
+          <Button size="sm" variant={editing ? 'default' : 'ghost'} onClick={() => setEditing(!editing)}>
+            <Pencil size={14} /> Edit
+          </Button>
+          <Button size="sm" variant="ghost" className="text-red-400" onClick={() => { setDeleteCascade(false); setDeleteOpen(true); }}>
+            <Trash2 size={14} /> Delete
+          </Button>
           {shareMsg && <span className="text-xs text-[var(--color-accent)] self-center">{shareMsg}</span>}
-          {item.purchasePrice != null && (
+          {item.purchasePrice != null && !editing && (
             <span className="text-sm text-stone-500 self-center ml-auto">{formatCurrency(item.purchasePrice)}</span>
           )}
         </div>
+
+        {editing && (
+          <Card className="space-y-3">
+            <p className="text-xs uppercase text-stone-500">Bottle details</p>
+            <div className="grid grid-cols-2 gap-2">
+              <input className="rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm" placeholder="Size (ml)" value={editMeta.sizeMl} onChange={(e) => setEditMeta({ ...editMeta, sizeMl: e.target.value })} />
+              <input className="rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm" placeholder="Price $" value={editMeta.price} onChange={(e) => setEditMeta({ ...editMeta, price: e.target.value })} />
+              <input type="date" className="rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm" title="Purchased" value={editMeta.purchase} onChange={(e) => setEditMeta({ ...editMeta, purchase: e.target.value })} />
+              <input type="date" className="rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm" title="Opened" value={editMeta.opened} onChange={(e) => setEditMeta({ ...editMeta, opened: e.target.value })} />
+            </div>
+            <Button className="w-full" onClick={saveEdits}>Save details</Button>
+          </Card>
+        )}
 
         <Card>
           <p className="text-xs uppercase text-stone-500 mb-2">Pyramid</p>
@@ -241,6 +326,31 @@ export function FragranceDetail() {
           </div>
         </Card>
 
+        {wearHistory.length > 0 && (
+          <Card>
+            <p className="font-medium mb-3">Wear history</p>
+            <ul className="space-y-3">
+              {wearHistory.slice(0, 8).map((w) => (
+                <li key={w.id}>
+                  <button
+                    type="button"
+                    className="w-full flex justify-between items-start text-sm gap-3 text-left hover:text-[var(--color-accent)]"
+                    onClick={() => setEditWear(w)}
+                  >
+                    <div>
+                      <span className="block">{format(new Date(w.wornAt), 'MMM d, yyyy')}</span>
+                      {w.compliment && <span className="text-xs text-[var(--color-accent)]">★ compliment</span>}
+                      {w.rating && <span className="text-xs text-stone-500">Rated {w.rating}/5</span>}
+                      {w.notes && <span className="text-xs text-stone-400 block mt-0.5 line-clamp-2">{w.notes}</span>}
+                    </div>
+                    <Pencil size={14} className="shrink-0 text-stone-500 mt-0.5" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </Card>
+        )}
+
         <Card className="grid grid-cols-3 gap-2 text-center text-sm">
           <div><p className="text-stone-500 text-xs">Office</p><p className="font-semibold">{fragrance.office_score}</p></div>
           <div><p className="text-stone-500 text-xs">Date</p><p className="font-semibold">{fragrance.date_score}</p></div>
@@ -250,6 +360,53 @@ export function FragranceDetail() {
         <Link to="/advisor"><Button className="w-full"><Sparkles size={16} /> Wear today</Button></Link>
         <Link to="/layering" state={{ primaryId: fragrance.id }}><Button variant="ghost" className="w-full">Open in Layer Lab</Button></Link>
       </div>
+
+      <AnimatePresence>
+        {deleteOpen && (
+          <motion.div
+            className="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-black/60 p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="glass-card rounded-3xl p-6 w-full max-w-md space-y-4"
+              initial={{ y: 40 }}
+              animate={{ y: 0 }}
+            >
+              <p className="font-semibold">Remove from wardrobe?</p>
+              <p className="text-sm text-stone-400">
+                {deleteCascade && childDecants.length > 0
+                  ? `This will also delete ${childDecants.length} linked decant${childDecants.length !== 1 ? 's' : ''}/travel bottle${childDecants.length !== 1 ? 's' : ''}.`
+                  : childDecants.length > 0
+                    ? `This bottle has ${childDecants.length} linked decant${childDecants.length !== 1 ? 's' : ''}/travel size${childDecants.length !== 1 ? 's' : ''}. Delete them too?`
+                    : `${fragrance.brand} ${fragrance.name} will be removed from your collection.`}
+              </p>
+              <div className="flex gap-3">
+                <Button variant="ghost" className="flex-1" onClick={() => setDeleteOpen(false)}>Cancel</Button>
+                {childDecants.length > 0 && !deleteCascade ? (
+                  <Button className="flex-1 bg-red-600 hover:bg-red-700" onClick={() => setDeleteCascade(true)}>
+                    Delete all
+                  </Button>
+                ) : (
+                  <Button className="flex-1 bg-red-600 hover:bg-red-700" onClick={confirmDelete}>
+                    {deleteCascade ? 'Delete all' : 'Delete'}
+                  </Button>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <WearRatingModal
+        open={Boolean(editWear)}
+        fragranceName={`${fragrance.brand} ${fragrance.name}`}
+        editMode
+        initial={editWear ? { rating: editWear.rating, compliment: editWear.compliment, notes: editWear.notes } : undefined}
+        onSubmit={saveWearEdit}
+        onSkip={() => setEditWear(null)}
+      />
     </div>
   );
 }

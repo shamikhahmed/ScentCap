@@ -4,7 +4,12 @@ import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import path from 'path';
 
+const isCapacitor = process.env.CAPACITOR === 'true' || process.env.VITE_CAPACITOR === 'true';
+const base = isCapacitor ? '/' : '/ScentCap/';
+const startUrl = isCapacitor ? '/' : '/ScentCap/';
+
 export default defineConfig({
+  base,
   plugins: [
     react(),
     tailwindcss(),
@@ -15,11 +20,11 @@ export default defineConfig({
         name: 'ScentCap',
         short_name: 'ScentCap',
         description: 'Your personal fragrance operating system',
-        theme_color: '#0c0a09',
-        background_color: '#0c0a09',
+        theme_color: '#000000',
+        background_color: '#000000',
         display: 'standalone',
         orientation: 'portrait',
-        start_url: '/ScentCap/',
+        start_url: startUrl,
         icons: [
           { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },
           { src: 'icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
@@ -31,7 +36,7 @@ export default defineConfig({
           {
             urlPattern: /^https:\/\/api\.open-meteo\.com\/.*/i,
             handler: 'NetworkFirst',
-            options: { cacheName: 'weather-cache-v103', networkTimeoutSeconds: 5, expiration: { maxEntries: 5, maxAgeSeconds: 86400 } },
+            options: { cacheName: 'weather-cache-v107', networkTimeoutSeconds: 5, expiration: { maxEntries: 5, maxAgeSeconds: 86400 } },
           },
         ],
       },
@@ -40,5 +45,4 @@ export default defineConfig({
   resolve: {
     alias: { '@': path.resolve(__dirname, './src') },
   },
-  base: '/ScentCap/',
 });

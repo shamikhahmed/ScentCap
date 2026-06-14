@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { MapPin } from 'lucide-react';
+import { MapPin, Briefcase, Share2, Bookmark } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useApp } from '@/context/AppContext';
@@ -14,6 +14,8 @@ import { SprayBodyMap } from '@/components/advisor/SprayBodyMap';
 import { ScoreRing } from '@/components/home/ScoreRing';
 import { FAMILY_COLORS } from '@/lib/stats';
 import { weatherUnavailableMessage } from '@/services/weather';
+import { advisorToShareInput, downloadBlob, exportShareCardPng, shareWearCard } from '@/lib/shareCard';
+import { saveAdvisorLayering } from '@/lib/layeringSave';
 
 const FIELDS: { key: keyof AdvisorInput; label: string; options: { v: string; l: string }[] }[] = [
   { key: 'timeOfDay', label: 'Time', options: [
@@ -47,6 +49,8 @@ export function AdvisorPage() {
   const [loading, setLoading] = useState(false);
   const [ratingOpen, setRatingOpen] = useState(false);
   const [pendingWear, setPendingWear] = useState<{ id: string; collectionId: string; fragranceId: string; name: string; sprays: number; wornAt: string } | null>(null);
+  const [shareMsg, setShareMsg] = useState<string | null>(null);
+  const [layerSaved, setLayerSaved] = useState(false);
 
   const run = async () => {
     if (!profile) return;
@@ -82,7 +86,7 @@ export function AdvisorPage() {
     setRatingOpen(true);
   };
 
-  const saveRating = async (rating: number, compliment: boolean) => {
+  const saveRating = async (rating: number, compliment: boolean, notes?: string) => {
     if (!pendingWear) return;
     await updateWearRecord({
       id: pendingWear.id,
@@ -94,10 +98,38 @@ export function AdvisorPage() {
       sprays: pendingWear.sprays,
       rating,
       compliment,
+      notes,
     });
     await refresh();
     setRatingOpen(false);
     setPendingWear(null);
+  };
+
+  const familyColor = result
+    ? FAMILY_COLORS[result.primary.fragrance.family] ?? '#0a84ff'
+    : '#0a84ff';
+
+  const shareResult = async () => {
+    if (!result) return;
+    try {
+      const shareInput = advisorToShareInput(result);
+      const outcome = await shareWearCard(shareInput, familyColor, { format: 'square' });
+      const msg = outcome === 'shared' ? 'Shared!' : outcome === 'copied' ? 'Copied to clipboard' : 'Saved as PNG';
+      setShareMsg(msg);
+      setTimeout(() => setShareMsg(null), 2500);
+    } catch {
+      const blob = await exportShareCardPng(advisorToShareInput(result), familyColor, { format: 'square' });
+      downloadBlob(blob, 'scentcap-today-square.png');
+      setShareMsg('Saved as PNG');
+      setTimeout(() => setShareMsg(null), 2500);
+    }
+  };
+
+  const saveLayering = async () => {
+    if (!result?.layering) return;
+    await saveAdvisorLayering(result);
+    setLayerSaved(true);
+    setTimeout(() => setLayerSaved(false), 2500);
   };
 
   return (
@@ -112,6 +144,21 @@ export function AdvisorPage() {
             <p className="text-sm text-stone-500 mt-1">{weatherNotice}</p>
             <Link to="/settings" className="text-[var(--color-accent)] text-sm font-medium mt-2 inline-block">
               Update location
+            </Link>
+          </div>
+        </Card>
+      )}
+
+      {prefs.officeSafeMode && (
+        <Card className="flex items-start gap-3 border-[var(--color-accent)]/25 bg-[var(--color-accent-muted)]">
+          <Briefcase className="text-[var(--color-accent)] shrink-0 mt-0.5" size={18} />
+          <div>
+            <p className="text-sm font-medium">Office Safe is on</p>
+            <p className="text-sm text-[var(--color-text-secondary)] mt-1">
+              Work and professional picks stay low-projection and desk-friendly.
+            </p>
+            <Link to="/settings" className="text-[var(--color-accent)] text-sm font-medium mt-2 inline-block">
+              Adjust in Settings
             </Link>
           </div>
         </Card>
@@ -175,6 +222,10 @@ export function AdvisorPage() {
               <p className="text-sm text-stone-300 mt-2">{result.layering.order}</p>
               <p className="text-sm text-stone-400 mt-1">+ {result.layering.secondary.brand} {result.layering.secondary.name}</p>
               <p className="text-xs text-stone-500 mt-2">{result.layering.guidance}</p>
+              <Button variant="ghost" className="w-full mt-3" onClick={saveLayering}>
+                <Bookmark size={16} />
+                {layerSaved ? 'Saved to Layering Lab!' : 'Save to Layering Lab'}
+              </Button>
             </Card>
           )}
 
@@ -202,7 +253,13 @@ export function AdvisorPage() {
             </ul>
           </Card>
 
-          <Button variant="outline" className="w-full" onClick={wear}>Log today&apos;s wear</Button>
+          <div className="flex gap-3">
+            <Button variant="outline" className="flex-1" onClick={wear}>Log today&apos;s wear</Button>
+            <Button variant="ghost" className="px-4" onClick={shareResult} aria-label="Share recommendation">
+              <Share2 size={16} />
+            </Button>
+          </div>
+          {shareMsg && <p className="text-center text-xs text-[var(--color-accent)]">{shareMsg}</p>}
         </motion.div>
       )}
 

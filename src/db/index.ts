@@ -7,6 +7,8 @@ import type {
   UserProfile,
   WearRecord,
   WeatherCache,
+  WishlistItem,
+  WishlistList,
 } from '@/types';
 
 export interface ScentCapDB extends DBSchema {
@@ -19,13 +21,14 @@ export interface ScentCapDB extends DBSchema {
   layering_profiles: { key: string; value: LayeringProfile };
   statistics: { key: string; value: { key: string; data: Record<string, unknown> } };
   photos: { key: string; value: { id: string; blob: Blob } };
+  wishlist: { key: string; value: WishlistItem; indexes: { 'by-list': WishlistList; 'by-fragrance': string } };
 }
 
 let dbPromise: Promise<IDBPDatabase<ScentCapDB>> | null = null;
 
 export function getDb() {
   if (!dbPromise) {
-    dbPromise = openDB<ScentCapDB>('scentcap-v1', 2, {
+    dbPromise = openDB<ScentCapDB>('scentcap-v1', 3, {
       upgrade(db, oldVersion, _newVersion, transaction) {
         if (!db.objectStoreNames.contains('fragrances')) {
           db.createObjectStore('fragrances', { keyPath: 'id' });
@@ -63,6 +66,15 @@ export function getDb() {
         if (!db.objectStoreNames.contains('photos')) {
           db.createObjectStore('photos', { keyPath: 'id' });
         }
+        if (!db.objectStoreNames.contains('wishlist')) {
+          const wl = db.createObjectStore('wishlist', { keyPath: 'id' });
+          wl.createIndex('by-list', 'list');
+          wl.createIndex('by-fragrance', 'fragranceId');
+        } else if (oldVersion < 3 && transaction) {
+          const wl = transaction.objectStore('wishlist');
+          if (!wl.indexNames.contains('by-list')) wl.createIndex('by-list', 'list');
+          if (!wl.indexNames.contains('by-fragrance')) wl.createIndex('by-fragrance', 'fragranceId');
+        }
       },
     });
   }
@@ -98,12 +110,47 @@ export async function putFragrance(f: Fragrance) {
   await (await getDb()).put('fragrances', f);
 }
 
+/** Case-insensitive substring + token + light fuzzy match on brand or name */
+function matchesFragrance(f: Fragrance, query: string): boolean {
+  const q = query.toLowerCase().trim();
+  if (!q) return false;
+  const brand = f.brand.toLowerCase();
+  const name = f.name.toLowerCase();
+  const combined = `${brand} ${name}`;
+
+  if (brand.includes(q) || name.includes(q) || combined.includes(q)) return true;
+
+  const tokens = q.split(/\s+/).filter(Boolean);
+  if (tokens.length > 1) {
+    return tokens.every((t) => brand.includes(t) || name.includes(t) || combined.includes(t));
+  }
+
+  const fuzzy = (hay: string, needle: string) => {
+    let hi = 0;
+    for (let ni = 0; ni < needle.length; ni++) {
+      const pos = hay.indexOf(needle[ni], hi);
+      if (pos === -1) return false;
+      hi = pos + 1;
+    }
+    return true;
+  };
+  return fuzzy(brand, q) || fuzzy(name, q);
+}
+
 export async function searchFragrancesLocal(q: string, limit = 60): Promise<Fragrance[]> {
   const query = q.toLowerCase().trim();
   if (!query) return [];
   const all = await (await getDb()).getAll('fragrances');
   return all
-    .filter((f) => `${f.brand} ${f.name}`.toLowerCase().includes(query))
+    .filter((f) => matchesFragrance(f, query))
+    .sort((a, b) => {
+      const aBrand = a.brand.toLowerCase().startsWith(query) ? 0 : 1;
+      const bBrand = b.brand.toLowerCase().startsWith(query) ? 0 : 1;
+      if (aBrand !== bBrand) return aBrand - bBrand;
+      const aName = a.name.toLowerCase().startsWith(query) ? 0 : 1;
+      const bName = b.name.toLowerCase().startsWith(query) ? 0 : 1;
+      return aName - bName || `${a.brand} ${a.name}`.localeCompare(`${b.brand} ${b.name}`);
+    })
     .slice(0, limit);
 }
 
@@ -143,6 +190,67 @@ function base64ToBlob(b64: string, type = 'image/jpeg'): Blob {
 
 export async function addToCollection(item: CollectionItem) {
   await (await getDb()).put('collection', item);
+  await recordRecentAddition(item.fragranceId);
+}
+
+const RECENT_LIMIT = 5;
+
+export async function recordRecentAddition(fragranceId: string) {
+  const prefs = await getPreferences();
+  const existing = prefs.recentAdditions ?? [];
+  const next = [fragranceId, ...existing.filter((id) => id !== fragranceId)].slice(0, RECENT_LIMIT);
+  await savePreferences({ ...prefs, recentAdditions: next });
+}
+
+export async function getRecentAdditions(): Promise<Fragrance[]> {
+  const prefs = await getPreferences();
+  const ids = prefs.recentAdditions ?? [];
+  const db = await getDb();
+  const results: Fragrance[] = [];
+  for (const id of ids) {
+    const f = await db.get('fragrances', id);
+    if (f) results.push(f);
+  }
+  return results;
+}
+
+export async function getWishlist(list?: WishlistList): Promise<WishlistItem[]> {
+  const db = await getDb();
+  if (list) {
+    return db.getAllFromIndex('wishlist', 'by-list', list);
+  }
+  return db.getAll('wishlist');
+}
+
+export async function addToWishlist(item: WishlistItem) {
+  await (await getDb()).put('wishlist', item);
+}
+
+export async function removeFromWishlist(id: string) {
+  await (await getDb()).delete('wishlist', id);
+}
+
+export async function getWishlistByFragrance(fragranceId: string, list: WishlistList): Promise<WishlistItem | undefined> {
+  const items = await (await getDb()).getAllFromIndex('wishlist', 'by-fragrance', fragranceId);
+  return items.find((w) => w.list === list);
+}
+
+export async function updateCollectionItem(item: CollectionItem) {
+  await (await getDb()).put('collection', item);
+}
+
+export async function deleteCollectionItem(id: string, options?: { cascadeChildren?: boolean }) {
+  const db = await getDb();
+  const children = await getCollectionByParent(id);
+  if (children.length > 0 && !options?.cascadeChildren) {
+    throw new Error('HAS_CHILDREN');
+  }
+  const toDelete = options?.cascadeChildren ? [id, ...children.map((c) => c.id)] : [id];
+  for (const itemId of toDelete) {
+    const item = await db.get('collection', itemId);
+    if (item?.photoBlobId) await db.delete('photos', item.photoBlobId);
+    await db.delete('collection', itemId);
+  }
 }
 
 export async function getCollectionByParent(parentId: string): Promise<CollectionItem[]> {
@@ -195,13 +303,14 @@ export async function exportAllData(): Promise<string> {
     photoExport[p.id] = await blobToBase64(p.blob);
   }
   const data = {
-    version: 2,
+    version: 3,
     fragrances: await db.getAll('fragrances'),
     collection: await db.getAll('collection'),
     layering_profiles: await db.getAll('layering_profiles'),
     wear_history: await db.getAll('wear_history'),
     user_profile: await db.getAll('user_profile'),
     preferences: await db.getAll('preferences'),
+    wishlist: await db.getAll('wishlist'),
     photos: photoExport,
   };
   return JSON.stringify(data);
@@ -216,6 +325,7 @@ export async function importAllData(json: string) {
   for (const w of data.wear_history ?? []) await db.put('wear_history', w);
   for (const p of data.user_profile ?? []) await db.put('user_profile', p);
   for (const p of data.preferences ?? []) await db.put('preferences', { officeSafeMode: false, ...p });
+  for (const w of data.wishlist ?? []) await db.put('wishlist', w);
   for (const [id, b64] of Object.entries(data.photos ?? {})) {
     await savePhoto(id, base64ToBlob(b64 as string));
   }
@@ -230,6 +340,27 @@ export async function getLastWearForFragrance(fragranceId: string): Promise<Wear
   return all.sort((a, b) => b.wornAt.localeCompare(a.wornAt))[0];
 }
 
+export async function exportWearHistoryCsv(): Promise<string> {
+  const history = await getWearHistory();
+  const fragCache = new Map<string, string>();
+  const rows: string[][] = [['date', 'fragrance', 'occasion', 'rating']];
+  for (const w of history.sort((a, b) => a.wornAt.localeCompare(b.wornAt))) {
+    let name = fragCache.get(w.fragranceId);
+    if (!name) {
+      const f = await getFragrance(w.fragranceId);
+      name = f ? `${f.brand} ${f.name}` : w.fragranceId;
+      fragCache.set(w.fragranceId, name);
+    }
+    rows.push([
+      w.wornAt.slice(0, 10),
+      name,
+      w.occasion ?? '',
+      w.rating != null ? String(w.rating) : '',
+    ]);
+  }
+  return rows.map((row) => row.map((cell) => `"${cell.replace(/"/g, '""')}"`).join(',')).join('\n');
+}
+
 const USER_STORES = [
   'collection',
   'wear_history',
@@ -239,6 +370,7 @@ const USER_STORES = [
   'layering_profiles',
   'statistics',
   'photos',
+  'wishlist',
 ] as const;
 
 export async function clearUserData() {
@@ -250,6 +382,8 @@ export interface TravelKitPlan {
   tripName: string;
   startDate: string;
   endDate: string;
+  pickedIds?: string[];
+  manualMode?: boolean;
 }
 
 export async function getTravelKitPlan(): Promise<TravelKitPlan | null> {

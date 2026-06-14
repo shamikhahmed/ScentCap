@@ -1,6 +1,10 @@
 import { Suspense, lazy } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AppProvider, useApp } from '@/context/AppContext';
+import { ProProvider } from '@/context/ProContext';
+import { PaywallModal } from '@/components/pro/PaywallModal';
+import { ProSync } from '@/components/pro/ProSync';
+import { ProGate } from '@/components/pro/ProGate';
 import { AppShell } from '@/components/layout/AppShell';
 import { Home } from '@/pages/Home';
 
@@ -45,10 +49,10 @@ function AppRoutes() {
           <Route path="/add" element={<AddFragrance />} />
           <Route path="/advisor" element={<AdvisorPage />} />
           <Route path="/calendar" element={<CalendarPage />} />
-          <Route path="/analytics" element={<AnalyticsPage />} />
+          <Route path="/analytics" element={<ProGate feature="analytics"><AnalyticsPage /></ProGate>} />
           <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/layering" element={<LayeringLab />} />
-          <Route path="/travel" element={<TravelKit />} />
+          <Route path="/layering" element={<ProGate feature="layering"><LayeringLab /></ProGate>} />
+          <Route path="/travel" element={<ProGate feature="travel"><TravelKit /></ProGate>} />
           <Route path="/fragrance/:id" element={<FragranceDetail />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
@@ -60,9 +64,13 @@ function AppRoutes() {
 export default function App() {
   return (
     <BrowserRouter basename={basename}>
-      <AppProvider>
-        <AppRoutes />
-      </AppProvider>
+      <ProProvider>
+        <AppProvider>
+          <ProSync />
+          <PaywallModal />
+          <AppRoutes />
+        </AppProvider>
+      </ProProvider>
     </BrowserRouter>
   );
 }

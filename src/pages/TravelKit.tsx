@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Luggage } from 'lucide-react';
+import { Luggage, Check } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useApp } from '@/context/AppContext';
@@ -16,13 +16,20 @@ function daysBetween(start: string, end: string): number {
   return Math.max(1, Math.min(14, diff));
 }
 
+function suggestCount(days: number): number {
+  return days <= 3 ? 2 : days <= 7 ? 3 : 4;
+}
+
 export function TravelKit() {
   const { collection } = useApp();
   const [tripName, setTripName] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [loaded, setLoaded] = useState(false);
+  const [manualMode, setManualMode] = useState(false);
+  const [pickedIds, setPickedIds] = useState<string[]>([]);
   const [picked, setPicked] = useState<{ f: Fragrance; itemId: string }[]>([]);
+  const [allBottles, setAllBottles] = useState<{ f: Fragrance; itemId: string }[]>([]);
 
   const days = useMemo(() => daysBetween(startDate, endDate), [startDate, endDate]);
 
@@ -32,6 +39,8 @@ export function TravelKit() {
         setTripName(plan.tripName);
         setStartDate(plan.startDate);
         setEndDate(plan.endDate);
+        setManualMode(plan.manualMode ?? false);
+        setPickedIds(plan.pickedIds ?? []);
       } else {
         const today = new Date();
         const end = new Date(today);
@@ -46,10 +55,10 @@ export function TravelKit() {
   useEffect(() => {
     if (!loaded) return;
     const timer = setTimeout(() => {
-      saveTravelKitPlan({ tripName, startDate, endDate });
+      saveTravelKitPlan({ tripName, startDate, endDate, pickedIds, manualMode });
     }, 400);
     return () => clearTimeout(timer);
-  }, [tripName, startDate, endDate, loaded]);
+  }, [tripName, startDate, endDate, pickedIds, manualMode, loaded]);
 
   useEffect(() => {
     (async () => {
@@ -63,10 +72,26 @@ export function TravelKit() {
         const score = (f: Fragrance) => f.heat_score + f.casual_score + (f.concentration === 'EDP' ? 10 : 0);
         return score(b.f) - score(a.f);
       });
-      const count = days <= 3 ? 2 : days <= 7 ? 3 : 4;
-      setPicked(sorted.slice(0, count).map((x) => ({ f: x.f, itemId: x.c.id })));
+      setAllBottles(sorted.map((x) => ({ f: x.f, itemId: x.c.id })));
+
+      if (!manualMode) {
+        setPickedIds(sorted.slice(0, suggestCount(days)).map((x) => x.c.id));
+      }
     })();
-  }, [collection, days]);
+  }, [collection, days, manualMode]);
+
+  useEffect(() => {
+    const rows = pickedIds
+      .map((id) => allBottles.find((b) => b.itemId === id))
+      .filter(Boolean) as { f: Fragrance; itemId: string }[];
+    setPicked(rows);
+  }, [pickedIds, allBottles]);
+
+  const togglePick = (itemId: string) => {
+    setPickedIds((prev) =>
+      prev.includes(itemId) ? prev.filter((id) => id !== itemId) : [...prev, itemId],
+    );
+  };
 
   const dateLabel = startDate && endDate
     ? `${new Date(startDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} – ${new Date(endDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}`
@@ -117,15 +142,52 @@ export function TravelKit() {
             />
           </div>
         </div>
+        <div className="flex gap-2">
+          <Button size="sm" variant={!manualMode ? 'default' : 'ghost'} onClick={() => setManualMode(false)}>
+            Auto suggest
+          </Button>
+          <Button size="sm" variant={manualMode ? 'default' : 'ghost'} onClick={() => setManualMode(true)}>
+            Pick manually
+          </Button>
+        </div>
         <p className="text-sm text-stone-400">
           {tripName ? <strong className="text-stone-200">{tripName}</strong> : 'Your trip'}
           {dateLabel ? ` · ${dateLabel}` : ''}
           {' · '}
           <strong className="text-stone-200">{days} days</strong>
           {' · '}
-          {picked.length} bottle{picked.length !== 1 ? 's' : ''} recommended
+          {picked.length} bottle{picked.length !== 1 ? 's' : ''} {manualMode ? 'picked' : 'recommended'}
         </p>
       </Card>
+
+      {manualMode && (
+        <Card className="space-y-2">
+          <p className="text-xs uppercase text-stone-500 mb-2">Your collection</p>
+          {allBottles.map(({ f, itemId }) => {
+            const selected = pickedIds.includes(itemId);
+            return (
+              <button
+                key={itemId}
+                type="button"
+                onClick={() => togglePick(itemId)}
+                className={`w-full flex items-center gap-3 py-2 px-2 rounded-xl text-left transition-colors ${
+                  selected ? 'bg-[var(--color-accent)]/15 border border-[var(--color-accent)]/40' : 'hover:bg-white/5'
+                }`}
+              >
+                <span className={`w-6 h-6 rounded-full flex items-center justify-center border ${selected ? 'bg-[var(--color-accent)] border-[var(--color-accent)]' : 'border-white/20'}`}>
+                  {selected && <Check size={14} className="text-stone-950" />}
+                </span>
+                <FamilyIcon family={f.family} size={16} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-stone-500">{f.brand}</p>
+                  <p className="font-medium truncate text-sm">{f.name}</p>
+                </div>
+              </button>
+            );
+          })}
+          {!allBottles.length && <p className="text-sm text-stone-500">Add bottles to your wardrobe first.</p>}
+        </Card>
+      )}
 
       <div className="space-y-3">
         {picked.map(({ f, itemId }, i) => (

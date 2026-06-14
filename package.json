@@ -1,11 +1,15 @@
 {
   "name": "scentcap",
   "private": true,
-  "version": "1.0.3",
+  "version": "1.0.7",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:cap": "CAPACITOR=true tsc -b && CAPACITOR=true vite build",
+    "cap:sync": "npm run build:cap && npx cap sync",
+    "cap:ios": "npm run cap:sync && npx cap open ios",
+    "cap:open": "npx cap open ios",
     "lint": "eslint .",
     "preview": "vite preview",
     "generate-seed": "node scripts/generate-seed.mjs",
@@ -13,6 +17,9 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@capacitor/cli": "^8.4.0",
+    "@capacitor/core": "^8.4.0",
+    "@capacitor/ios": "^8.4.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",

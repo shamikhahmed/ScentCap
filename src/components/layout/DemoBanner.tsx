@@ -17,8 +17,8 @@ export function DemoBanner() {
   };
 
   return (
-    <div className="sticky top-0 z-40 mx-5 md:mx-0 mt-3 mb-1 flex items-center justify-between gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-2.5 text-sm">
-      <p className="flex items-center gap-2 text-amber-100/90">
+    <div className="demo-banner sticky top-0 z-40 mx-5 md:mx-0 mt-3 mb-1 flex items-center justify-between gap-3 rounded-xl px-4 py-2.5 text-sm">
+      <p className="flex items-center gap-2">
         <Sparkles size={16} className="shrink-0 text-[var(--color-accent)]" />
         <span>You&apos;re viewing a demo wardrobe</span>
       </p>

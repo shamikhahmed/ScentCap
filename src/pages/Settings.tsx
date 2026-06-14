@@ -1,22 +1,37 @@
 import { Link, useNavigate } from 'react-router-dom';
+import { Crown, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ProfileEditor } from '@/components/settings/ProfileEditor';
 import { useApp } from '@/context/AppContext';
-import { exportAllData, importAllData } from '@/db';
+import { usePro } from '@/context/ProContext';
+import { exportAllData, exportWearHistoryCsv, importAllData } from '@/db';
 import { exitDemo, loadDemoData } from '@/services/demo';
 import { getDailyWeather, requestLocation } from '@/services/weather';
+import { FREE_BOTTLE_LIMIT } from '@/lib/pro';
 
 export function SettingsPage() {
-  const { profile, prefs, setPrefs, setProfile, refresh } = useApp();
+  const { profile, prefs, setPrefs, setProfile, refresh, collection } = useApp();
+  const { isPro, openPaywall, requestFeature, deactivatePro } = usePro();
   const navigate = useNavigate();
 
   const exportData = async () => {
+    if (!requestFeature('export')) return;
     const json = await exportAllData();
     const blob = new Blob([json], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = `scentcap-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+  };
+
+  const exportWearCsv = async () => {
+    if (!requestFeature('export')) return;
+    const csv = await exportWearHistoryCsv();
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `scentcap-wear-history-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
   };
 
@@ -47,8 +62,73 @@ export function SettingsPage() {
   return (
     <div className="safe-pt px-5 py-6 max-w-lg mx-auto space-y-6">
       <h1 className="text-3xl font-semibold">Settings</h1>
-      <Link to="/analytics" className="text-sm text-[var(--color-accent)]">Collection analytics →</Link>
-      <Link to="/travel" className="text-sm text-[var(--color-accent)] block">Travel kit planner →</Link>
+
+      <Card className={`space-y-4 ${isPro ? 'border-[var(--color-accent)]/40' : ''}`} data-testid="pro-settings-card">
+        <div className="flex items-start gap-3">
+          <div className="w-10 h-10 rounded-xl bg-[var(--color-accent-muted)] flex items-center justify-center shrink-0">
+            <Crown size={20} className="text-[var(--color-accent)]" />
+          </div>
+          <div className="flex-1">
+            <p className="font-semibold">{isPro ? 'ScentCap Pro' : 'Upgrade to Pro'}</p>
+            <p className="text-sm text-stone-400 mt-1">
+              {isPro
+                ? 'All features unlocked — Analytics, Layering Lab, Travel Kit, and unlimited bottles.'
+                : `Free: ${FREE_BOTTLE_LIMIT} bottles. Pro unlocks analytics, layering, travel kit, and export.`}
+            </p>
+            {!isPro && (
+              <p className="text-xs text-stone-500 mt-2">
+                {collection.length}/{FREE_BOTTLE_LIMIT} bottles used
+              </p>
+            )}
+          </div>
+        </div>
+        {isPro ? (
+          <Button variant="ghost" size="sm" onClick={deactivatePro} data-testid="pro-deactivate">
+            Reset Pro (dev)
+          </Button>
+        ) : (
+          <div className="grid gap-2 sm:grid-cols-2">
+            <Button onClick={() => openPaywall()} data-testid="upgrade-pro-btn">
+              Upgrade — $4.99/mo
+            </Button>
+            <Button variant="outline" onClick={() => openPaywall()} data-testid="upgrade-pro-yearly">
+              Yearly — $39.99/yr
+            </Button>
+          </div>
+        )}
+      </Card>
+
+      <Card className="privacy-badge border-[var(--color-accent)]/30 bg-[var(--color-accent-muted)] space-y-3">
+        <div className="flex items-start gap-3">
+          <div className="w-10 h-10 rounded-xl bg-[var(--color-surface)] flex items-center justify-center shrink-0">
+            <Shield size={20} className="text-[var(--color-accent)]" />
+          </div>
+          <div>
+            <p className="font-semibold">Your data stays on this device</p>
+            <p className="text-sm text-[var(--color-text-secondary)] mt-1 leading-relaxed">
+              No account, no cloud sync, no tracking. Export a JSON backup anytime before switching phones.
+            </p>
+          </div>
+        </div>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <Button variant="outline" size="sm" className="flex-1" onClick={exportData}>Export wardrobe</Button>
+          <a
+            href={`${import.meta.env.BASE_URL}privacy.html`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1"
+          >
+            <Button variant="ghost" size="sm" className="w-full">Privacy policy</Button>
+          </a>
+        </div>
+      </Card>
+
+      <Link to="/analytics" className="text-sm text-[var(--color-accent)]">
+        Collection analytics {!isPro && '· Pro'}
+      </Link>
+      <Link to="/travel" className="text-sm text-[var(--color-accent)] block">
+        Travel kit planner {!isPro && '· Pro'}
+      </Link>
 
       <ProfileEditor />
 
@@ -127,7 +207,8 @@ export function SettingsPage() {
 
       <Card className="space-y-3">
         <p className="font-medium">Backup (includes photos)</p>
-        <Button variant="outline" className="w-full" onClick={exportData}>Export wardrobe</Button>
+        <Button variant="outline" className="w-full" onClick={exportData}>Export wardrobe (JSON)</Button>
+        <Button variant="outline" className="w-full" onClick={exportWearCsv}>Export wear history (CSV)</Button>
         <Button variant="ghost" className="w-full" onClick={importData}>Import wardrobe</Button>
       </Card>
     </div>

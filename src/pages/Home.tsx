@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  Cloud, Droplets, Flame, Layers, Sparkles, Sun, Wind, ChevronRight, Check, MapPin, Share2,
+  Cloud, Droplets, Flame, Layers, Sparkles, Sun, Wind, ChevronRight, Check, MapPin, Share2, Briefcase, AlertCircle, Bookmark,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useApp } from '@/context/AppContext';
@@ -17,6 +17,7 @@ import { FAMILY_COLORS, rotationHealth, wearStreak, wearsThisMonth, daysSinceWea
 import { weatherUnavailableMessage } from '@/services/weather';
 import { uid } from '@/lib/utils';
 import { advisorToShareInput, downloadBlob, exportShareCardPng, shareWearCard } from '@/lib/shareCard';
+import { saveAdvisorLayering } from '@/lib/layeringSave';
 
 const PRESETS = [
   { label: 'Office', icon: '💼', occasion: 'work' as const, dress: 'professional' as const, vibe: 'subtle' as const },
@@ -38,12 +39,14 @@ export function Home() {
   const [pendingWear, setPendingWear] = useState<{ id: string; name: string; wornAt: string } | null>(null);
   const [neglectedDetails, setNeglectedDetails] = useState<{ id: string; f: Fragrance; days: number | null }[]>([]);
   const [shareMsg, setShareMsg] = useState<string | null>(null);
+  const [layerSaved, setLayerSaved] = useState(false);
 
   const greeting = timeGreeting();
   const streak = wearStreak(history);
   const monthWears = wearsThisMonth(history);
   const rotation = rotationHealth(collection, history);
   const mood = scentMood(weather);
+  const rotationLow = rotation < 50 && collection.length >= 3;
 
   useEffect(() => {
     (async () => {
@@ -103,19 +106,26 @@ export function Home() {
     if (!result) return;
     try {
       const input = advisorToShareInput(result);
-      const outcome = await shareWearCard(input, familyColor);
+      const outcome = await shareWearCard(input, familyColor, { format: 'square' });
       const msg = outcome === 'shared' ? 'Shared!' : outcome === 'copied' ? 'Copied to clipboard' : 'Saved as PNG';
       setShareMsg(msg);
       setTimeout(() => setShareMsg(null), 2500);
     } catch {
-      const blob = await exportShareCardPng(advisorToShareInput(result), familyColor);
-      downloadBlob(blob, 'scentcap-today.png');
+      const blob = await exportShareCardPng(advisorToShareInput(result), familyColor, { format: 'square' });
+      downloadBlob(blob, 'scentcap-today-square.png');
       setShareMsg('Saved as PNG');
       setTimeout(() => setShareMsg(null), 2500);
     }
   };
 
-  const saveRating = async (rating: number, compliment: boolean) => {
+  const saveLayering = async () => {
+    if (!result?.layering) return;
+    await saveAdvisorLayering(result);
+    setLayerSaved(true);
+    setTimeout(() => setLayerSaved(false), 2500);
+  };
+
+  const saveRating = async (rating: number, compliment: boolean, notes?: string) => {
     if (!pendingWear || !result) return;
     await updateWearRecord({
       id: pendingWear.id,
@@ -125,6 +135,7 @@ export function Home() {
       sprays: result.spray.totalSprays,
       rating,
       compliment,
+      notes,
     });
     await refresh();
     setRatingOpen(false);
@@ -132,8 +143,8 @@ export function Home() {
   };
 
   const familyColor = result
-    ? FAMILY_COLORS[result.primary.fragrance.family] ?? '#c9a87c'
-    : '#c9a87c';
+    ? FAMILY_COLORS[result.primary.fragrance.family] ?? '#0a84ff'
+    : '#0a84ff';
 
   const WIcon = weather ? (WEATHER_ICON[weather.condition] ?? Cloud) : Cloud;
   const weatherNotice = !weather ? weatherUnavailableMessage(weatherUnavailable) : null;
@@ -142,11 +153,11 @@ export function Home() {
     return (
       <div className="relative min-h-[80dvh] flex flex-col items-center justify-center px-6 text-center">
         <MistBackground />
-        <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
           <div className="welcome-orb mx-auto mb-8" />
-          <p className="text-xs uppercase tracking-[0.3em] text-[var(--color-accent)]">ScentCap</p>
-          <h1 className="text-4xl font-semibold tracking-tight mt-3">Your wardrobe awaits</h1>
-          <p className="text-stone-400 mt-4 max-w-sm mx-auto leading-relaxed">
+          <p className="text-xs uppercase tracking-[0.2em] text-[var(--color-text-secondary)]">ScentCap</p>
+          <h1 className="text-3xl font-semibold tracking-tight mt-3">Your wardrobe awaits</h1>
+          <p className="text-[var(--color-text-secondary)] mt-4 max-w-sm mx-auto leading-relaxed">
             Add the bottles you own. Every morning, ScentCap tells you exactly what to wear.
           </p>
           <Link to="/add" className="inline-block mt-8">
@@ -163,105 +174,154 @@ export function Home() {
 
       {/* Hero welcome */}
       <section className="safe-pt px-5 md:px-0 pt-4 pb-2">
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-stone-400 flex items-center gap-2">
-                <span>{greeting.emoji}</span>
-                {greeting.line}{profile?.gender === 'man' ? ', sir' : profile?.gender === 'woman' ? '' : ''}
-              </p>
-              <h1 className="text-[2rem] md:text-4xl font-semibold tracking-tight mt-1 leading-tight">
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="text-sm text-[var(--color-text-secondary)] flex items-center gap-2">
+                  <span>{greeting.emoji}</span>
+                  {greeting.line}{profile?.gender === 'man' ? ', sir' : profile?.gender === 'woman' ? '' : ''}
+                </p>
+                {prefs.officeSafeMode && (
+                  <span className="office-safe-badge" title="Office-safe mode is on">
+                    <Briefcase size={12} />
+                    Office Safe
+                  </span>
+                )}
+              </div>
+              <h1 className="text-[1.75rem] md:text-3xl font-semibold tracking-tight mt-1 leading-tight">
                 {mood}
               </h1>
             </div>
             {weather && (
-              <motion.div
-                className="weather-orb shrink-0"
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.2 }}
-              >
-                <WIcon size={20} className="text-[var(--color-accent)]" />
-                <span className="text-lg font-semibold tabular-nums">{Math.round(weather.tempC)}°</span>
-              </motion.div>
+              <div className="weather-orb shrink-0">
+                <WIcon size={18} className="text-[var(--color-accent)]" />
+                <span className="text-base font-semibold tabular-nums">{Math.round(weather.tempC)}°</span>
+              </div>
             )}
           </div>
         </motion.div>
       </section>
 
+      {/* Rotation health alert */}
+      {rotationLow && (
+        <section className="px-5 md:px-0 mt-3">
+          <div className="rotation-banner rotation-banner--low rounded-xl px-4 py-3 flex items-start gap-3">
+            <AlertCircle size={18} className="text-orange-400 shrink-0 mt-0.5" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium">Rotation at {rotation}%</p>
+              <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">
+                {collection.length - Math.round((rotation / 100) * collection.length)} bottles haven&apos;t been worn yet. Try a neglected pick below.
+              </p>
+            </div>
+            <Link to="/collection" className="text-xs text-[var(--color-accent)] font-medium shrink-0">
+              View all
+            </Link>
+          </div>
+        </section>
+      )}
+
       {/* Stats strip */}
       <motion.div
-        className="px-5 md:px-0 flex gap-3 overflow-x-auto pb-4 scrollbar-none"
+        className="px-5 md:px-0 flex gap-2 overflow-x-auto py-4 scrollbar-none"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.15 }}
+        transition={{ delay: 0.1, duration: 0.25 }}
       >
         <StatChip icon={<Droplets size={14} />} label="Bottles" value={String(collection.length)} />
         <StatChip icon={<Flame size={14} />} label="Streak" value={`${streak}d`} accent={streak > 0} />
         <StatChip icon={<Sparkles size={14} />} label="This month" value={String(monthWears)} />
-        <StatChip icon={<Layers size={14} />} label="Rotation" value={`${rotation}%`} />
+        <StatChip
+          icon={<Layers size={14} />}
+          label="Rotation"
+          value={`${rotation}%`}
+          warn={rotationLow}
+          good={rotation >= 70}
+        />
       </motion.div>
 
       {/* Today's pick — hero card */}
       <section className="px-5 md:px-0">
         {loading ? (
-          <div className="hero-pick-card animate-pulse h-64 rounded-[2rem]" />
+          <div className="hero-pick-card animate-pulse h-56 rounded-2xl" />
         ) : result ? (
           <motion.div
-            className="hero-pick-card relative overflow-hidden rounded-[2rem] p-6 md:p-8"
+            className="hero-pick-card relative overflow-hidden rounded-2xl p-6 md:p-8"
             style={{ '--aura': familyColor } as React.CSSProperties}
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, ease: 'easeOut' }}
           >
-            <div className="hero-pick-glow" />
+            <div className="hero-pick-accent" />
             <div className="relative z-10 flex gap-5">
               <div className="flex-1 min-w-0">
-                <p className="text-[10px] uppercase tracking-[0.25em] text-white/50">Today&apos;s scent</p>
+                <p className="text-[10px] uppercase tracking-[0.2em] text-[var(--color-text-tertiary)]">Today&apos;s scent</p>
                 <h2 className="text-2xl md:text-3xl font-semibold mt-2 truncate">{result.primary.fragrance.brand}</h2>
-                <p className="text-lg text-white/70 truncate">{result.primary.fragrance.name}</p>
+                <p className="text-lg text-[var(--color-text-secondary)] truncate">{result.primary.fragrance.name}</p>
                 <div className="flex flex-wrap gap-2 mt-4">
                   <span className="tag-pill">{result.primary.fragrance.concentration}</span>
                   <span className="tag-pill">{result.primary.fragrance.family}</span>
                   <span className="tag-pill">{result.spray.totalSprays} sprays</span>
                 </div>
-                <p className="text-sm text-white/55 mt-4 line-clamp-2">{result.reasoning[0]}</p>
+                <p className="text-sm text-[var(--color-text-secondary)] mt-4 line-clamp-2">{result.reasoning[0]}</p>
                 {result.layering && (
-                  <p className="text-xs text-[var(--color-accent)] mt-2 flex items-center gap-1">
-                    <Layers size={12} /> Layer with {result.layering.secondary.name}
-                  </p>
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    <p className="text-xs text-[var(--color-accent)] flex items-center gap-1">
+                      <Layers size={12} /> Layer with {result.layering.secondary.name}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={saveLayering}
+                      className="text-xs font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] flex items-center gap-1 transition-colors"
+                    >
+                      <Bookmark size={12} />
+                      {layerSaved ? 'Saved!' : 'Save to Layering Lab'}
+                    </button>
+                  </div>
                 )}
               </div>
-              <ScoreRing score={result.fragranceScore} color={familyColor} size={96} />
+              <ScoreRing score={result.fragranceScore} color={familyColor} size={88} />
             </div>
             <div className="relative z-10 flex gap-3 mt-6">
               <Button className="flex-1" onClick={wearToday} disabled={logged}>
                 {logged ? <><Check size={16} /> Logged</> : 'Wear this today'}
               </Button>
-              <Button variant="ghost" className="border border-white/15 bg-white/5 px-4" onClick={shareToday} aria-label="Share today's pick">
+              <Button variant="ghost" className="px-4" onClick={shareToday} aria-label="Share today's pick">
                 <Share2 size={16} />
               </Button>
               <Link to="/advisor" className="flex-1">
-                <Button variant="ghost" className="w-full border border-white/15 bg-white/5">
+                <Button variant="ghost" className="w-full">
                   <Sparkles size={16} /> Customize
                 </Button>
               </Link>
             </div>
             {shareMsg && <p className="relative z-10 text-center text-xs text-[var(--color-accent)] mt-2">{shareMsg}</p>}
           </motion.div>
-        ) : null}
+        ) : (
+          <div className="hero-pick-card rounded-2xl p-6 text-center">
+            <p className="text-sm font-medium">No match for today&apos;s filters</p>
+            <p className="text-sm text-[var(--color-text-secondary)] mt-2">
+              {prefs.officeSafeMode
+                ? 'Office Safe is on — try turning it off in Settings or customize in Advisor.'
+                : 'Open Advisor to customize occasion and vibe.'}
+            </p>
+            <Link to="/advisor" className="inline-block mt-4">
+              <Button variant="outline">Open Advisor</Button>
+            </Link>
+          </div>
+        )}
 
         {result && result.backups.length > 0 && (
           <div className="mt-4 space-y-2">
-            <p className="text-xs uppercase tracking-wider text-stone-500">Backup picks</p>
+            <p className="text-xs uppercase tracking-wider text-[var(--color-text-tertiary)]">Backup picks</p>
             <div className="flex gap-2 overflow-x-auto scrollbar-none pb-1">
               {result.backups.slice(0, 3).map((b) => (
                 <Link
                   key={b.collectionId}
                   to={`/fragrance/${b.collectionId}`}
-                  className="shrink-0 glass-card rounded-2xl px-4 py-3 min-w-[140px]"
+                  className="shrink-0 surface-card rounded-xl px-4 py-3 min-w-[140px]"
                 >
-                  <p className="text-[10px] text-stone-500 truncate">{b.fragrance.brand}</p>
+                  <p className="text-[10px] text-[var(--color-text-tertiary)] truncate">{b.fragrance.brand}</p>
                   <p className="text-sm font-medium truncate">{b.fragrance.name}</p>
                   <p className="text-[10px] text-[var(--color-accent)] mt-1">{Math.round(b.score)}% match</p>
                 </Link>
@@ -278,21 +338,52 @@ export function Home() {
         onSkip={() => { setRatingOpen(false); setPendingWear(null); }}
       />
 
+      {/* Neglected bottles — moved up for visibility */}
+      {neglectedDetails.length > 0 && (
+        <section className="mt-6">
+          <div className="px-5 md:px-0 flex items-center justify-between mb-3">
+            <div>
+              <p className="text-xs uppercase tracking-wider text-[var(--color-text-tertiary)]">Needs attention</p>
+              <p className="text-sm text-[var(--color-text-secondary)] mt-0.5">
+                {neglectedDetails.length} bottle{neglectedDetails.length !== 1 ? 's' : ''} not worn in 3+ weeks
+              </p>
+            </div>
+            <Link to="/collection" className="text-xs text-[var(--color-accent)] flex items-center gap-0.5">
+              All <ChevronRight size={14} />
+            </Link>
+          </div>
+          <div className="flex gap-3 overflow-x-auto px-5 md:px-0 pb-2 scrollbar-none">
+            {neglectedDetails.map((n) => (
+              <Link key={n.id} to={`/fragrance/${n.id}`} className="neglected-card block w-[148px] rounded-xl p-4 shrink-0">
+                <div
+                  className="w-10 h-10 rounded-lg mb-3"
+                  style={{ background: `linear-gradient(135deg, ${FAMILY_COLORS[n.f.family] ?? '#0a84ff'}33, transparent)` }}
+                />
+                <p className="text-[10px] text-[var(--color-text-tertiary)] truncate">{n.f.brand}</p>
+                <p className="text-sm font-medium truncate">{n.f.name}</p>
+                <p className="text-[11px] font-medium text-orange-400 mt-2">
+                  {n.days === null ? 'Never worn' : `${n.days} days ago`}
+                </p>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Quick presets */}
       <section className="px-5 md:px-0 mt-8">
-        <p className="text-xs uppercase tracking-wider text-stone-500 mb-3">One tap mood</p>
+        <p className="text-xs uppercase tracking-wider text-[var(--color-text-tertiary)] mb-3">One tap mood</p>
         <div className="grid grid-cols-4 gap-2">
-          {PRESETS.map((p, i) => (
-            <motion.div key={p.label} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 + i * 0.05 }}>
-              <Link
-                to="/advisor"
-                state={p}
-                className="preset-tile flex flex-col items-center gap-1.5 rounded-2xl py-4 text-center"
-              >
-                <span className="text-xl">{p.icon}</span>
-                <span className="text-[11px] font-medium text-stone-300">{p.label}</span>
-              </Link>
-            </motion.div>
+          {PRESETS.map((p) => (
+            <Link
+              key={p.label}
+              to="/advisor"
+              state={p}
+              className="preset-tile flex flex-col items-center gap-1.5 rounded-xl py-4 text-center"
+            >
+              <span className="text-xl">{p.icon}</span>
+              <span className="text-[11px] font-medium text-[var(--color-text-secondary)]">{p.label}</span>
+            </Link>
           ))}
         </div>
       </section>
@@ -300,13 +391,13 @@ export function Home() {
       {/* Weather detail */}
       {weather ? (
         <section className="px-5 md:px-0 mt-6">
-          <div className="glass-card rounded-2xl p-4 flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-[var(--color-accent)]/15 flex items-center justify-center">
-              <WIcon className="text-[var(--color-accent)]" size={22} />
+          <div className="surface-card rounded-xl p-4 flex items-center gap-4">
+            <div className="w-11 h-11 rounded-xl bg-[var(--color-accent-muted)] flex items-center justify-center">
+              <WIcon className="text-[var(--color-accent)]" size={20} />
             </div>
             <div className="flex-1">
               <p className="font-medium capitalize">{weather.condition} · {profile?.cityLabel ?? 'Local'}</p>
-              <p className="text-sm text-stone-400">
+              <p className="text-sm text-[var(--color-text-secondary)]">
                 {weather.tempC}°C · {weather.humidity}% humidity · wind {Math.round(weather.windKmh)} km/h
               </p>
             </div>
@@ -315,13 +406,13 @@ export function Home() {
         </section>
       ) : weatherNotice ? (
         <section className="px-5 md:px-0 mt-6">
-          <div className="glass-card rounded-2xl p-4 flex items-start gap-3 border border-white/5">
-            <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center shrink-0">
-              <MapPin className="text-stone-400" size={18} />
+          <div className="surface-card rounded-xl p-4 flex items-start gap-3">
+            <div className="w-10 h-10 rounded-lg bg-[var(--color-surface-elevated)] flex items-center justify-center shrink-0">
+              <MapPin className="text-[var(--color-text-secondary)]" size={18} />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-stone-300">Weather unavailable</p>
-              <p className="text-sm text-stone-500 mt-1 leading-relaxed">{weatherNotice}</p>
+              <p className="text-sm font-medium">Weather unavailable</p>
+              <p className="text-sm text-[var(--color-text-secondary)] mt-1 leading-relaxed">{weatherNotice}</p>
               <Link to="/settings" className="inline-block text-[var(--color-accent)] text-sm font-medium mt-2">
                 Open Settings
               </Link>
@@ -330,67 +421,43 @@ export function Home() {
         </section>
       ) : null}
 
-      {/* Neglected carousel */}
-      {neglectedDetails.length > 0 && (
-        <section className="mt-8">
-          <div className="px-5 md:px-0 flex items-center justify-between mb-3">
-            <p className="text-xs uppercase tracking-wider text-stone-500">Sleeping in your shelf</p>
-            <Link to="/collection" className="text-xs text-[var(--color-accent)] flex items-center gap-0.5">
-              All <ChevronRight size={14} />
-            </Link>
-          </div>
-          <div className="flex gap-3 overflow-x-auto px-5 md:px-0 pb-2 scrollbar-none">
-            {neglectedDetails.map((n, i) => (
-              <motion.div
-                key={n.id}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4 + i * 0.06 }}
-              >
-                <Link to={`/fragrance/${n.id}`} className="neglected-card block w-[140px] rounded-2xl p-4">
-                  <div
-                    className="w-10 h-10 rounded-xl mb-3"
-                    style={{ background: `linear-gradient(135deg, ${FAMILY_COLORS[n.f.family] ?? '#c9a87c'}44, transparent)` }}
-                  />
-                  <p className="text-[10px] text-stone-500 truncate">{n.f.brand}</p>
-                  <p className="text-sm font-medium truncate">{n.f.name}</p>
-                  <p className="text-[10px] text-amber-400/80 mt-2">
-                    {n.days === null ? 'Never worn' : `${n.days}d ago`}
-                  </p>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </section>
-      )}
-
       {/* Recent wears */}
       {history.length > 0 && (
         <section className="px-5 md:px-0 mt-8">
-          <p className="text-xs uppercase tracking-wider text-stone-500 mb-3">Recent wears</p>
+          <p className="text-xs uppercase tracking-wider text-[var(--color-text-tertiary)] mb-3">Recent wears</p>
           <RecentWears history={history.slice(-4).reverse()} />
         </section>
       )}
 
       {/* Explore row */}
       <section className="px-5 md:px-0 mt-8 grid grid-cols-2 gap-3">
-        <Link to="/analytics" className="explore-tile rounded-2xl p-4">
+        <Link to="/analytics" className="explore-tile rounded-xl p-4">
           <p className="text-sm font-medium">Analytics</p>
-          <p className="text-xs text-stone-500 mt-1">Value & rotation</p>
+          <p className="text-xs text-[var(--color-text-tertiary)] mt-1">Value & rotation</p>
         </Link>
-        <Link to="/calendar" className="explore-tile rounded-2xl p-4">
+        <Link to="/calendar" className="explore-tile rounded-xl p-4">
           <p className="text-sm font-medium">Calendar</p>
-          <p className="text-xs text-stone-500 mt-1">Wear patterns</p>
+          <p className="text-xs text-[var(--color-text-tertiary)] mt-1">Wear patterns</p>
         </Link>
       </section>
     </div>
   );
 }
 
-function StatChip({ icon, label, value, accent }: { icon: React.ReactNode; label: string; value: string; accent?: boolean }) {
+function StatChip({
+  icon, label, value, accent, warn, good,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  accent?: boolean;
+  warn?: boolean;
+  good?: boolean;
+}) {
+  const variant = warn ? 'stat-chip--warn' : good ? 'stat-chip--good' : accent ? 'stat-chip--hot' : '';
   return (
-    <div className={`stat-chip shrink-0 rounded-2xl px-4 py-3 min-w-[100px] ${accent ? 'stat-chip--hot' : ''}`}>
-      <div className="flex items-center gap-1.5 text-stone-500 text-[10px] uppercase tracking-wider">{icon}{label}</div>
+    <div className={`stat-chip shrink-0 rounded-xl px-4 py-3 min-w-[96px] ${variant}`}>
+      <div className="flex items-center gap-1.5 text-[var(--color-text-tertiary)] text-[10px] uppercase tracking-wider">{icon}{label}</div>
       <p className="text-xl font-semibold mt-1 tabular-nums">{value}</p>
     </div>
   );
@@ -408,9 +475,9 @@ function RecentWears({ history }: { history: { id: string; fragranceId: string; 
   return (
     <div className="space-y-2">
       {history.map((h) => (
-        <div key={h.id} className="flex justify-between items-center glass-card rounded-xl px-4 py-3 text-sm">
+        <div key={h.id} className="flex justify-between items-center surface-card rounded-xl px-4 py-3 text-sm">
           <span className="truncate pr-4">{names[h.id] ?? '…'}</span>
-          <span className="text-stone-500 shrink-0 text-xs">
+          <span className="text-[var(--color-text-tertiary)] shrink-0 text-xs">
             {new Date(h.wornAt).toLocaleDateString(undefined, { weekday: 'short' })}
           </span>
         </div>

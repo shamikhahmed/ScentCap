@@ -12,10 +12,10 @@ export function Card({
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay, ease: [0.22, 1, 0.36, 1] }}
-      className={cn('glass-card rounded-3xl p-5', className)}
+      transition={{ duration: 0.25, delay, ease: 'easeOut' }}
+      className={cn('surface-card rounded-2xl p-5', className)}
     >
       {children}
     </motion.div>

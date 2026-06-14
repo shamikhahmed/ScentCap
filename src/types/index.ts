@@ -86,6 +86,16 @@ export interface UserProfile {
   onboardingComplete: boolean;
 }
 
+export type WishlistList = 'want' | 'tested';
+
+export interface WishlistItem {
+  id: string;
+  fragranceId: string;
+  list: WishlistList;
+  addedAt: string;
+  notes?: string;
+}
+
 export interface Preferences {
   id: 'preferences';
   officeMaxSprays: number;
@@ -93,6 +103,8 @@ export interface Preferences {
   theme: 'dark' | 'light' | 'system';
   signatures: Partial<Record<SignatureRole, string>>;
   demoMode?: boolean;
+  /** Last 5 fragrance IDs added to collection (for catalog recents) */
+  recentAdditions?: string[];
 }
 
 export const CONCENTRATIONS: Concentration[] = ['Cologne', 'EDT', 'EDP', 'Parfum', 'Extrait'];
