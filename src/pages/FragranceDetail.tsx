@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { WearRatingModal } from '@/components/ui/WearRatingModal';
+import { BottleVisual } from '@/components/ui/BottleVisual';
 import {
   deleteCollectionItem,
   getAllCollection,
@@ -197,7 +198,7 @@ export function FragranceDetail() {
           <img src={photoUrl} alt="" className="w-full h-full object-cover opacity-80" />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="welcome-orb scale-75" />
+            <BottleVisual brand={fragrance.brand} name={fragrance.name} family={fragrance.family} size="hero" />
           </div>
         )}
         <button

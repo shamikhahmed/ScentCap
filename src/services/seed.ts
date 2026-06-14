@@ -10,7 +10,9 @@ export async function ensureSeedLoaded(): Promise<number> {
     seeded = true;
     return count;
   }
-  const res = await fetch('./data/fragrances.seed.json');
+  const url = `${import.meta.env.BASE_URL}data/fragrances.seed.json`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Failed to load fragrance catalog (${res.status})`);
   const data = await res.json() as { fragrances: Fragrance[] };
   const db = await getDb();
   const tx = db.transaction('fragrances', 'readwrite');

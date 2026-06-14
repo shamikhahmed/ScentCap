@@ -1,13 +1,14 @@
 import { Link } from 'react-router-dom';
 import { Star } from 'lucide-react';
 import { Card } from '@/components/ui/card';
+import { BottleVisual } from '@/components/ui/BottleVisual';
 import { usePhotoUrl } from '@/hooks/usePhotoUrl';
 import type { CollectionItem, Fragrance } from '@/types';
 import { FAMILY_COLORS } from '@/lib/stats';
 
 export function BottleCard({ c, f }: { c: CollectionItem; f?: Fragrance }) {
   const photoUrl = usePhotoUrl(c.photoBlobId);
-  const aura = FAMILY_COLORS[f?.family ?? ''] ?? '#c9a87c';
+  const aura = FAMILY_COLORS[f?.family ?? ''] ?? '#0071e3';
 
   return (
     <Link to={`/fragrance/${c.id}`}>
@@ -17,19 +18,23 @@ export function BottleCard({ c, f }: { c: CollectionItem; f?: Fragrance }) {
           style={{
             background: photoUrl
               ? undefined
-              : `linear-gradient(160deg, ${aura}22, rgba(0,0,0,0.4))`,
+              : `linear-gradient(160deg, ${aura}18, var(--color-bg-secondary))`,
           }}
         >
-          {photoUrl && (
+          {photoUrl ? (
             <>
               <img src={photoUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
             </>
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center pb-10">
+              <BottleVisual brand={f?.brand} name={f?.name} family={f?.family} size="lg" />
+            </div>
           )}
           <div className="relative z-10">
             {c.isFavorite && <Star size={14} className="text-[var(--color-accent)] mb-auto" fill="currentColor" />}
-            <p className="text-[10px] text-stone-400 uppercase tracking-wider">{f?.brand}</p>
-            <p className="font-semibold leading-tight">{f?.name ?? '…'}</p>
+            <p className="text-[10px] text-[var(--color-text-tertiary)] uppercase tracking-wider">{f?.brand}</p>
+            <p className="font-semibold leading-tight text-[var(--color-text)]">{f?.name ?? '…'}</p>
             <div className="flex justify-between items-center mt-2 gap-2 flex-wrap">
               {f?.concentration && (
                 <span className="text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-[var(--color-accent)]/20 text-[var(--color-accent)]">

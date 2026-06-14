@@ -10,6 +10,7 @@ import { runAdvisor, defaultAdvisorInput } from '@/engines/advisor';
 import { getFragrance, logWear, updateWearRecord } from '@/db';
 import type { AdvisorResult, Fragrance } from '@/types';
 import { WearRatingModal } from '@/components/ui/WearRatingModal';
+import { BottleVisual } from '@/components/ui/BottleVisual';
 import { MistBackground } from '@/components/home/MistBackground';
 import { ScoreRing } from '@/components/home/ScoreRing';
 import { timeGreeting, scentMood } from '@/lib/greetings';
@@ -253,7 +254,15 @@ export function Home() {
             transition={{ duration: 0.35, ease: 'easeOut' }}
           >
             <div className="hero-pick-accent" />
-            <div className="relative z-10 flex gap-5">
+            <div className="relative z-10 flex gap-5 items-start">
+              <div className="hidden sm:block shrink-0 pt-1">
+                <BottleVisual
+                  brand={result.primary.fragrance.brand}
+                  name={result.primary.fragrance.name}
+                  family={result.primary.fragrance.family}
+                  size="md"
+                />
+              </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[10px] uppercase tracking-[0.2em] text-[var(--color-text-tertiary)]">Today&apos;s scent</p>
                 <h2 className="text-2xl md:text-3xl font-semibold mt-2 truncate">{result.primary.fragrance.brand}</h2>
