@@ -108,50 +108,35 @@ test.describe('ScentCap PWA', () => {
   });
 });
 
-test.describe('ScentCap Pro paywall', () => {
+test.describe('ScentCap launch preview', () => {
   test.beforeEach(async ({ context, page }) => {
     await installTestMocks(page, { pro: false });
     await context.grantPermissions(['geolocation']);
     await context.setGeolocation({ latitude: 40.7128, longitude: -74.006 });
   });
 
-  test('gated feature shows paywall when not Pro', async ({ page }) => {
+  test('Pro features accessible without paywall during launch preview', async ({ page }) => {
     await page.goto('./onboarding');
     await page.getByRole('button', { name: /Try demo collection/i }).click();
     await expect(page).not.toHaveURL(/onboarding/, { timeout: 30_000 });
 
     await page.goto('./travel');
-    await expect(page.getByTestId('paywall-modal')).toBeVisible({ timeout: 10_000 });
-    await expect(page.getByRole('heading', { name: /Upgrade to Pro/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Travel kit' })).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByTestId('paywall-modal')).not.toBeVisible();
+
+    await page.goto('./analytics');
+    await expect(page.getByRole('heading', { name: 'Analytics' })).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByTestId('pro-gate')).not.toBeVisible();
   });
 
-  test('bottle limit shows paywall when adding 13th bottle', async ({ page }) => {
-    await completeOnboarding(page);
-
-    for (let i = 0; i < 12; i++) {
-      await addFragranceFromSearch(page, 'Dior');
-      if (i < 11) {
-        await page.getByRole('link', { name: /Add bottle/i }).first().click();
-      }
-    }
-
-    await page.getByRole('link', { name: /Add bottle/i }).first().click();
-    await page.getByPlaceholder(/Search by brand or name/i).fill('Chanel');
-    await expect(page.locator('button').filter({ hasText: /^(EDT|EDP|Parfum|Cologne|Extrait)$/ }).first()).toBeVisible({ timeout: 20_000 });
-    await page.locator('button').filter({ hasText: /^(EDT|EDP|Parfum|Cologne|Extrait)$/ }).first().click();
-    await page.getByRole('button', { name: 'Add to wardrobe' }).click();
-
-    await expect(page.getByTestId('paywall-modal')).toBeVisible({ timeout: 10_000 });
-  });
-
-  test('web purchase shows App Store unavailable message', async ({ page }) => {
+  test('Pro roadmap modal opens from settings', async ({ page }) => {
     await page.goto('./onboarding');
     await page.getByRole('button', { name: /Try demo collection/i }).click();
     await expect(page).not.toHaveURL(/onboarding/, { timeout: 30_000 });
 
-    await page.goto('./travel');
+    await page.goto('./settings');
+    await page.getByTestId('pro-roadmap-btn').click();
     await expect(page.getByTestId('paywall-modal')).toBeVisible({ timeout: 10_000 });
-    await page.getByTestId('paywall-plan-yearly').click();
-    await expect(page.getByTestId('iap-status')).toContainText(/App Store version/i);
+    await expect(page.getByRole('heading', { name: /coming soon/i })).toBeVisible();
   });
 });

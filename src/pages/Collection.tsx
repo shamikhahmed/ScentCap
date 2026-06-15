@@ -10,6 +10,7 @@ import { getFragrance, getWishlist, removeFromWishlist } from '@/db';
 import type { Fragrance, WishlistItem } from '@/types';
 import { formatCurrency } from '@/lib/utils';
 import { BottleCard } from '@/components/collection/BottleCard';
+import { EmptyState } from '@/components/ui/EmptyState';
 import { FAMILY_COLORS } from '@/lib/stats';
 import { chipActive, chipInactive, inputFieldLg, segmentActive, segmentBar, segmentInactive, textMuted, textSubtle } from '@/lib/ui-classes';
 
@@ -183,20 +184,20 @@ export function CollectionPage() {
       )}
 
       {tab === 'owned' && !collection.length && (
-        <Card className="text-center py-12">
-          <p className={`${textMuted} mb-4`}>Your wardrobe is empty</p>
-          <Link to="/add"><Button>Add your first bottle</Button></Link>
-        </Card>
+        <EmptyState
+          eyebrow="Wardrobe"
+          title="No bottles yet"
+          description="Search thousands of fragrances or add your own. Your collection stays on this device."
+          action={{ label: 'Add first bottle', to: '/add' }}
+        />
       )}
 
       {tab !== 'owned' && !wishlist.length && (
-        <Card className="text-center py-12">
-          <p className={`${textMuted} mb-2`}>
-            {tab === 'want' ? 'Nothing on your wishlist yet' : 'No tested fragrances logged'}
-          </p>
-          <p className={`text-xs ${textSubtle} mb-4`}>Search the catalog and save fragrances you want to try or have sampled.</p>
-          <Link to={`/add?list=${tab}`}><Button>Add to {tab === 'want' ? 'Want list' : 'Tested'}</Button></Link>
-        </Card>
+        <EmptyState
+          title={tab === 'want' ? 'Nothing on your wishlist' : 'No tested fragrances'}
+          description="Search the catalog and save fragrances you want to try or have sampled."
+          action={{ label: tab === 'want' ? 'Add to Want list' : 'Log a tested scent', to: `/add?list=${tab}` }}
+        />
       )}
     </div>
   );

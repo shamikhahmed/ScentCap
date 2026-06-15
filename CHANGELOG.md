@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.2.0] - 2026-06-15
+- Launch preview: all features unlocked (Analytics, Layering Lab, Travel Kit, unlimited bottles, export) until App Store IAP ships.
+- Premium empty states on Home, Wardrobe, and Analytics with demo collection shortcut on Today.
+- Settings: honest launch preview messaging; export no longer gated.
+- Pro paywall reframed as App Store roadmap (no dead-end purchase buttons on web).
+
 ## [1.1.1] - 2026-06-14
 - iOS: adopt UIScene lifecycle (`SceneDelegate`, Info.plist manifest) for iOS 26+ / future SDK.
 - Fix Analytics charts crashing WKWebView in Capacitor (measured chart sizes vs ResponsiveContainer).

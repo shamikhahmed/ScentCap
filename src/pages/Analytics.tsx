@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, PieChart, Pie, Cell } from 'recharts';
 import { Card } from '@/components/ui/card';
 import { ChartFrame } from '@/components/ui/ChartFrame';
+import { EmptyState } from '@/components/ui/EmptyState';
 import { useApp } from '@/context/AppContext';
 import { getFragrance } from '@/db';
 import { formatCurrency } from '@/lib/utils';
@@ -77,6 +78,17 @@ export function AnalyticsPage() {
       avgLongevity: avgLongevityLabel(allFragrances),
     };
   }, [collection, history, fragrances, allFragrances]);
+
+  if (!collection.length) {
+    return (
+      <EmptyState
+        eyebrow="Analytics"
+        title="Nothing to analyze yet"
+        description="Add bottles to your wardrobe and log a few wears. Rotation health, family breakdown, and value insights appear here."
+        action={{ label: 'Add a bottle', to: '/add' }}
+      />
+    );
+  }
 
   return (
     <div className="safe-pt px-5 py-6 max-w-2xl mx-auto space-y-6">

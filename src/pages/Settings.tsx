@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Crown, Shield } from 'lucide-react';
+import { Crown, Shield, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ProfileEditor } from '@/components/settings/ProfileEditor';
@@ -8,15 +8,14 @@ import { usePro } from '@/context/ProContext';
 import { exportAllData, exportWearHistoryCsv, importAllData } from '@/db';
 import { exitDemo, loadDemoData } from '@/services/demo';
 import { getDailyWeather, requestLocation } from '@/services/weather';
-import { FREE_BOTTLE_LIMIT } from '@/lib/pro';
+import { LAUNCH_PREVIEW } from '@/lib/pro';
 
 export function SettingsPage() {
-  const { profile, prefs, setPrefs, setProfile, refresh, collection } = useApp();
-  const { isPro, openPaywall, requestFeature, deactivatePro } = usePro();
+  const { profile, prefs, setPrefs, setProfile, refresh } = useApp();
+  const { isPro, openPaywall, deactivatePro } = usePro();
   const navigate = useNavigate();
 
   const exportData = async () => {
-    if (!requestFeature('export')) return;
     const json = await exportAllData();
     const blob = new Blob([json], { type: 'application/json' });
     const a = document.createElement('a');
@@ -26,7 +25,6 @@ export function SettingsPage() {
   };
 
   const exportWearCsv = async () => {
-    if (!requestFeature('export')) return;
     const csv = await exportWearHistoryCsv();
     const blob = new Blob([csv], { type: 'text/csv' });
     const a = document.createElement('a');
@@ -66,23 +64,26 @@ export function SettingsPage() {
       <Card className={`space-y-4 ${isPro ? 'border-[var(--color-accent)]/40' : ''}`} data-testid="pro-settings-card">
         <div className="flex items-start gap-3">
           <div className="w-10 h-10 rounded-xl bg-[var(--color-accent-muted)] flex items-center justify-center shrink-0">
-            <Crown size={20} className="text-[var(--color-accent)]" />
+            {LAUNCH_PREVIEW ? <Sparkles size={20} className="text-[var(--color-accent)]" /> : <Crown size={20} className="text-[var(--color-accent)]" />}
           </div>
           <div className="flex-1">
-            <p className="font-semibold">{isPro ? 'ScentCap Pro' : 'Upgrade to Pro'}</p>
-            <p className="text-sm text-stone-400 mt-1">
-              {isPro
-                ? 'All features unlocked — Analytics, Layering Lab, Travel Kit, and unlimited bottles.'
-                : `Free: ${FREE_BOTTLE_LIMIT} bottles. Pro unlocks analytics, layering, travel kit, and export.`}
+            <p className="font-semibold">
+              {LAUNCH_PREVIEW ? 'Launch preview' : isPro ? 'ScentCap Pro' : 'Upgrade to Pro'}
             </p>
-            {!isPro && (
-              <p className="text-xs text-stone-500 mt-2">
-                {collection.length}/{FREE_BOTTLE_LIMIT} bottles used
-              </p>
-            )}
+            <p className="text-sm text-stone-400 mt-1">
+              {LAUNCH_PREVIEW
+                ? 'Every feature is free while we polish the App Store release — Analytics, Layering Lab, Travel Kit, and unlimited bottles.'
+                : isPro
+                  ? 'All features unlocked — Analytics, Layering Lab, Travel Kit, and unlimited bottles.'
+                  : 'Pro unlocks analytics, layering, travel kit, export, and unlimited bottles.'}
+            </p>
           </div>
         </div>
-        {isPro ? (
+        {LAUNCH_PREVIEW ? (
+          <Button variant="outline" size="sm" onClick={() => openPaywall()} data-testid="pro-roadmap-btn">
+            Pro subscriptions — coming to App Store
+          </Button>
+        ) : isPro ? (
           <Button variant="ghost" size="sm" onClick={deactivatePro} data-testid="pro-deactivate">
             Reset Pro (dev)
           </Button>
@@ -124,10 +125,10 @@ export function SettingsPage() {
       </Card>
 
       <Link to="/analytics" className="text-sm text-[var(--color-accent)]">
-        Collection analytics {!isPro && '· Pro'}
+        Collection analytics
       </Link>
       <Link to="/travel" className="text-sm text-[var(--color-accent)] block">
-        Travel kit planner {!isPro && '· Pro'}
+        Travel kit planner
       </Link>
 
       <ProfileEditor />

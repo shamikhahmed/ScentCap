@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Cloud, Droplets, Flame, Layers, Sparkles, Sun, Wind, ChevronRight, Check, MapPin, Share2, Briefcase, AlertCircle, Bookmark,
@@ -19,6 +19,8 @@ import { weatherUnavailableMessage } from '@/services/weather';
 import { uid } from '@/lib/utils';
 import { advisorToShareInput, downloadBlob, exportShareCardPng, shareWearCard } from '@/lib/shareCard';
 import { saveAdvisorLayering } from '@/lib/layeringSave';
+import { loadDemoData } from '@/services/demo';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 const PRESETS = [
   { label: 'Office', icon: '💼', occasion: 'work' as const, dress: 'professional' as const, vibe: 'subtle' as const },
@@ -33,6 +35,7 @@ const WEATHER_ICON: Record<string, typeof Sun> = {
 
 export function Home() {
   const { profile, prefs, collection, history, weather, weatherUnavailable, refresh } = useApp();
+  const navigate = useNavigate();
   const [result, setResult] = useState<AdvisorResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [logged, setLogged] = useState(false);
@@ -41,6 +44,7 @@ export function Home() {
   const [neglectedDetails, setNeglectedDetails] = useState<{ id: string; f: Fragrance; days: number | null }[]>([]);
   const [shareMsg, setShareMsg] = useState<string | null>(null);
   const [layerSaved, setLayerSaved] = useState(false);
+  const [loadingDemo, setLoadingDemo] = useState(false);
 
   const greeting = timeGreeting();
   const streak = wearStreak(history);
@@ -150,22 +154,26 @@ export function Home() {
   const WIcon = weather ? (WEATHER_ICON[weather.condition] ?? Cloud) : Cloud;
   const weatherNotice = !weather ? weatherUnavailableMessage(weatherUnavailable) : null;
 
+  const tryDemo = async () => {
+    setLoadingDemo(true);
+    try {
+      await loadDemoData();
+      await refresh();
+      navigate('/');
+    } finally {
+      setLoadingDemo(false);
+    }
+  };
+
   if (!collection.length) {
     return (
-      <div className="relative min-h-[80dvh] flex flex-col items-center justify-center px-6 text-center">
-        <MistBackground />
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
-          <div className="welcome-orb mx-auto mb-8" />
-          <p className="text-xs uppercase tracking-[0.2em] text-[var(--color-text-secondary)]">ScentCap</p>
-          <h1 className="text-3xl font-semibold tracking-tight mt-3">Your wardrobe awaits</h1>
-          <p className="text-[var(--color-text-secondary)] mt-4 max-w-sm mx-auto leading-relaxed">
-            Add the bottles you own. Every morning, ScentCap tells you exactly what to wear.
-          </p>
-          <Link to="/add" className="inline-block mt-8">
-            <Button size="lg" className="px-10">Add first bottle</Button>
-          </Link>
-        </motion.div>
-      </div>
+      <EmptyState
+        eyebrow="ScentCap"
+        title="Your wardrobe awaits"
+        description="Add the bottles you own. Every morning, ScentCap tells you exactly what to wear."
+        action={{ label: 'Add first bottle', to: '/add' }}
+        secondary={{ label: 'Try demo collection', onClick: tryDemo, loading: loadingDemo }}
+      />
     );
   }
 

@@ -3,7 +3,7 @@ import { Crown, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { usePro } from '@/context/ProContext';
-import { PRO_FEATURES, type ProFeature } from '@/lib/pro';
+import { PRO_FEATURES, LAUNCH_PREVIEW, type ProFeature } from '@/lib/pro';
 import {
   applyProEntitlement,
   IAP_UNAVAILABLE_MESSAGE,
@@ -79,10 +79,22 @@ export function PaywallModal() {
             <Crown size={24} className="text-[var(--color-accent)]" />
           </div>
           <div>
-            <h2 id="paywall-title" className="text-xl font-semibold">Upgrade to Pro</h2>
-            <p className="text-sm text-stone-400">Unlock the full fragrance OS</p>
+            <h2 id="paywall-title" className="text-xl font-semibold">
+              {LAUNCH_PREVIEW ? 'ScentCap Pro — coming soon' : 'Upgrade to Pro'}
+            </h2>
+            <p className="text-sm text-stone-400">
+              {LAUNCH_PREVIEW
+                ? 'Subscriptions launch with the App Store release'
+                : 'Unlock the full fragrance OS'}
+            </p>
           </div>
         </div>
+
+        {LAUNCH_PREVIEW && (
+          <p className="text-sm text-stone-300 bg-white/5 rounded-xl px-4 py-3 leading-relaxed">
+            During launch preview, every feature is free. Pro will add optional subscriptions for power users — same offline privacy, no cloud required.
+          </p>
+        )}
 
         {feature && (
           <p className="text-sm text-stone-300 bg-white/5 rounded-xl px-4 py-3">
@@ -106,7 +118,7 @@ export function PaywallModal() {
             <button
               key={plan.id}
               type="button"
-              disabled={busy}
+              disabled={busy || LAUNCH_PREVIEW}
               className={`rounded-xl border px-4 py-3 text-left transition-colors disabled:opacity-60 ${
                 plan.highlight
                   ? 'border-[var(--color-accent)] bg-[var(--color-accent-muted)]'
@@ -119,7 +131,9 @@ export function PaywallModal() {
                 <span className="font-semibold">{plan.label}</span>
                 <span className="text-[var(--color-accent)] font-medium">{plan.price}</span>
               </div>
-              <p className="text-xs text-stone-500 mt-0.5">{plan.detail}</p>
+              <p className="text-xs text-stone-500 mt-0.5">
+                {LAUNCH_PREVIEW ? 'Available after App Store launch' : plan.detail}
+              </p>
             </button>
           ))}
         </div>
@@ -130,7 +144,7 @@ export function PaywallModal() {
           </p>
         )}
 
-        <Button variant="ghost" size="sm" className="w-full" onClick={handleRestore} disabled={busy} data-testid="restore-purchases">
+        <Button variant="ghost" size="sm" className="w-full" onClick={handleRestore} disabled={busy || LAUNCH_PREVIEW} data-testid="restore-purchases">
           Restore purchases
         </Button>
 

@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import {
   FREE_BOTTLE_LIMIT,
+  LAUNCH_PREVIEW,
   type ProFeature,
   readProStatus,
   writeProStatus,
@@ -33,6 +34,7 @@ export function ProProvider({ children }: { children: React.ReactNode }) {
 
   const canAccessFeature = useCallback(
     (feature: ProFeature) => {
+      if (LAUNCH_PREVIEW) return true;
       if (feature === 'bottle_limit') return isPro || bottleCount < FREE_BOTTLE_LIMIT;
       return isPro;
     },
@@ -40,7 +42,7 @@ export function ProProvider({ children }: { children: React.ReactNode }) {
   );
 
   const canAddBottle = useCallback(
-    () => isPro || bottleCount < FREE_BOTTLE_LIMIT,
+    () => LAUNCH_PREVIEW || isPro || bottleCount < FREE_BOTTLE_LIMIT,
     [isPro, bottleCount],
   );
 
@@ -56,7 +58,7 @@ export function ProProvider({ children }: { children: React.ReactNode }) {
 
   const requestFeature = useCallback(
     (feature: ProFeature): boolean => {
-      if (isPro) return true;
+      if (LAUNCH_PREVIEW || isPro) return true;
       if (feature === 'bottle_limit') {
         if (bottleCount < FREE_BOTTLE_LIMIT) return true;
         openPaywall('bottle_limit');

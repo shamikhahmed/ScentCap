@@ -1,5 +1,8 @@
 export const FREE_BOTTLE_LIMIT = 12;
 
+/** All features free until App Store IAP ships. Set false to re-enable paywall. */
+export const LAUNCH_PREVIEW = true;
+
 export const PRO_STORAGE_KEY = 'scentcap_pro';
 
 export type ProFeature = 'analytics' | 'layering' | 'travel' | 'export' | 'bottle_limit';
