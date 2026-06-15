@@ -11,7 +11,7 @@ import { getDailyWeather, requestLocation } from '@/services/weather';
 import { LAUNCH_PREVIEW } from '@/lib/pro';
 
 export function SettingsPage() {
-  const { profile, prefs, setPrefs, setProfile, refresh } = useApp();
+  const { profile, prefs, setPrefs, setProfile, refresh, collection } = useApp();
   const { isPro, openPaywall, deactivatePro } = usePro();
   const navigate = useNavigate();
 
@@ -191,17 +191,20 @@ export function SettingsPage() {
               Reset demo data
             </Button>
           </>
+        ) : collection.length > 0 ? (
+          <p className="text-xs text-stone-500">Your wardrobe is saved on this device. Export a backup below before clearing site data. To explore sample data, use onboarding on a fresh install or add <code className="text-stone-400">?demo=1</code> on first visit.</p>
         ) : (
           <Button
             variant="outline"
             className="w-full"
             onClick={async () => {
+              if (!window.confirm('Load sample wardrobe? You can export your data anytime from Backup below.')) return;
               await loadDemoData();
               await refresh();
               navigate('/');
             }}
           >
-            Load demo wardrobe
+            Load sample wardrobe
           </Button>
         )}
       </Card>
