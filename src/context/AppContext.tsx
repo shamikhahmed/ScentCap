@@ -64,6 +64,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     document.body.classList.toggle('light', prefs.theme === 'light');
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', prefs.theme === 'light' ? '#fafaf9' : '#0c0a09');
   }, [prefs.theme]);
 
   const setProfile = useCallback(async (p: UserProfile) => {

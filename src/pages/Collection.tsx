@@ -84,6 +84,19 @@ export function CollectionPage() {
   const totalValue = collection.reduce((s, c) => s + (c.purchasePrice ?? 0), 0);
   const countLabel = tab === 'owned' ? collection.length : wishlist.length;
 
+  if (tab === 'owned' && !collection.length) {
+    return (
+      <div className="safe-pt px-5 py-6 max-w-2xl mx-auto">
+        <EmptyState
+          eyebrow="Wardrobe"
+          title="No bottles yet"
+          description="Search thousands of fragrances or add your own. Your collection stays on this device."
+          action={{ label: 'Add first bottle', to: '/add' }}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="safe-pt px-5 py-6 max-w-2xl mx-auto space-y-5">
       <div className="flex items-end justify-between">
@@ -183,12 +196,10 @@ export function CollectionPage() {
         </div>
       )}
 
-      {tab === 'owned' && !collection.length && (
+      {tab === 'owned' && collection.length > 0 && filteredOwned.length === 0 && (
         <EmptyState
-          eyebrow="Wardrobe"
-          title="No bottles yet"
-          description="Search thousands of fragrances or add your own. Your collection stays on this device."
-          action={{ label: 'Add first bottle', to: '/add' }}
+          title="No matches"
+          description="Try a different search or family filter."
         />
       )}
 

@@ -10,6 +10,10 @@ export function wearStreak(history: WearRecord[]): number {
   const days = new Set(history.map((h) => h.wornAt.slice(0, 10)));
   let streak = 0;
   const d = new Date();
+  const todayKey = d.toISOString().slice(0, 10);
+  if (!days.has(todayKey)) {
+    d.setDate(d.getDate() - 1);
+  }
   for (;;) {
     const key = d.toISOString().slice(0, 10);
     if (!days.has(key)) break;
@@ -17,6 +21,17 @@ export function wearStreak(history: WearRecord[]): number {
     d.setDate(d.getDate() - 1);
   }
   return streak;
+}
+
+/** Streak at risk when user hasn't logged today but had a streak yesterday. */
+export function streakAtRisk(history: WearRecord[]): boolean {
+  if (!history.length) return false;
+  const days = new Set(history.map((h) => h.wornAt.slice(0, 10)));
+  const today = new Date().toISOString().slice(0, 10);
+  if (days.has(today)) return false;
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  return days.has(yesterday.toISOString().slice(0, 10));
 }
 
 export function wearsThisMonth(history: WearRecord[]): number {

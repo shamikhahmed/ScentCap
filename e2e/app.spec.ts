@@ -49,7 +49,7 @@ test.describe('ScentCap PWA', () => {
     await page.getByRole('button', { name: 'Delete' }).click();
     await page.getByRole('button', { name: 'Delete' }).last().click();
     await expect(page).toHaveURL(/\/collection/, { timeout: 15_000 });
-    await expect(page.getByText(/0 bottles/i)).toBeVisible();
+    await expect(page.getByText(/No bottles yet/i)).toBeVisible();
   });
 
   test('travel kit persists trip name after reload', async ({ page }) => {

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { MapPin, Briefcase, Share2, Bookmark } from 'lucide-react';
@@ -16,6 +16,7 @@ import { FAMILY_COLORS } from '@/lib/stats';
 import { weatherUnavailableMessage } from '@/services/weather';
 import { advisorToShareInput, downloadBlob, exportShareCardPng, shareWearCard } from '@/lib/shareCard';
 import { saveAdvisorLayering } from '@/lib/layeringSave';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 const FIELDS: { key: keyof AdvisorInput; label: string; options: { v: string; l: string }[] }[] = [
   { key: 'timeOfDay', label: 'Time', options: [
@@ -51,6 +52,7 @@ export function AdvisorPage() {
   const [pendingWear, setPendingWear] = useState<{ id: string; collectionId: string; fragranceId: string; name: string; sprays: number; wornAt: string } | null>(null);
   const [shareMsg, setShareMsg] = useState<string | null>(null);
   const [layerSaved, setLayerSaved] = useState(false);
+  const presetRan = useRef(false);
 
   const run = async () => {
     if (!profile) return;
@@ -59,6 +61,26 @@ export function AdvisorPage() {
     setResult(r);
     setLoading(false);
   };
+
+  useEffect(() => {
+    if (!preset || presetRan.current || !collection.length || !profile) return;
+    presetRan.current = true;
+    run();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [preset, collection.length, profile]);
+
+  if (!collection.length) {
+    return (
+      <div className="safe-pt px-5 py-6 max-w-2xl mx-auto">
+        <EmptyState
+          eyebrow="Advisor"
+          title="Add bottles first"
+          description="The Scent Advisor needs at least one bottle in your wardrobe to recommend a match."
+          action={{ label: 'Add a bottle', to: '/add' }}
+        />
+      </div>
+    );
+  }
 
   const wear = async () => {
     if (!result || !profile) return;
