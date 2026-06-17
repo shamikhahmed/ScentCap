@@ -1,9 +1,10 @@
-import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
+import { Link, NavLink, Outlet } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Calendar, Droplets, Home, Layers, Plus, Settings, Sparkles, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { DemoBanner } from '@/components/layout/DemoBanner';
 import { AmbientBackground } from '@/components/premium/AmbientBackground';
+import { CapRouteTransition } from '@/components/premium/CapRouteTransition';
 import { Button } from '@/components/ui/button';
 import { hapticLight } from '@/lib/premium/haptics';
 
@@ -74,8 +75,6 @@ function MobileTab({ to, icon: Icon, label }: { to: string; icon: typeof Home; l
 }
 
 export function AppShell() {
-  const location = useLocation();
-
   return (
     <div className="min-h-dvh flex flex-col md:flex-row md:max-w-[1440px] md:mx-auto md:w-full relative">
       <AmbientBackground />
@@ -99,15 +98,9 @@ export function AppShell() {
       <main className="flex-1 overflow-y-auto pb-32 md:pb-10 md:px-6 lg:px-10 xl:px-12 w-full min-w-0 relative z-10">
         <div className="mx-auto w-full max-w-2xl lg:max-w-3xl xl:max-w-4xl">
           <DemoBanner />
-          <motion.div
-            key={location.pathname}
-            className="relative z-[1]"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.32, ease: [0.25, 0.46, 0.45, 0.94] }}
-          >
+          <CapRouteTransition className="relative z-[1]">
             <Outlet />
-          </motion.div>
+          </CapRouteTransition>
         </div>
       </main>
 

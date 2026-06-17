@@ -14,7 +14,7 @@
 html,body{width:100%;height:100%;background:var(--bg);color:var(--text);
   font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',system-ui,sans-serif;
   overflow:hidden;user-select:none}
-#mist-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.3}
+#cap-scene{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.3}
 #progress{position:fixed;top:0;left:0;height:3px;z-index:200;width:10%;
   background:linear-gradient(90deg,var(--amber),var(--gold));
   box-shadow:0 0 12px rgba(201,168,124,0.5);transition:width .5s}
@@ -89,9 +89,16 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);
   background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 @media(max-width:600px){.grid2,.grid3{grid-template-columns:1fr}.split{flex-direction:column}}
 </style>
+
+  <link rel="stylesheet" href="css/capricorn-core.css">
+  <script src="js/vendor/gsap.min.js"></script>
+  <script src="js/vendor/ScrollTrigger.min.js"></script>
+  <script src="js/capricorn-scene.js"></script>
+  <script src="js/capricorn-deck.js"></script>
 </head>
 <body>
-<canvas id="mist-canvas"></canvas>
+<div class="cap-scroll-progress" aria-hidden="true"></div>
+<canvas id="cap-scene" class="cap-scene-canvas cap-scene-canvas--subtle"></canvas>
 <div id="progress"></div>
 <button id="fullscreen-btn" title="Fullscreen" onclick="document.documentElement.requestFullscreen?.()">⛶</button>
 <div id="counter">1 / 10</div>
@@ -227,39 +234,6 @@ html,body{width:100%;height:100%;background:var(--bg);color:var(--text);
 
 </div>
 
-<script>
-const slides=[...document.querySelectorAll('.slide')];
-let idx=0;
-const total=slides.length;
-const progress=document.getElementById('progress');
-const counter=document.getElementById('counter');
-function show(i){
-  idx=Math.max(0,Math.min(total-1,i));
-  slides.forEach((s,j)=>s.classList.toggle('active',j===idx));
-  progress.style.width=((idx+1)/total*100)+'%';
-  counter.textContent=(idx+1)+' / '+total;
-}
-function next(){show(idx+1)}
-function prev(){show(idx-1)}
-document.addEventListener('keydown',e=>{
-  if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' ')next();
-  if(e.key==='ArrowLeft'||e.key==='PageUp')prev();
-});
-let tx=0;document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
-document.addEventListener('touchend',e=>{const dx=tx-e.changedTouches[0].clientX;if(Math.abs(dx)>50){if(dx>0)next();else prev()}},{passive:true});
-const c=document.getElementById('mist-canvas'),ctx=c.getContext('2d');
-function resize(){c.width=innerWidth;c.height=innerHeight}
-resize();addEventListener('resize',resize);
-(function draw(){
-  ctx.clearRect(0,0,c.width,c.height);
-  for(let i=0;i<40;i++){
-    const x=(Math.sin(Date.now()/3000+i)*.5+.5)*c.width;
-    const y=(Math.cos(Date.now()/4000+i*1.3)*.5+.5)*c.height;
-    ctx.beginPath();ctx.arc(x,y,2,0,Math.PI*2);
-    ctx.fillStyle='rgba(201,168,124,'+(0.1+Math.random()*0.15)+')';ctx.fill();
-  }
-  requestAnimationFrame(draw);
-})();
-</script>
+
 </body>
 </html>

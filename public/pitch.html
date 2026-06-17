@@ -68,8 +68,14 @@ h2{font-size:clamp(1.6rem,4.5vw,2.8rem);font-weight:800;letter-spacing:-.03em;ma
   background:rgba(201,168,124,.06);border:1px solid rgba(201,168,124,.2);font-weight:600;line-height:1.6}
 @media print{#nav-dots,#export-btn{display:none!important}.slide{page-break-after:always;min-height:100vh}.reveal,.reveal-left,.reveal-right{opacity:1!important;transform:none!important}}
 </style>
-</head>
+
+  <link rel="stylesheet" href="css/capricorn-core.css">
+  <script src="js/vendor/gsap.min.js"></script>
+  <script src="js/vendor/ScrollTrigger.min.js"></script>
+  <script src="js/capricorn-scene.js"></script>
+  </head>
 <body>
+<div class="cap-scroll-progress" aria-hidden="true"></div>
 <div id="nav-dots"></div>
 <button id="export-btn" onclick="window.print()">⬇ Export PDF</button>
 
@@ -244,5 +250,10 @@ const secObs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting&&e.
 slides.forEach(s=>secObs.observe(s));
 setTimeout(()=>document.querySelectorAll('#s1 .reveal').forEach(el=>el.classList.add('visible')),100);
 </script>
+
+  <script src="js/vendor/gsap.min.js"></script>
+  <script src="js/vendor/ScrollTrigger.min.js"></script>
+  <script src="js/capricorn-scene.js"></script>
+  <script src="js/capricorn-pitch.js"></script>
 </body>
 </html>
