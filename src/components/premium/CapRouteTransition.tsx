@@ -6,6 +6,21 @@ const reduced =
   typeof window !== 'undefined' &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+const WIDGET_SEL = [
+  '.cap-reveal',
+  '.cap-stagger > *',
+  '[data-cap-stagger]',
+  '.glass-premium',
+  '.glass-card',
+  '.stat-pill',
+  '.page-title',
+  '.page-sub',
+  '.section-label',
+  '.stat-row',
+  '.home-header',
+  '.home-hero',
+].join(', ');
+
 type CapRouteTransitionProps = {
   children: React.ReactNode;
   className?: string;
@@ -27,16 +42,33 @@ export function CapRouteTransition({ children, className }: CapRouteTransitionPr
     const ctx = gsap.context(() => {
       gsap.fromTo(
         el,
-        { opacity: 0, y: 18, scale: 0.992, filter: 'blur(6px)' },
-        { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: 0.48, ease: 'power3.out' },
+        { opacity: 0, y: 20, scale: 0.992, filter: 'blur(8px)', transformPerspective: 1200 },
+        { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: 0.52, ease: 'power3.out' },
       );
 
-      const stagger = el.querySelectorAll('.cap-reveal, .cap-stagger > *, [data-cap-stagger]');
-      if (stagger.length) {
+      const widgets = el.querySelectorAll(WIDGET_SEL);
+      if (widgets.length) {
         gsap.fromTo(
-          stagger,
-          { opacity: 0, y: 14 },
-          { opacity: 1, y: 0, duration: 0.42, stagger: 0.04, ease: 'power2.out', delay: 0.08 },
+          widgets,
+          {
+            opacity: 0,
+            y: 24,
+            rotateX: 12,
+            scale: 0.96,
+            transformPerspective: 1000,
+            transformOrigin: '50% 85%',
+          },
+          {
+            opacity: 1,
+            y: 0,
+            rotateX: 0,
+            scale: 1,
+            duration: 0.55,
+            stagger: { amount: 0.42, from: 'start' },
+            ease: 'power3.out',
+            delay: 0.06,
+            clearProps: 'transform',
+          },
         );
       }
     }, el);
@@ -45,7 +77,7 @@ export function CapRouteTransition({ children, className }: CapRouteTransitionPr
   }, [location.pathname]);
 
   return (
-    <div ref={ref} className={className}>
+    <div ref={ref} className={className} data-cap-dashboard>
       {children}
     </div>
   );
