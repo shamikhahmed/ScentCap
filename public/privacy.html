@@ -18,8 +18,11 @@ ul{margin:8px 0 16px 20px}
 code{background:rgba(255,255,255,.06);padding:2px 6px;border-radius:4px;font-size:.9em}
 footer{margin-top:40px;padding-top:20px;border-top:1px solid rgba(255,255,255,.08);font-size:13px;color:#a89888}
 </style>
+
+  <link rel="stylesheet" href="../css/capricorn-core.css">
 </head>
 <body>
+<div class="cap-scroll-progress" aria-hidden="true"></div>
 <nav>
   <a href="landing.html">← ScentCap</a>
   <a href="index.html">App</a>
@@ -59,5 +62,14 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid rgba(255,255,255,.0
 <p>Built by Shamikh Ahmed — <a href="support.html">Support</a> · <a href="terms.html">Terms</a> · <a href="https://github.com/shamikhahmed/ScentCap">GitHub</a></p>
 </article>
 <footer>© 2026 Shamikh Ahmed · <a href="support.html">Support</a> · <a href="terms.html">Terms</a> · <a href="https://github.com/shamikhahmed/ScentCap">GitHub</a></footer>
+
+  <canvas id="cap-scene" class="cap-scene-canvas cap-scene-canvas--subtle" aria-hidden="true"></canvas>
+
+  <script src="../js/vendor/gsap.min.js"></script>
+  <script src="../js/vendor/ScrollTrigger.min.js"></script>
+  <script src="../js/capricorn-scene.js"></script>
+  <script src="../js/capricorn-motion.js"></script>
+  <script src="../js/capricorn-cinematic.js"></script>
+  <script>document.addEventListener('DOMContentLoaded',function(){if(window.CapCinematic)CapCinematic.init({canvas:'#cap-scene'});});</script>
 </body>
 </html>
