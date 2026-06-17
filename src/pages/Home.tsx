@@ -1,18 +1,21 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  Cloud, Droplets, Flame, Layers, Sparkles, Sun, Wind, ChevronRight, Check, MapPin, Share2, Briefcase, AlertCircle, Bookmark,
+  Cloud, Droplets, Flame, Layers, Sparkles, Sun, Wind, ChevronRight, MapPin, Briefcase, AlertCircle,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { PressableLink } from '@/components/ui/PressableScale';
+import { LoadingCard } from '@/components/ui/LoadingCard';
+import { HOME_LOADING_MESSAGES } from '@/components/ui/CyclingShimmerText';
 import { useApp } from '@/context/AppContext';
-import { runAdvisor, defaultAdvisorInput } from '@/engines/advisor';
-import { getFragrance, logWear, updateWearRecord } from '@/db';
-import type { AdvisorResult, Fragrance } from '@/types';
+import { runAdvisor } from '@/engines/advisor';
+import { getFragrance, getPhoto, logWear, updateWearRecord } from '@/db';
+import type { AdvisorInput, AdvisorResult, Fragrance } from '@/types';
 import { WearRatingModal } from '@/components/ui/WearRatingModal';
-import { BottleVisual } from '@/components/ui/BottleVisual';
-import { MistBackground } from '@/components/home/MistBackground';
-import { ScoreRing } from '@/components/home/ScoreRing';
+import { HeroPick } from '@/components/premium/HeroPick';
+import { FragranceThumb } from '@/components/collection/FragranceThumb';
+import { StatPill } from '@/components/premium/StatPill';
+import { GlassCard } from '@/components/premium/GlassCard';
 import { timeGreeting, scentMood } from '@/lib/greetings';
 import { FAMILY_COLORS, rotationHealth, wearStreak, wearsThisMonth, daysSinceWear } from '@/lib/stats';
 import { weatherUnavailableMessage } from '@/services/weather';
@@ -21,13 +24,15 @@ import { advisorToShareInput, downloadBlob, exportShareCardPng, shareWearCard } 
 import { saveAdvisorLayering } from '@/lib/layeringSave';
 import { loadDemoData } from '@/services/demo';
 import { EmptyState } from '@/components/ui/EmptyState';
-
-const PRESETS = [
-  { label: 'Office', icon: '💼', occasion: 'work' as const, dress: 'professional' as const, vibe: 'subtle' as const },
-  { label: 'Date', icon: '🌹', occasion: 'date' as const, dress: 'smart_casual' as const, vibe: 'romantic' as const },
-  { label: 'Weekend', icon: '☕', occasion: 'casual' as const, dress: 'casual' as const, vibe: 'confident' as const },
-  { label: 'Gala', icon: '✨', occasion: 'event' as const, dress: 'formal' as const, vibe: 'bold' as const },
-];
+import { hapticSuccess, hapticLight } from '@/lib/premium/haptics';
+import { enrichFragranceImages, hydrateAdvisorResult, enrichFragranceOnce } from '@/services/seed';
+import {
+  MOOD_PRESETS,
+  initialAdvisorInput,
+  advisorInputFromPreset,
+  moodLabel,
+  type MoodPreset,
+} from '@/lib/advisorPresets';
 
 const WEATHER_ICON: Record<string, typeof Sun> = {
   hot: Sun, clear: Sun, cold: Wind, rain: Cloud, cloudy: Cloud, windy: Wind, snow: Cloud,
@@ -37,6 +42,8 @@ export function Home() {
   const { profile, prefs, collection, history, weather, weatherUnavailable, refresh } = useApp();
   const navigate = useNavigate();
   const [result, setResult] = useState<AdvisorResult | null>(null);
+  const [advisorInput, setAdvisorInput] = useState<AdvisorInput>(() => initialAdvisorInput());
+  const [activePresetId, setActivePresetId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [logged, setLogged] = useState(false);
   const [ratingOpen, setRatingOpen] = useState(false);
@@ -45,6 +52,8 @@ export function Home() {
   const [shareMsg, setShareMsg] = useState<string | null>(null);
   const [layerSaved, setLayerSaved] = useState(false);
   const [loadingDemo, setLoadingDemo] = useState(false);
+  const [heroPhotoUrl, setHeroPhotoUrl] = useState<string | null>(null);
+  const [wearRatingImage, setWearRatingImage] = useState<string | null>(null);
 
   const greeting = timeGreeting();
   const streak = wearStreak(history);
@@ -53,21 +62,79 @@ export function Home() {
   const mood = scentMood(weather);
   const rotationLow = rotation < 50 && collection.length >= 3;
 
-  useEffect(() => {
-    (async () => {
-      if (!profile || !collection.length) {
-        setLoading(false);
-        return;
-      }
-      const input = defaultAdvisorInput();
-      if (profile.workContext === 'office') {
-        input.occasion = 'work';
-        input.dressLevel = 'professional';
-      }
-      setResult(await runAdvisor(collection, input, profile, prefs, weather, history));
-      setLoading(false);
-    })();
+  const runPick = useCallback(async (input: AdvisorInput) => {
+    if (!profile || !collection.length) return;
+    setLoading(true);
+    setLogged(false);
+    setLayerSaved(false);
+    setShareMsg(null);
+    const raw = await runAdvisor(collection, input, profile, prefs, weather, history);
+    setLoading(false);
+    if (!raw) {
+      setResult(null);
+      return;
+    }
+    setResult(raw);
+    void hydrateAdvisorResult(raw).then(setResult);
   }, [profile, collection, prefs, weather, history]);
+
+  useEffect(() => {
+    if (!profile || !collection.length) {
+      setLoading(false);
+      return;
+    }
+    const input = initialAdvisorInput(profile);
+    setAdvisorInput(input);
+    setActivePresetId(null);
+    void runPick(input);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- re-run on wardrobe/weather, not every wear log
+  }, [profile, collection, prefs, weather]);
+
+  const applyPreset = (preset: MoodPreset) => {
+    hapticLight();
+    const input = advisorInputFromPreset(preset);
+    setAdvisorInput(input);
+    setActivePresetId(preset.id);
+    void runPick(input);
+  };
+
+  useEffect(() => {
+    void enrichFragranceImages(collection.map((c) => c.fragranceId));
+  }, [collection]);
+
+  useEffect(() => {
+    if (!result || (result.primary.fragrance.image && !result.primary.fragrance.image.includes('perfume-nobg'))) return;
+    void enrichFragranceOnce(result.primary.fragrance).then((primary) => {
+      if (primary.image && primary.image !== result.primary.fragrance.image) {
+        setResult((prev) =>
+          prev ? { ...prev, primary: { ...prev.primary, fragrance: primary } } : prev,
+        );
+      }
+    });
+  }, [result?.primary.fragrance.id, result?.primary.fragrance.image]);
+
+  useEffect(() => {
+    if (!result) {
+      setHeroPhotoUrl(null);
+      return;
+    }
+    let objectUrl: string | undefined;
+    (async () => {
+      const colItem = collection.find((c) => c.id === result.primary.collectionId);
+      if (colItem?.photoBlobId) {
+        const blob = await getPhoto(colItem.photoBlobId);
+        if (blob) {
+          objectUrl = URL.createObjectURL(blob);
+          setHeroPhotoUrl(objectUrl);
+          return;
+        }
+      }
+      setHeroPhotoUrl(null);
+    })();
+    return () => {
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [result, collection]);
 
   const neglected = useMemo(() =>
     collection
@@ -79,7 +146,8 @@ export function Home() {
   useEffect(() => {
     Promise.all(
       neglected.map(async ({ c, days }) => {
-        const f = await getFragrance(c.fragranceId);
+        let f = await getFragrance(c.fragranceId);
+        if (f && !f.image) f = await enrichFragranceOnce(f);
         return f ? { id: c.id, f, days } : null;
       }),
     ).then((rows) => setNeglectedDetails(rows.filter(Boolean) as { id: string; f: Fragrance; days: number | null }[]));
@@ -97,12 +165,15 @@ export function Home() {
       sprays: result.spray.totalSprays,
     });
     await refresh();
+    hapticSuccess();
     setLogged(true);
+    void runPick(advisorInput);
     setPendingWear({
       id: wearId,
       name: `${result.primary.fragrance.brand} ${result.primary.fragrance.name}`,
       wornAt,
     });
+    setWearRatingImage(result.primary.fragrance.image ?? null);
     setRatingOpen(true);
     setTimeout(() => setLogged(false), 2500);
   };
@@ -126,6 +197,7 @@ export function Home() {
   const saveLayering = async () => {
     if (!result?.layering) return;
     await saveAdvisorLayering(result);
+    hapticSuccess();
     setLayerSaved(true);
     setTimeout(() => setLayerSaved(false), 2500);
   };
@@ -178,170 +250,133 @@ export function Home() {
   }
 
   return (
-    <div className="relative pb-8">
-      <MistBackground />
-
-      {/* Hero welcome */}
-      <section className="safe-pt px-5 md:px-0 pt-4 pb-2">
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <p className="text-sm text-[var(--color-text-secondary)] flex items-center gap-2">
-                  <span>{greeting.emoji}</span>
-                  {greeting.line}{profile?.gender === 'man' ? ', sir' : profile?.gender === 'woman' ? '' : ''}
-                </p>
-                {prefs.officeSafeMode && (
-                  <span className="office-safe-badge" title="Office-safe mode is on">
-                    <Briefcase size={12} />
-                    Office Safe
-                  </span>
-                )}
-              </div>
-              <h1 className="text-[1.75rem] md:text-3xl font-semibold tracking-tight mt-1 leading-tight">
-                {mood}
-              </h1>
-            </div>
-            {weather && (
-              <div className="weather-orb shrink-0">
-                <WIcon size={18} className="text-[var(--color-accent)]" />
-                <span className="text-base font-semibold tabular-nums">{Math.round(weather.tempC)}°</span>
-              </div>
+    <div className="relative pb-10">
+      <section className="safe-pt px-5 md:px-0 pt-5 pb-1">
+        <div className="flex items-start justify-between gap-4">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+            <p className="text-subhead text-[var(--color-text-secondary)] flex items-center gap-2">
+              <span>{greeting.emoji}</span>
+              {greeting.line}
+            </p>
+            <h1 className="text-display mt-1.5">{mood}</h1>
+            {prefs.officeSafeMode && (
+              <span className="inline-flex items-center gap-1.5 mt-3 text-caption text-[var(--color-accent)] bg-[var(--color-accent-muted)] px-2.5 py-1 rounded-full">
+                <Briefcase size={11} /> Office Safe
+              </span>
             )}
-          </div>
-        </motion.div>
+          </motion.div>
+          {weather && (
+            <motion.div
+              className="weather-chip-premium shrink-0"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1 }}
+            >
+              <WIcon size={18} className="text-[var(--color-accent)]" strokeWidth={2} />
+              <span className="text-base font-semibold tabular-nums tracking-tight">{Math.round(weather.tempC)}°</span>
+            </motion.div>
+          )}
+        </div>
       </section>
 
-      {/* Rotation health alert */}
       {rotationLow && (
-        <section className="px-5 md:px-0 mt-3">
-          <div className="rotation-banner rotation-banner--low rounded-xl px-4 py-3 flex items-start gap-3">
+        <section className="px-5 md:px-0 mt-4">
+          <GlassCard className="flex items-start gap-3 !p-4 border-orange-500/20" glow="rgba(255,159,10,0.12)">
             <AlertCircle size={18} className="text-orange-400 shrink-0 mt-0.5" />
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium">Rotation at {rotation}%</p>
-              <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">
-                {collection.length - Math.round((rotation / 100) * collection.length)} bottles haven&apos;t been worn yet. Try a neglected pick below.
+              <p className="text-headline text-sm">Rotation at {rotation}%</p>
+              <p className="text-xs text-[var(--color-text-secondary)] mt-1 leading-relaxed">
+                Try a neglected bottle below — {collection.length - Math.round((rotation / 100) * collection.length)} haven&apos;t been worn yet.
               </p>
             </div>
-            <Link to="/collection" className="text-xs text-[var(--color-accent)] font-medium shrink-0">
-              View all
-            </Link>
-          </div>
+            <PressableLink to="/collection" className="text-xs text-[var(--color-accent)] font-semibold shrink-0">
+              View
+            </PressableLink>
+          </GlassCard>
         </section>
       )}
 
-      {/* Stats strip */}
-      <motion.div
-        className="px-5 md:px-0 flex gap-2 overflow-x-auto py-4 scrollbar-none"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.1, duration: 0.25 }}
-      >
-        <StatChip icon={<Droplets size={14} />} label="Bottles" value={String(collection.length)} />
-        <StatChip icon={<Flame size={14} />} label="Streak" value={`${streak}d`} accent={streak > 0} />
-        <StatChip icon={<Sparkles size={14} />} label="This month" value={String(monthWears)} />
-        <StatChip
-          icon={<Layers size={14} />}
-          label="Rotation"
-          value={`${rotation}%`}
-          warn={rotationLow}
-          good={rotation >= 70}
-        />
-      </motion.div>
+      <div className="px-5 md:px-0 flex gap-2.5 overflow-x-auto py-5 scrollbar-none">
+        <StatPill icon={<Droplets size={15} strokeWidth={2} />} label="Bottles" value={String(collection.length)} to="/collection" delay={0.05} />
+        <StatPill icon={<Flame size={15} strokeWidth={2} />} label="Streak" value={`${streak}d`} tone={streak > 0 ? 'hot' : 'default'} to="/calendar" delay={0.1} />
+        <StatPill icon={<Sparkles size={15} strokeWidth={2} />} label="Month" value={String(monthWears)} to="/calendar" delay={0.15} />
+        <StatPill icon={<Layers size={15} strokeWidth={2} />} label="Rotation" value={`${rotation}%`} tone={rotationLow ? 'warn' : rotation >= 70 ? 'good' : 'default'} to="/analytics" delay={0.2} />
+      </div>
 
-      {/* Today's pick — hero card */}
+      <section className="px-5 md:px-0 mt-4">
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-caption text-[var(--color-text-tertiary)]">One-tap mood</p>
+          {activePresetId && (
+            <span className="text-[11px] font-semibold text-[var(--color-accent)]">
+              {moodLabel(advisorInput)} · re-scored
+            </span>
+          )}
+        </div>
+        <div className="grid grid-cols-4 gap-2.5">
+          {MOOD_PRESETS.map((p) => (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => applyPreset(p)}
+              className={`tile-premium flex flex-col items-center gap-2 !py-4 text-center pressable transition-all ${
+                activePresetId === p.id ? 'ring-2 ring-[var(--color-accent)]/60 bg-[var(--color-accent-muted)]/30' : ''
+              }`}
+            >
+              <span className="text-2xl">{p.icon}</span>
+              <span className="text-[11px] font-semibold text-[var(--color-text-secondary)]">{p.label}</span>
+            </button>
+          ))}
+        </div>
+      </section>
+
       <section className="px-5 md:px-0">
         {loading ? (
-          <div className="hero-pick-card animate-pulse h-56 rounded-2xl" />
+          <LoadingCard messages={HOME_LOADING_MESSAGES} />
         ) : result ? (
-          <motion.div
-            className="hero-pick-card relative overflow-hidden rounded-2xl p-6 md:p-8"
-            style={{ '--aura': familyColor } as React.CSSProperties}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, ease: 'easeOut' }}
-          >
-            <div className="hero-pick-accent" />
-            <div className="relative z-10 flex gap-5 items-start">
-              <div className="hidden sm:block shrink-0 pt-1">
-                <BottleVisual
-                  brand={result.primary.fragrance.brand}
-                  name={result.primary.fragrance.name}
-                  family={result.primary.fragrance.family}
-                  size="md"
-                />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[10px] uppercase tracking-[0.2em] text-[var(--color-text-tertiary)]">Today&apos;s scent</p>
-                <h2 className="text-2xl md:text-3xl font-semibold mt-2 truncate">{result.primary.fragrance.brand}</h2>
-                <p className="text-lg text-[var(--color-text-secondary)] truncate">{result.primary.fragrance.name}</p>
-                <div className="flex flex-wrap gap-2 mt-4">
-                  <span className="tag-pill">{result.primary.fragrance.concentration}</span>
-                  <span className="tag-pill">{result.primary.fragrance.family}</span>
-                  <span className="tag-pill">{result.spray.totalSprays} sprays</span>
-                </div>
-                <p className="text-sm text-[var(--color-text-secondary)] mt-4 line-clamp-2">{result.reasoning[0]}</p>
-                {result.layering && (
-                  <div className="mt-2 flex flex-wrap items-center gap-2">
-                    <p className="text-xs text-[var(--color-accent)] flex items-center gap-1">
-                      <Layers size={12} /> Layer with {result.layering.secondary.name}
-                    </p>
-                    <button
-                      type="button"
-                      onClick={saveLayering}
-                      className="text-xs font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] flex items-center gap-1 transition-colors"
-                    >
-                      <Bookmark size={12} />
-                      {layerSaved ? 'Saved!' : 'Save to Layering Lab'}
-                    </button>
-                  </div>
-                )}
-              </div>
-              <ScoreRing score={result.fragranceScore} color={familyColor} size={88} />
-            </div>
-            <div className="relative z-10 flex gap-3 mt-6">
-              <Button className="flex-1" onClick={wearToday} disabled={logged}>
-                {logged ? <><Check size={16} /> Logged</> : 'Wear this today'}
-              </Button>
-              <Button variant="ghost" className="px-4" onClick={shareToday} aria-label="Share today's pick">
-                <Share2 size={16} />
-              </Button>
-              <Link to="/advisor" className="flex-1">
-                <Button variant="ghost" className="w-full">
-                  <Sparkles size={16} /> Customize
-                </Button>
-              </Link>
-            </div>
-            {shareMsg && <p className="relative z-10 text-center text-xs text-[var(--color-accent)] mt-2">{shareMsg}</p>}
-          </motion.div>
+          <HeroPick
+            result={result}
+            familyColor={familyColor}
+            logged={logged}
+            layerSaved={layerSaved}
+            shareMsg={shareMsg}
+            photoUrl={heroPhotoUrl}
+            moodLabel={moodLabel(advisorInput)}
+            onWear={wearToday}
+            onShare={shareToday}
+            onSaveLayer={saveLayering}
+          />
         ) : (
-          <div className="hero-pick-card rounded-2xl p-6 text-center">
-            <p className="text-sm font-medium">No match for today&apos;s filters</p>
-            <p className="text-sm text-[var(--color-text-secondary)] mt-2">
-              {prefs.officeSafeMode
-                ? 'Office Safe is on — try turning it off in Settings or customize in Advisor.'
-                : 'Open Advisor to customize occasion and vibe.'}
+          <GlassCard className="text-center !py-10">
+            <p className="text-headline">No match today</p>
+            <p className="text-subhead text-[var(--color-text-secondary)] mt-2 max-w-xs mx-auto">
+              {prefs.officeSafeMode ? 'Office Safe may be limiting picks.' : 'Customize occasion and vibe in Advisor.'}
             </p>
-            <Link to="/advisor" className="inline-block mt-4">
-              <Button variant="outline">Open Advisor</Button>
-            </Link>
-          </div>
+            <PressableLink to="/advisor" className="inline-flex mt-6 btn-glow text-white rounded-2xl px-8 py-3.5 font-semibold text-sm">
+              Open Advisor
+            </PressableLink>
+          </GlassCard>
         )}
 
         {result && result.backups.length > 0 && (
-          <div className="mt-4 space-y-2">
-            <p className="text-xs uppercase tracking-wider text-[var(--color-text-tertiary)]">Backup picks</p>
-            <div className="flex gap-2 overflow-x-auto scrollbar-none pb-1">
+          <div className="mt-5">
+            <p className="text-caption text-[var(--color-text-tertiary)] mb-2.5 px-0.5">Backup picks</p>
+            <div className="flex gap-2.5 overflow-x-auto scrollbar-none pb-1">
               {result.backups.slice(0, 3).map((b) => (
-                <Link
-                  key={b.collectionId}
-                  to={`/fragrance/${b.collectionId}`}
-                  className="shrink-0 surface-card rounded-xl px-4 py-3 min-w-[140px]"
-                >
-                  <p className="text-[10px] text-[var(--color-text-tertiary)] truncate">{b.fragrance.brand}</p>
-                  <p className="text-sm font-medium truncate">{b.fragrance.name}</p>
-                  <p className="text-[10px] text-[var(--color-accent)] mt-1">{Math.round(b.score)}% match</p>
-                </Link>
+                <PressableLink key={b.collectionId} to={`/fragrance/${b.collectionId}`} className="shrink-0 min-w-[148px]">
+                  <div className="tile-premium !py-3 !px-4">
+                    <FragranceThumb
+                      brand={b.fragrance.brand}
+                      name={b.fragrance.name}
+                      family={b.fragrance.family}
+                      catalogImage={b.fragrance.image}
+                      size="sm"
+                      className="mb-2.5 w-full"
+                    />
+                    <p className="text-[10px] text-[var(--color-text-tertiary)] truncate">{b.fragrance.brand}</p>
+                    <p className="text-sm font-semibold truncate tracking-tight">{b.fragrance.name}</p>
+                    <p className="text-xs font-semibold text-[var(--color-accent)] mt-1.5">{Math.round(b.score)}% match</p>
+                  </div>
+                </PressableLink>
               ))}
             </div>
           </div>
@@ -351,154 +386,164 @@ export function Home() {
       <WearRatingModal
         open={ratingOpen}
         fragranceName={pendingWear?.name ?? ''}
+        catalogImage={wearRatingImage}
         onSubmit={saveRating}
-        onSkip={() => { setRatingOpen(false); setPendingWear(null); }}
+        onSkip={() => { setRatingOpen(false); setPendingWear(null); setWearRatingImage(null); }}
       />
 
-      {/* Neglected bottles — moved up for visibility */}
       {neglectedDetails.length > 0 && (
-        <section className="mt-6">
-          <div className="px-5 md:px-0 flex items-center justify-between mb-3">
+        <section className="mt-8">
+          <div className="px-5 md:px-0 flex items-end justify-between mb-3">
             <div>
-              <p className="text-xs uppercase tracking-wider text-[var(--color-text-tertiary)]">Needs attention</p>
-              <p className="text-sm text-[var(--color-text-secondary)] mt-0.5">
-                {neglectedDetails.length} bottle{neglectedDetails.length !== 1 ? 's' : ''} not worn in 3+ weeks
+              <p className="text-caption text-[var(--color-text-tertiary)]">Needs attention</p>
+              <p className="text-subhead text-[var(--color-text-secondary)] mt-1">
+                {neglectedDetails.length} not worn in 3+ weeks
               </p>
             </div>
-            <Link to="/collection" className="text-xs text-[var(--color-accent)] flex items-center gap-0.5">
+            <PressableLink to="/collection" className="text-xs text-[var(--color-accent)] font-semibold flex items-center gap-0.5">
               All <ChevronRight size={14} />
-            </Link>
+            </PressableLink>
           </div>
           <div className="flex gap-3 overflow-x-auto px-5 md:px-0 pb-2 scrollbar-none">
-            {neglectedDetails.map((n) => (
-              <Link key={n.id} to={`/fragrance/${n.id}`} className="neglected-card block w-[148px] rounded-xl p-4 shrink-0">
-                <div
-                  className="w-10 h-10 rounded-lg mb-3"
-                  style={{ background: `linear-gradient(135deg, ${FAMILY_COLORS[n.f.family] ?? '#0a84ff'}33, transparent)` }}
-                />
-                <p className="text-[10px] text-[var(--color-text-tertiary)] truncate">{n.f.brand}</p>
-                <p className="text-sm font-medium truncate">{n.f.name}</p>
-                <p className="text-[11px] font-medium text-orange-400 mt-2">
-                  {n.days === null ? 'Never worn' : `${n.days} days ago`}
-                </p>
-              </Link>
+            {neglectedDetails.map((n, i) => (
+              <PressableLink key={n.id} to={`/fragrance/${n.id}`} className="shrink-0 w-[156px]">
+                <motion.div
+                  className="tile-premium h-full"
+                  initial={{ opacity: 0, x: 12 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                >
+                  <FragranceThumb
+                    brand={n.f.brand}
+                    name={n.f.name}
+                    family={n.f.family}
+                    catalogImage={n.f.image}
+                    size="sm"
+                    className="mb-3 w-full"
+                  />
+                  <p className="text-[10px] text-[var(--color-text-tertiary)] truncate">{n.f.brand}</p>
+                  <p className="text-sm font-semibold truncate tracking-tight">{n.f.name}</p>
+                  <p className="text-[11px] font-semibold text-orange-400 mt-2">
+                    {n.days === null ? 'Never worn' : `${n.days}d ago`}
+                  </p>
+                </motion.div>
+              </PressableLink>
             ))}
           </div>
         </section>
       )}
 
-      {/* Quick presets */}
-      <section className="px-5 md:px-0 mt-8">
-        <p className="text-xs uppercase tracking-wider text-[var(--color-text-tertiary)] mb-3">One tap mood</p>
-        <div className="grid grid-cols-4 gap-2">
-          {PRESETS.map((p) => (
-            <Link
-              key={p.label}
-              to="/advisor"
-              state={p}
-              className="preset-tile flex flex-col items-center gap-1.5 rounded-xl py-4 text-center"
-            >
-              <span className="text-xl">{p.icon}</span>
-              <span className="text-[11px] font-medium text-[var(--color-text-secondary)]">{p.label}</span>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* Weather detail */}
       {weather ? (
-        <section className="px-5 md:px-0 mt-6">
-          <div className="surface-card rounded-xl p-4 flex items-center gap-4">
-            <div className="w-11 h-11 rounded-xl bg-[var(--color-accent-muted)] flex items-center justify-center">
-              <WIcon className="text-[var(--color-accent)]" size={20} />
-            </div>
-            <div className="flex-1">
-              <p className="font-medium capitalize">{weather.condition} · {profile?.cityLabel ?? 'Local'}</p>
-              <p className="text-sm text-[var(--color-text-secondary)]">
-                {weather.tempC}°C · {weather.humidity}% humidity · wind {Math.round(weather.windKmh)} km/h
-              </p>
-            </div>
-            <Link to="/layering" className="text-[var(--color-accent)] text-sm font-medium">Layer lab</Link>
-          </div>
-        </section>
-      ) : weatherNotice ? (
-        <section className="px-5 md:px-0 mt-6">
-          <div className="surface-card rounded-xl p-4 flex items-start gap-3">
-            <div className="w-10 h-10 rounded-lg bg-[var(--color-surface-elevated)] flex items-center justify-center shrink-0">
-              <MapPin className="text-[var(--color-text-secondary)]" size={18} />
+        <section className="px-5 md:px-0 mt-8">
+          <GlassCard className="flex items-center gap-4 !p-4">
+            <div className="w-12 h-12 rounded-2xl bg-[var(--color-accent-muted)] flex items-center justify-center shrink-0">
+              <WIcon className="text-[var(--color-accent)]" size={22} strokeWidth={2} />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium">Weather unavailable</p>
-              <p className="text-sm text-[var(--color-text-secondary)] mt-1 leading-relaxed">{weatherNotice}</p>
-              <Link to="/settings" className="inline-block text-[var(--color-accent)] text-sm font-medium mt-2">
-                Open Settings
-              </Link>
+              <p className="font-semibold capitalize tracking-tight">{weather.condition}</p>
+              <p className="text-sm text-[var(--color-text-secondary)] mt-0.5">
+                {profile?.cityLabel ?? 'Local'} · {weather.tempC}° · {weather.humidity}% humidity
+              </p>
             </div>
-          </div>
+            <PressableLink to="/layering" className="text-[var(--color-accent)] text-sm font-semibold shrink-0">Layer</PressableLink>
+          </GlassCard>
+        </section>
+      ) : weatherNotice ? (
+        <section className="px-5 md:px-0 mt-8">
+          <GlassCard className="flex items-start gap-3 !p-4">
+            <MapPin className="text-[var(--color-text-secondary)] shrink-0 mt-0.5" size={18} />
+            <div className="flex-1 min-w-0">
+              <p className="text-headline text-sm">Weather unavailable</p>
+              <p className="text-sm text-[var(--color-text-secondary)] mt-1 leading-relaxed">{weatherNotice}</p>
+              <PressableLink to="/settings" className="inline-block text-[var(--color-accent)] text-sm font-semibold mt-2">
+                Add your city in Settings
+              </PressableLink>
+            </div>
+          </GlassCard>
         </section>
       ) : null}
 
-      {/* Recent wears */}
       {history.length > 0 && (
-        <section className="px-5 md:px-0 mt-8">
-          <p className="text-xs uppercase tracking-wider text-[var(--color-text-tertiary)] mb-3">Recent wears</p>
-          <RecentWears history={history.slice(-4).reverse()} />
+        <section className="px-5 md:px-0 mt-10">
+          <p className="text-caption text-[var(--color-text-tertiary)] mb-3">Recent wears</p>
+          <RecentWears history={history.slice(-4).reverse()} collection={collection} />
         </section>
       )}
 
-      {/* Explore row */}
       <section className="px-5 md:px-0 mt-8 grid grid-cols-2 gap-3">
-        <Link to="/analytics" className="explore-tile rounded-xl p-4">
-          <p className="text-sm font-medium">Analytics</p>
-          <p className="text-xs text-[var(--color-text-tertiary)] mt-1">Value & rotation</p>
-        </Link>
-        <Link to="/calendar" className="explore-tile rounded-xl p-4">
-          <p className="text-sm font-medium">Calendar</p>
-          <p className="text-xs text-[var(--color-text-tertiary)] mt-1">Wear patterns</p>
-        </Link>
+        <PressableLink to="/analytics">
+          <div className="tile-premium h-full">
+            <p className="text-headline text-sm">Analytics</p>
+            <p className="text-xs text-[var(--color-text-tertiary)] mt-1">Value & rotation</p>
+          </div>
+        </PressableLink>
+        <PressableLink to="/calendar">
+          <div className="tile-premium h-full">
+            <p className="text-headline text-sm">Calendar</p>
+            <p className="text-xs text-[var(--color-text-tertiary)] mt-1">Wear patterns</p>
+          </div>
+        </PressableLink>
       </section>
     </div>
   );
 }
 
-function StatChip({
-  icon, label, value, accent, warn, good,
+function RecentWears({
+  history,
+  collection,
 }: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  accent?: boolean;
-  warn?: boolean;
-  good?: boolean;
+  history: { id: string; fragranceId: string; wornAt: string }[];
+  collection: { id: string; fragranceId: string }[];
 }) {
-  const variant = warn ? 'stat-chip--warn' : good ? 'stat-chip--good' : accent ? 'stat-chip--hot' : '';
-  return (
-    <div className={`stat-chip shrink-0 rounded-xl px-4 py-3 min-w-[96px] ${variant}`}>
-      <div className="flex items-center gap-1.5 text-[var(--color-text-tertiary)] text-[10px] uppercase tracking-wider">{icon}{label}</div>
-      <p className="text-xl font-semibold mt-1 tabular-nums">{value}</p>
-    </div>
-  );
-}
+  const [rows, setRows] = useState<{ id: string; name: string; wornAt: string; collectionId?: string; f?: Fragrance }[]>([]);
 
-function RecentWears({ history }: { history: { id: string; fragranceId: string; wornAt: string }[] }) {
-  const [names, setNames] = useState<Record<string, string>>({});
   useEffect(() => {
     Promise.all(history.map(async (h) => {
       const f = await getFragrance(h.fragranceId);
-      return [h.id, f ? `${f.brand} ${f.name}` : '…'] as const;
-    })).then((pairs) => setNames(Object.fromEntries(pairs)));
-  }, [history]);
+      const c = collection.find((x) => x.fragranceId === h.fragranceId);
+      return {
+        id: h.id,
+        name: f ? `${f.brand} ${f.name}` : '…',
+        wornAt: h.wornAt,
+        collectionId: c?.id,
+        f,
+      };
+    })).then(setRows);
+  }, [history, collection]);
 
   return (
     <div className="space-y-2">
-      {history.map((h) => (
-        <div key={h.id} className="flex justify-between items-center surface-card rounded-xl px-4 py-3 text-sm">
-          <span className="truncate pr-4">{names[h.id] ?? '…'}</span>
-          <span className="text-[var(--color-text-tertiary)] shrink-0 text-xs">
-            {new Date(h.wornAt).toLocaleDateString(undefined, { weekday: 'short' })}
-          </span>
-        </div>
-      ))}
+      {rows.map((row) => {
+        const inner = (
+          <>
+            <FragranceThumb
+              brand={row.f?.brand}
+              name={row.f?.name}
+              family={row.f?.family}
+              catalogImage={row.f?.image}
+              size="sm"
+              className="w-12 shrink-0"
+            />
+            <span className="truncate pr-4 flex-1 text-sm">{row.name}</span>
+            <span className="text-[var(--color-text-tertiary)] shrink-0 text-xs">
+              {new Date(row.wornAt).toLocaleDateString(undefined, { weekday: 'short' })}
+            </span>
+          </>
+        );
+        return row.collectionId ? (
+          <PressableLink
+            key={row.id}
+            to={`/fragrance/${row.collectionId}`}
+            className="flex items-center gap-3 tile-premium !py-3 !px-4"
+          >
+            {inner}
+          </PressableLink>
+        ) : (
+          <div key={row.id} className="flex items-center gap-3 tile-premium !py-3 !px-4 text-sm">
+            {inner}
+          </div>
+        );
+      })}
     </div>
   );
 }

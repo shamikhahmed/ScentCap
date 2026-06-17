@@ -1,9 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { MapPin, Briefcase, Share2, Bookmark } from 'lucide-react';
-import { Card } from '@/components/ui/card';
+import { MapPin, Briefcase, Share2, Bookmark, UserRound, Layers } from 'lucide-react';
+import { GlassCard } from '@/components/premium/GlassCard';
+import { PageHeader } from '@/components/premium/PageHeader';
 import { Button } from '@/components/ui/button';
+import { OptionPill } from '@/components/ui/OptionPill';
+import { LoadingCard } from '@/components/ui/LoadingCard';
+import { ADVISOR_LOADING_MESSAGES } from '@/components/ui/CyclingShimmerText';
 import { useApp } from '@/context/AppContext';
 import { defaultAdvisorInput, runAdvisor } from '@/engines/advisor';
 import { logWear, updateWearRecord } from '@/db';
@@ -17,6 +21,10 @@ import { weatherUnavailableMessage } from '@/services/weather';
 import { advisorToShareInput, downloadBlob, exportShareCardPng, shareWearCard } from '@/lib/shareCard';
 import { saveAdvisorLayering } from '@/lib/layeringSave';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { FragranceThumb } from '@/components/collection/FragranceThumb';
+import { hapticSuccess } from '@/lib/premium/haptics';
+import { hydrateAdvisorResult } from '@/services/seed';
+import { bodyVariantLabel, genderToBodyVariant } from '@/lib/sprayZones';
 
 const FIELDS: { key: keyof AdvisorInput; label: string; options: { v: string; l: string }[] }[] = [
   { key: 'timeOfDay', label: 'Time', options: [
@@ -38,6 +46,7 @@ export function AdvisorPage() {
   const location = useLocation();
   const preset = location.state as { occasion?: AdvisorInput['occasion']; dress?: AdvisorInput['dressLevel']; vibe?: AdvisorInput['vibe'] } | null;
   const weatherNotice = !weather ? weatherUnavailableMessage(weatherUnavailable) : null;
+  const bodyVariant = profile ? genderToBodyVariant(profile.gender) : 'neutral';
 
   const [input, setInput] = useState<AdvisorInput>(() => {
     const d = defaultAdvisorInput();
@@ -52,14 +61,20 @@ export function AdvisorPage() {
   const [pendingWear, setPendingWear] = useState<{ id: string; collectionId: string; fragranceId: string; name: string; sprays: number; wornAt: string } | null>(null);
   const [shareMsg, setShareMsg] = useState<string | null>(null);
   const [layerSaved, setLayerSaved] = useState(false);
+  const [wearRatingImage, setWearRatingImage] = useState<string | null>(null);
   const presetRan = useRef(false);
 
   const run = async () => {
     if (!profile) return;
     setLoading(true);
     const r = await runAdvisor(collection, input, profile, prefs, weather, history);
-    setResult(r);
     setLoading(false);
+    if (!r) {
+      setResult(null);
+      return;
+    }
+    setResult(r);
+    void hydrateAdvisorResult(r).then(setResult);
   };
 
   useEffect(() => {
@@ -97,6 +112,7 @@ export function AdvisorPage() {
       sprays,
     });
     await refresh();
+    hapticSuccess();
     setPendingWear({
       id: wearId,
       collectionId: result.primary.collectionId,
@@ -105,6 +121,7 @@ export function AdvisorPage() {
       sprays,
       wornAt,
     });
+    setWearRatingImage(result.primary.fragrance.image ?? null);
     setRatingOpen(true);
   };
 
@@ -150,29 +167,45 @@ export function AdvisorPage() {
   const saveLayering = async () => {
     if (!result?.layering) return;
     await saveAdvisorLayering(result);
+    hapticSuccess();
     setLayerSaved(true);
     setTimeout(() => setLayerSaved(false), 2500);
   };
 
   return (
-    <div className="safe-pt px-5 py-6 max-w-2xl mx-auto space-y-6">
-      <h1 className="text-3xl font-semibold">Scent Advisor</h1>
+    <div className="safe-pt px-5 md:px-0 py-6 max-w-2xl mx-auto pb-12">
+      <PageHeader eyebrow="Smart Assistant" title="Scent Advisor" subtitle="Match your wardrobe to the moment — with a personal spray map." large />
 
-      {weatherNotice && (
-        <Card className="flex items-start gap-3 border-white/5 bg-white/[0.02]">
-          <MapPin className="text-stone-400 shrink-0 mt-0.5" size={18} />
-          <div>
-            <p className="text-sm font-medium text-stone-300">No weather data</p>
-            <p className="text-sm text-stone-500 mt-1">{weatherNotice}</p>
-            <Link to="/settings" className="text-[var(--color-accent)] text-sm font-medium mt-2 inline-block">
-              Update location
+      {profile?.gender === 'prefer_not' && (
+        <GlassCard className="flex items-start gap-3 !p-4 mb-5" delay={0.02}>
+          <UserRound size={18} className="text-[var(--color-accent)] shrink-0 mt-0.5" />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium">Set your profile for a tailored body map</p>
+            <p className="text-xs text-[var(--color-text-secondary)] mt-1 leading-relaxed">
+              We use male or female anatomy based on your gender in Settings.
+            </p>
+            <Link to="/settings" className="text-xs text-[var(--color-accent)] font-semibold mt-2 inline-block">
+              Update profile →
             </Link>
           </div>
-        </Card>
+        </GlassCard>
+      )}
+
+      {weatherNotice && (
+        <GlassCard className="flex items-start gap-3 !p-4 mb-5" delay={0.03}>
+          <MapPin className="text-[var(--color-text-secondary)] shrink-0 mt-0.5" size={18} />
+          <div>
+            <p className="text-sm font-medium">No weather data</p>
+            <p className="text-sm text-[var(--color-text-secondary)] mt-1">{weatherNotice}</p>
+            <Link to="/settings" className="text-[var(--color-accent)] text-sm font-medium mt-2 inline-block">
+              Set your city in Settings
+            </Link>
+          </div>
+        </GlassCard>
       )}
 
       {prefs.officeSafeMode && (
-        <Card className="flex items-start gap-3 border-[var(--color-accent)]/25 bg-[var(--color-accent-muted)]">
+        <GlassCard className="flex items-start gap-3 !p-4 mb-5 border-[var(--color-accent)]/25" glow="rgba(10,132,255,0.08)" delay={0.04}>
           <Briefcase className="text-[var(--color-accent)] shrink-0 mt-0.5" size={18} />
           <div>
             <p className="text-sm font-medium">Office Safe is on</p>
@@ -183,100 +216,154 @@ export function AdvisorPage() {
               Adjust in Settings
             </Link>
           </div>
-        </Card>
+        </GlassCard>
       )}
 
-      {FIELDS.map((field) => (
-        <div key={field.key}>
-          <p className="text-xs uppercase tracking-wider text-stone-500 mb-2">{field.label}</p>
-          <div className="flex flex-wrap gap-2">
-            {field.options.map((o) => (
-              <button
-                key={o.v}
-                type="button"
-                onClick={() => setInput({ ...input, [field.key]: o.v })}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition-colors min-h-[40px] ${
-                  input[field.key] === o.v ? 'bg-[var(--color-accent)] text-stone-950' : 'bg-white/5 text-stone-300'
-                }`}
-              >
-                {o.l}
-              </button>
-            ))}
-          </div>
-        </div>
-      ))}
-
-      <Button className="w-full" onClick={run} disabled={loading || !collection.length}>
-        {loading ? 'Analyzing wardrobe…' : 'Get recommendation'}
-      </Button>
-
-      {result && (
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-          <Card className="border-[var(--color-accent)]/40 flex gap-4 items-center">
-            <div className="flex-1">
-              <p className="text-xs text-[var(--color-accent)] uppercase tracking-wider">Primary</p>
-              <h2 className="text-2xl font-semibold mt-1">{result.primary.fragrance.brand}</h2>
-              <p className="text-lg text-stone-300">{result.primary.fragrance.name}</p>
+      <GlassCard className="!p-5 mb-5" delay={0.05}>
+        <p className="text-xs uppercase tracking-wider text-[var(--color-text-tertiary)] font-semibold mb-4">
+          Your moment
+        </p>
+        <div className="space-y-5">
+          {FIELDS.map((field) => (
+            <div key={field.key}>
+              <p className="text-xs uppercase tracking-wider text-[var(--color-text-tertiary)] mb-2 font-semibold">{field.label}</p>
+              <div className="flex flex-wrap gap-2">
+                {field.options.map((o) => (
+                  <OptionPill
+                    key={o.v}
+                    label={o.l}
+                    selected={input[field.key] === o.v}
+                    onSelect={() => setInput({ ...input, [field.key]: o.v })}
+                  />
+                ))}
+              </div>
             </div>
-            <ScoreRing
-              score={result.fragranceScore}
-              color={FAMILY_COLORS[result.primary.fragrance.family] ?? '#c9a87c'}
-            />
-          </Card>
+          ))}
+        </div>
+        <Button className="w-full btn-glow mt-6" size="lg" onClick={run} disabled={loading || !collection.length} haptic="medium">
+          {loading ? 'Working…' : 'Get recommendation'}
+        </Button>
+      </GlassCard>
 
-          <Card>
-            <p className="font-medium mb-4 text-center">Application map</p>
+      {loading && <LoadingCard messages={ADVISOR_LOADING_MESSAGES} />}
+
+      {result && !loading && (
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
+          <GlassCard
+            className="flex gap-4 items-center !p-5 border-[var(--color-accent)]/30"
+            glow={`${familyColor}22`}
+            delay={0.05}
+          >
+            <FragranceThumb
+              brand={result.primary.fragrance.brand}
+              name={result.primary.fragrance.name}
+              family={result.primary.fragrance.family}
+              catalogImage={result.primary.fragrance.image}
+              size="md"
+              className="w-20 shrink-0"
+            />
+            <div className="flex-1 min-w-0">
+              <p className="text-xs text-[var(--color-accent)] uppercase tracking-wider font-semibold">Primary pick</p>
+              <h2 className="text-xl font-semibold mt-1 tracking-tight">{result.primary.fragrance.brand}</h2>
+              <p className="text-base text-[var(--color-text-secondary)]">{result.primary.fragrance.name}</p>
+              <p className="text-xs text-[var(--color-text-tertiary)] mt-1">
+                {result.primary.fragrance.concentration} · {result.primary.fragrance.family}
+              </p>
+            </div>
+            <ScoreRing score={result.fragranceScore} color={familyColor} size={72} />
+          </GlassCard>
+
+          <GlassCard className="!p-5 md:!p-6" delay={0.1}>
             <SprayBodyMap
-              pulsePoints={result.spray.pulsePoints}
-              skinAreas={result.spray.skinAreas}
-              clothingAreas={result.spray.clothingAreas}
+              bodyVariant={result.spray.bodyVariant ?? bodyVariant}
+              activeZones={result.spray.activeZones ?? []}
               sprays={result.spray.totalSprays}
+              isLayered={result.spray.isLayered}
+              applicationSteps={result.spray.applicationSteps}
+              techniqueNote={result.spray.techniqueNote}
             />
-            <p className="text-sm text-stone-400 mt-4 text-center">{result.spray.pulsePoints.join(' · ')}</p>
-            {result.spray.skinAreas.length > 0 && <p className="text-sm mt-2">Skin: {result.spray.skinAreas.join(', ')}</p>}
-            {result.spray.clothingAreas.length > 0 && <p className="text-sm mt-1">Clothes: {result.spray.clothingAreas.join(', ')}</p>}
-            {result.spray.warnings.map((w) => <p key={w} className="text-amber-400/90 text-sm mt-2">⚠ {w}</p>)}
-          </Card>
+            <p className="text-xs text-[var(--color-text-tertiary)] mt-5 text-center leading-relaxed">
+              {result.spray.concentrationNote}
+            </p>
+            {result.spray.warnings.map((w) => (
+              <p key={w} className="text-amber-400/90 text-sm mt-2 text-center">⚠ {w}</p>
+            ))}
+          </GlassCard>
 
-          {result.layering && (
-            <Card>
-              <p className="font-medium">Layering ({result.layering.compatibilityScore}% match)</p>
-              <p className="text-sm text-stone-300 mt-2">{result.layering.order}</p>
-              <p className="text-sm text-stone-400 mt-1">+ {result.layering.secondary.brand} {result.layering.secondary.name}</p>
-              <p className="text-xs text-stone-500 mt-2">{result.layering.guidance}</p>
+          {result.layering && result.spray.isLayered && result.spray.layeringRoles && (
+            <GlassCard className="!p-5" delay={0.12}>
+              <p className="font-medium flex items-center gap-2">
+                <Layers size={16} className="text-[var(--color-accent)]" />
+                Layering · {result.layering.compatibilityScore}% match
+              </p>
+              <p className="text-sm text-[var(--color-text-secondary)] mt-2">{result.layering.order}</p>
+              <p className="text-xs text-[var(--color-text-tertiary)] mt-2">{result.layering.guidance}</p>
               <Button variant="ghost" className="w-full mt-3" onClick={saveLayering}>
                 <Bookmark size={16} />
                 {layerSaved ? 'Saved to Layering Lab!' : 'Save to Layering Lab'}
               </Button>
-            </Card>
+            </GlassCard>
+          )}
+
+          {result.layering && !result.spray.isLayered && (
+            <GlassCard className="!p-5" delay={0.12}>
+              <p className="font-medium">Layering · {result.layering.compatibilityScore}% match</p>
+              <p className="text-sm text-[var(--color-text-secondary)] mt-2">{result.layering.order}</p>
+              <div className="flex items-center gap-3 mt-3">
+                <FragranceThumb
+                  brand={result.layering.secondary.brand}
+                  name={result.layering.secondary.name}
+                  family={result.layering.secondary.family}
+                  catalogImage={result.layering.secondary.image}
+                  size="sm"
+                  className="w-12 shrink-0"
+                />
+                <p className="text-sm text-[var(--color-text-secondary)]">
+                  + {result.layering.secondary.brand} {result.layering.secondary.name}
+                </p>
+              </div>
+              <p className="text-xs text-[var(--color-text-tertiary)] mt-2">{result.layering.guidance}</p>
+              <Button variant="ghost" className="w-full mt-3" onClick={saveLayering}>
+                <Bookmark size={16} />
+                {layerSaved ? 'Saved to Layering Lab!' : 'Save to Layering Lab'}
+              </Button>
+            </GlassCard>
           )}
 
           {result.backups.length > 0 && (
-            <Card>
+            <GlassCard className="!p-5" delay={0.14}>
               <p className="font-medium mb-3">Backup picks</p>
               <div className="space-y-2">
                 {result.backups.map((b) => (
-                  <div key={b.collectionId} className="flex justify-between items-center text-sm">
-                    <div>
-                      <p className="font-medium">{b.fragrance.brand} {b.fragrance.name}</p>
-                      <p className="text-xs text-stone-500">{b.fragrance.concentration} · {b.fragrance.family}</p>
+                  <div key={b.collectionId} className="flex justify-between items-center gap-3 text-sm">
+                    <FragranceThumb
+                      brand={b.fragrance.brand}
+                      name={b.fragrance.name}
+                      family={b.fragrance.family}
+                      catalogImage={b.fragrance.image}
+                      size="sm"
+                      className="w-12 shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium truncate">{b.fragrance.brand} {b.fragrance.name}</p>
+                      <p className="text-xs text-[var(--color-text-tertiary)]">{b.fragrance.concentration} · {b.fragrance.family}</p>
                     </div>
-                    <span className="text-[var(--color-accent)] text-xs font-semibold">{Math.round(b.score)}%</span>
+                    <span className="text-[var(--color-accent)] text-xs font-semibold shrink-0">{Math.round(b.score)}%</span>
                   </div>
                 ))}
               </div>
-            </Card>
+            </GlassCard>
           )}
 
-          <Card>
+          <GlassCard className="!p-5" delay={0.16}>
             <p className="font-medium mb-2">Why this scent</p>
-            <ul className="text-sm text-stone-400 space-y-1">
+            <ul className="text-sm text-[var(--color-text-secondary)] space-y-1.5">
               {result.reasoning.map((r) => <li key={r}>· {r}</li>)}
             </ul>
-          </Card>
+          </GlassCard>
 
-          <div className="flex gap-3">
-            <Button variant="outline" className="flex-1" onClick={wear}>Log today&apos;s wear</Button>
+          <div className="flex gap-3 pt-1">
+            <Button variant="outline" className="flex-1" onClick={wear} haptic="success">Log today&apos;s wear</Button>
             <Button variant="ghost" className="px-4" onClick={shareResult} aria-label="Share recommendation">
               <Share2 size={16} />
             </Button>
@@ -285,11 +372,21 @@ export function AdvisorPage() {
         </motion.div>
       )}
 
+      {!result && !loading && (
+        <GlassCard className="!p-6 text-center" delay={0.08}>
+          <p className="text-headline text-sm">Your spray map is ready</p>
+          <p className="text-subhead text-[var(--color-text-secondary)] mt-2 max-w-sm mx-auto leading-relaxed">
+            {bodyVariantLabel(bodyVariant)} will guide each spray once you get a recommendation.
+          </p>
+        </GlassCard>
+      )}
+
       <WearRatingModal
         open={ratingOpen}
         fragranceName={pendingWear?.name ?? ''}
+        catalogImage={wearRatingImage}
         onSubmit={saveRating}
-        onSkip={() => { setRatingOpen(false); setPendingWear(null); }}
+        onSkip={() => { setRatingOpen(false); setPendingWear(null); setWearRatingImage(null); }}
       />
     </div>
   );

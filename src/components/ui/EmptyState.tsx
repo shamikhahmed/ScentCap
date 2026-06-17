@@ -1,7 +1,9 @@
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { MistBackground } from '@/components/home/MistBackground';
+import { AmbientBackground } from '@/components/premium/AmbientBackground';
+import { BrandMark } from '@/components/premium/BrandMark';
+import { CyclingShimmerText, DEMO_LOADING_MESSAGES } from '@/components/ui/CyclingShimmerText';
 
 interface EmptyStateProps {
   eyebrow?: string;
@@ -12,37 +14,37 @@ interface EmptyStateProps {
 }
 
 export function EmptyState({ eyebrow, title, description, action, secondary }: EmptyStateProps) {
+  const navigate = useNavigate();
+
   return (
-    <div className="relative min-h-[60dvh] flex flex-col items-center justify-center px-6 py-12 text-center">
-      <MistBackground />
+    <div className="relative min-h-[65dvh] flex flex-col items-center justify-center px-6 py-14 text-center">
+      <AmbientBackground />
       <motion.div
-        initial={{ opacity: 0, y: 12 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35 }}
+        transition={{ duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] }}
         className="relative z-10 max-w-sm"
       >
-        <div className="welcome-orb mx-auto mb-8" />
-        {eyebrow && (
-          <p className="text-xs uppercase tracking-[0.2em] text-[var(--color-text-secondary)]">{eyebrow}</p>
-        )}
-        <h2 className="text-2xl font-semibold tracking-tight mt-3">{title}</h2>
-        <p className="text-[var(--color-text-secondary)] mt-4 leading-relaxed">{description}</p>
-        <div className="flex flex-col gap-3 mt-8">
+        <BrandMark className="mx-auto mb-10" />
+        {eyebrow && <p className="text-caption text-[var(--color-text-tertiary)]">{eyebrow}</p>}
+        <h2 className="text-display mt-3">{title}</h2>
+        <p className="text-subhead text-[var(--color-text-secondary)] mt-4 leading-relaxed max-w-[18rem] mx-auto">
+          {description}
+        </p>
+        <div className="flex flex-col gap-3 mt-10">
           {action && (
-            <Link to={action.to} className="inline-block">
-              <Button size="lg" className="w-full min-w-[200px]">{action.label}</Button>
-            </Link>
+            <Button size="lg" className="w-full min-w-[220px] btn-glow" haptic="medium" onClick={() => navigate(action.to)}>
+              {action.label}
+            </Button>
           )}
           {secondary && (
-            <Button
-              variant="ghost"
-              size="lg"
-              className="w-full"
-              onClick={secondary.onClick}
-              disabled={secondary.loading}
-            >
-              {secondary.loading ? 'Loading…' : secondary.label}
-            </Button>
+            secondary.loading ? (
+              <CyclingShimmerText messages={DEMO_LOADING_MESSAGES} className="text-center py-3" />
+            ) : (
+              <Button variant="glass" size="lg" className="w-full" onClick={secondary.onClick} haptic="light">
+                {secondary.label}
+              </Button>
+            )
           )}
         </div>
       </motion.div>

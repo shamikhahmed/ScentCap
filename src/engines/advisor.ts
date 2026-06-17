@@ -11,7 +11,7 @@ import type {
 } from '@/types';
 import { findBestLayering } from './layering';
 import { scoreFragrance } from './scoring';
-import { computeSprayGuidance } from './spray';
+import { computeLayeringSprayGuidance, computeSprayGuidance } from './spray';
 
 export async function runAdvisor(
   collection: CollectionItem[],
@@ -49,7 +49,15 @@ export async function runAdvisor(
     pairs.slice(1, 8).map((p) => p.fragrance),
   );
 
-  const spray = computeSprayGuidance(top.fragrance, input, profile, prefs.officeMaxSprays);
+  const spray = layering
+    ? computeLayeringSprayGuidance(
+        top.fragrance,
+        layering.secondary,
+        input,
+        profile,
+        prefs.officeMaxSprays,
+      )
+    : computeSprayGuidance(top.fragrance, input, profile, prefs.officeMaxSprays);
   const reasoning = [
     `${top.fragrance.brand} ${top.fragrance.name} scored ${top.breakdown.total}/100`,
     ...top.breakdown.reasons,
@@ -71,6 +79,8 @@ export async function runAdvisor(
           order: layering.order,
           guidance: layering.guidance,
           compatibilityScore: layering.score,
+          baseFragranceId: layering.baseFragranceId,
+          accentFragranceId: layering.accentFragranceId,
         }
       : undefined,
     spray,

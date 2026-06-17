@@ -23,13 +23,7 @@ const TravelKit = lazy(() => import('@/pages/TravelKit').then((m) => ({ default:
 
 const basename = import.meta.env.BASE_URL.replace(/\/$/, '') || undefined;
 
-function CenteredLoader() {
-  return (
-    <div className="min-h-dvh flex items-center justify-center gradient-hero">
-      <p className="text-stone-400 animate-pulse">Loading ScentCap…</p>
-    </div>
-  );
-}
+import { CenteredLoader } from '@/components/layout/CenteredLoader';
 
 function Guard({ children }: { children: React.ReactNode }) {
   const { ready, profile } = useApp();

@@ -13,6 +13,7 @@ export function BottleVisual({
   name,
   family,
   photoUrl,
+  catalogImage,
   size = 'md',
   className,
 }: {
@@ -20,20 +21,34 @@ export function BottleVisual({
   name?: string;
   family?: string;
   photoUrl?: string | null;
+  catalogImage?: string | null;
   size?: 'sm' | 'md' | 'lg' | 'hero';
   className?: string;
 }) {
   const aura = FAMILY_COLORS[family ?? ''] ?? '#0071e3';
   const dims = { sm: 56, md: 88, lg: 120, hero: 160 }[size];
+  const height = Math.round(dims * 1.25);
+  const imageSrc = photoUrl ?? catalogImage;
 
-  if (photoUrl) {
+  if (imageSrc) {
     return (
       <div
         className={cn('relative overflow-hidden rounded-2xl', className)}
-        style={{ width: dims, height: Math.round(dims * 1.25) }}
+        style={{ width: dims, height }}
       >
-        <img src={photoUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+        <img
+          src={imageSrc}
+          alt=""
+          className={cn(
+            'absolute inset-0 w-full h-full',
+            photoUrl ? 'object-cover' : 'object-contain p-1.5',
+          )}
+          loading="lazy"
+          onError={(e) => {
+            e.currentTarget.style.display = 'none';
+          }}
+        />
+        {photoUrl && <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />}
       </div>
     );
   }
@@ -41,7 +56,7 @@ export function BottleVisual({
   return (
     <div
       className={cn('relative flex items-center justify-center', className)}
-      style={{ width: dims, height: Math.round(dims * 1.25) }}
+      style={{ width: dims, height }}
       aria-hidden
     >
       <svg

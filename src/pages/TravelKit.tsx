@@ -206,7 +206,7 @@ export function TravelKit() {
       </div>
 
       {!picked.length && <Card className="text-center py-8 text-stone-400">Add bottles to plan a travel kit.</Card>}
-      <Link to="/"><Button variant="ghost" className="w-full">Back to Today</Button></Link>
+      <Button to="/" variant="ghost" className="w-full">Back to Today</Button>
     </div>
   );
 }

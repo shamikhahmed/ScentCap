@@ -72,7 +72,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     await saveProfile(p);
     setProfileState(p);
     if (p.onboardingComplete) {
-      const { weather: w, unavailableReason } = await getDailyWeather(p);
+      const { weather: w, unavailableReason } = await getDailyWeather(p, true);
       setWeather(w);
       setWeatherUnavailable(unavailableReason);
     }

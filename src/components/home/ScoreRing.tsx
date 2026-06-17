@@ -1,31 +1,49 @@
 import { motion } from 'framer-motion';
 
-export function ScoreRing({ score, color = '#c9a87c', size = 88 }: { score: number; color?: string; size?: number }) {
-  const r = (size - 10) / 2;
+export function ScoreRing({ score, color = '#0a84ff', size = 88 }: { score: number; color?: string; size?: number }) {
+  const r = (size - 12) / 2;
   const c = 2 * Math.PI * r;
   const offset = c - (score / 100) * c;
+  const gradId = `ring-grad-${color.replace('#', '')}`;
 
   return (
-    <div className="relative" style={{ width: size, height: size }}>
+    <div
+      className="relative score-ring-glow shrink-0"
+      style={{ width: size, height: size, '--ring-color': color } as React.CSSProperties}
+    >
       <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth={6} />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={5} />
+        <defs>
+          <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor={color} stopOpacity="1" />
+            <stop offset="100%" stopColor={color} stopOpacity="0.55" />
+          </linearGradient>
+        </defs>
         <motion.circle
           cx={size / 2}
           cy={size / 2}
           r={r}
           fill="none"
-          stroke={color}
-          strokeWidth={6}
+          stroke={`url(#${gradId})`}
+          strokeWidth={5}
           strokeLinecap="round"
           strokeDasharray={c}
           initial={{ strokeDashoffset: c }}
           animate={{ strokeDashoffset: offset }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
+          transition={{ duration: 0.9, ease: [0.25, 0.46, 0.45, 0.94] }}
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-2xl font-bold tabular-nums">{score}</span>
-        <span className="text-[9px] uppercase tracking-widest text-stone-500">match</span>
+        <motion.span
+          key={score}
+          initial={{ opacity: 0, scale: 0.85 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.35 }}
+          className="text-xl font-semibold tabular-nums tracking-tight"
+        >
+          {score}
+        </motion.span>
+        <span className="text-[8px] font-semibold uppercase tracking-[0.14em] text-[var(--color-text-tertiary)]">match</span>
       </div>
     </div>
   );

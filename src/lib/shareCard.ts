@@ -9,6 +9,7 @@ export interface ShareCardInput {
   score?: number;
   reasoning?: string;
   accentColor?: string;
+  imageUrl?: string;
 }
 
 export type ShareCardFormat = 'portrait' | 'story' | 'square';
@@ -48,6 +49,7 @@ export function advisorToShareInput(result: AdvisorResult): ShareCardInput {
     sprays: result.spray.totalSprays,
     score: result.fragranceScore,
     reasoning: result.reasoning[0],
+    imageUrl: result.primary.fragrance.image,
   };
 }
 
@@ -58,6 +60,7 @@ export function fragranceToShareInput(f: Fragrance, sprays?: number): ShareCardI
     concentration: f.concentration,
     family: f.family,
     sprays,
+    imageUrl: f.image,
   };
 }
 
@@ -70,6 +73,16 @@ async function canvasToBlob(canvas: HTMLCanvasElement): Promise<Blob> {
 function isLightTheme(override?: boolean): boolean {
   if (override != null) return override;
   return typeof document !== 'undefined' && document.body.classList.contains('light');
+}
+
+async function loadShareImage(url: string): Promise<HTMLImageElement | null> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(null);
+    img.src = url;
+  });
 }
 
 /** Cap Neutral share card — solid bg, minimal typography */
@@ -97,11 +110,23 @@ export async function exportShareCardPng(
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, w, h);
 
-  // Accent bar — subtle brand mark
   ctx.fillStyle = accentColor;
   ctx.fillRect(0, 0, w, 6);
 
-  const centerY = format === 'story' ? h * 0.38 : h * 0.42;
+  let centerY = format === 'story' ? h * 0.38 : h * 0.42;
+
+  if (input.imageUrl) {
+    const img = await loadShareImage(input.imageUrl);
+    if (img) {
+      const maxH = format === 'square' ? 300 : 340;
+      const maxW = w - 200;
+      const scale = Math.min(maxW / img.width, maxH / img.height);
+      const iw = img.width * scale;
+      const ih = img.height * scale;
+      ctx.drawImage(img, (w - iw) / 2, centerY - 280, iw, ih);
+      centerY += 40;
+    }
+  }
 
   ctx.textAlign = 'center';
   ctx.fillStyle = textTertiary;

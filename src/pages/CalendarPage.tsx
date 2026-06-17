@@ -1,22 +1,29 @@
 import { useEffect, useMemo, useState } from 'react';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, addMonths, subMonths } from 'date-fns';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, addMonths, subMonths, isToday } from 'date-fns';
 import { Link } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Pencil } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Pencil, Plus } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { FragranceThumb } from '@/components/collection/FragranceThumb';
 import { WearRatingModal } from '@/components/ui/WearRatingModal';
 import { useApp } from '@/context/AppContext';
-import { getFragrance, updateWearRecord } from '@/db';
-import { FAMILY_COLORS } from '@/lib/stats';
+import { getFragrance, logWear, updateWearRecord } from '@/db';
+import { FAMILY_COLORS, wearStreak, wearsThisMonth } from '@/lib/stats';
+import { uid } from '@/lib/utils';
+import { hapticSuccess } from '@/lib/premium/haptics';
 import type { WearRecord } from '@/types';
 
 export function CalendarPage() {
-  const { history, refresh } = useApp();
-  const [labels, setLabels] = useState<Record<string, { name: string; family: string }>>({});
+  const { history, collection, refresh } = useApp();
+  const [labels, setLabels] = useState<Record<string, { name: string; family: string; image?: string }>>({});
   const [month, setMonth] = useState(() => new Date());
   const [editWear, setEditWear] = useState<WearRecord | null>(null);
+  const [quickLogOpen, setQuickLogOpen] = useState(false);
+  const [logging, setLogging] = useState(false);
   const days = eachDayOfInterval({ start: startOfMonth(month), end: endOfMonth(month) });
   const monthKey = format(month, 'yyyy-MM');
+  const todayKey = format(new Date(), 'yyyy-MM-dd');
+  const loggedToday = history.some((h) => h.wornAt.slice(0, 10) === todayKey);
 
   const byDay = useMemo(() => {
     const m: Record<string, string[]> = {};
@@ -29,12 +36,12 @@ export function CalendarPage() {
   }, [history]);
 
   useEffect(() => {
-    const ids = [...new Set(history.map((h) => h.fragranceId))];
+    const ids = [...new Set([...history.map((h) => h.fragranceId), ...collection.map((c) => c.fragranceId)])];
     Promise.all(ids.map(async (id) => {
       const f = await getFragrance(id);
-      return [id, { name: f ? `${f.brand} ${f.name}` : id, family: f?.family ?? 'Fresh' }] as const;
+      return [id, { name: f ? `${f.brand} ${f.name}` : id, family: f?.family ?? 'Fresh', image: f?.image }] as const;
     })).then((pairs) => setLabels(Object.fromEntries(pairs)));
-  }, [history]);
+  }, [history, collection]);
 
   const monthInsights = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -58,15 +65,46 @@ export function CalendarPage() {
     setEditWear(null);
   };
 
+  const quickLog = async (collectionId: string, fragranceId: string) => {
+    setLogging(true);
+    try {
+      await logWear({
+        id: uid(),
+        collectionId,
+        fragranceId,
+        wornAt: new Date().toISOString(),
+      });
+      await refresh();
+      hapticSuccess();
+      setQuickLogOpen(false);
+    } finally {
+      setLogging(false);
+    }
+  };
+
+  const padStart = startOfMonth(month).getDay();
+
   return (
     <div className="safe-pt px-5 py-6 max-w-2xl mx-auto space-y-6">
-      <h1 className="text-3xl font-semibold">Wear calendar</h1>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-semibold tracking-tight">Wear calendar</h1>
+          <p className="text-sm text-[var(--color-text-secondary)] mt-1">
+            {wearStreak(history)}d streak · {wearsThisMonth(history)} this month
+          </p>
+        </div>
+        {!loggedToday && collection.length > 0 && (
+          <Button size="sm" className="btn-glow shrink-0" onClick={() => setQuickLogOpen(true)}>
+            <Plus size={16} /> Log today
+          </Button>
+        )}
+      </div>
 
       {monthInsights && (
-        <Card>
-          <p className="text-xs uppercase text-stone-500">{format(month, 'MMMM')} MVP</p>
+        <Card className="border-[var(--color-accent)]/20 bg-[var(--color-accent-muted)]/20">
+          <p className="text-xs uppercase text-[var(--color-text-tertiary)]">{format(month, 'MMMM')} MVP</p>
           <p className="font-semibold mt-1">{monthInsights.name}</p>
-          <p className="text-sm text-stone-400">{monthInsights.count} wears</p>
+          <p className="text-sm text-[var(--color-text-secondary)]">{monthInsights.count} wears</p>
         </Card>
       )}
 
@@ -81,22 +119,28 @@ export function CalendarPage() {
           </Button>
         </div>
         <div className="grid grid-cols-7 gap-1.5 text-center text-xs">
-          {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => <span key={i} className="text-stone-500 py-1">{d}</span>)}
+          {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => <span key={i} className="text-[var(--color-text-tertiary)] py-1 font-medium">{d}</span>)}
+          {Array.from({ length: padStart }).map((_, i) => <span key={`pad-${i}`} />)}
           {days.map((day) => {
             const key = format(day, 'yyyy-MM-dd');
             const worn = byDay[key] ?? [];
             const primary = worn[0];
             const color = primary ? FAMILY_COLORS[labels[primary]?.family ?? ''] ?? '#c9a87c' : undefined;
+            const today = isToday(day);
             return (
               <div
                 key={key}
-                className="min-h-[52px] rounded-xl flex flex-col items-center justify-start pt-1.5 text-[11px] border border-transparent"
+                className={`min-h-[56px] rounded-xl flex flex-col items-center justify-start pt-1.5 text-[11px] border ${
+                  today ? 'ring-1 ring-[var(--color-accent)]/50' : 'border-transparent'
+                }`}
                 style={color ? { background: `${color}22`, borderColor: `${color}44` } : { background: 'rgba(255,255,255,0.04)' }}
                 title={primary ? labels[primary]?.name : undefined}
               >
-                <span className={worn.length ? 'font-semibold' : 'text-stone-500'}>{format(day, 'd')}</span>
+                <span className={`${worn.length || today ? 'font-semibold' : 'text-[var(--color-text-tertiary)]'}`}>
+                  {format(day, 'd')}
+                </span>
                 {primary && (
-                  <span className="text-[8px] leading-tight px-0.5 mt-0.5 line-clamp-2 text-stone-400 max-w-full">
+                  <span className="text-[8px] leading-tight px-0.5 mt-0.5 line-clamp-2 text-[var(--color-text-secondary)] max-w-full">
                     {labels[primary]?.name.split(' ').slice(-1)[0]}
                   </span>
                 )}
@@ -113,16 +157,23 @@ export function CalendarPage() {
             <li key={h.id}>
               <button
                 type="button"
-                className="w-full flex justify-between items-start text-sm gap-3 text-left hover:text-[var(--color-accent)]"
+                className="w-full flex justify-between items-center text-sm gap-3 text-left hover:text-[var(--color-accent)] pressable"
                 onClick={() => setEditWear(h)}
               >
-                <div>
+                <FragranceThumb
+                  name={labels[h.fragranceId]?.name}
+                  family={labels[h.fragranceId]?.family}
+                  catalogImage={labels[h.fragranceId]?.image}
+                  size="sm"
+                  className="w-11 shrink-0"
+                />
+                <div className="flex-1 min-w-0">
                   <span className="block">{labels[h.fragranceId]?.name ?? '…'}</span>
                   {h.compliment && <span className="text-xs text-[var(--color-accent)]">★ compliment</span>}
-                  {h.rating && <span className="text-xs text-stone-500">Rated {h.rating}/5</span>}
-                  {h.notes && <span className="text-xs text-stone-400 block mt-0.5 line-clamp-2">{h.notes}</span>}
+                  {h.rating && <span className="text-xs text-[var(--color-text-secondary)]">Rated {h.rating}/5</span>}
+                  {h.notes && <span className="text-xs text-[var(--color-text-tertiary)] block mt-0.5 line-clamp-2">{h.notes}</span>}
                 </div>
-                <span className="text-stone-500 shrink-0 text-xs flex items-center gap-1">
+                <span className="text-[var(--color-text-tertiary)] shrink-0 text-xs flex items-center gap-1">
                   {format(new Date(h.wornAt), 'MMM d')}
                   <Pencil size={12} />
                 </span>
@@ -131,16 +182,48 @@ export function CalendarPage() {
           ))}
         </ul>
         {!monthTimeline.length && (
-          <p className="text-stone-500 text-sm">
-            No wears logged in {format(month, 'MMMM yyyy')}. Tap &quot;Wear this today&quot; on the home screen.
+          <p className="text-[var(--color-text-secondary)] text-sm">
+            No wears logged in {format(month, 'MMMM yyyy')}. Use &quot;Log today&quot; or wear from Today.
           </p>
         )}
       </Card>
-      <Link to="/analytics" className="text-sm text-[var(--color-accent)]">View full analytics →</Link>
+      <Link to="/analytics" className="text-sm text-[var(--color-accent)] font-semibold">View full analytics →</Link>
+
+      {quickLogOpen && (
+        <div className="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-black/60 p-4">
+          <div className="glass-card rounded-3xl p-5 w-full max-w-md max-h-[70vh] overflow-y-auto space-y-3">
+            <p className="font-semibold">Log wear for today</p>
+            <p className="text-sm text-[var(--color-text-secondary)]">Pick a bottle from your wardrobe.</p>
+            <ul className="space-y-2">
+              {collection.map((c) => (
+                <li key={c.id}>
+                  <button
+                    type="button"
+                    disabled={logging}
+                    className="w-full flex items-center gap-3 tile-premium !py-3 !px-4 text-left pressable disabled:opacity-50"
+                    onClick={() => void quickLog(c.id, c.fragranceId)}
+                  >
+                    <FragranceThumb
+                      name={labels[c.fragranceId]?.name}
+                      family={labels[c.fragranceId]?.family}
+                      catalogImage={labels[c.fragranceId]?.image}
+                      size="sm"
+                      className="w-11 shrink-0"
+                    />
+                    <span className="text-sm truncate">{labels[c.fragranceId]?.name ?? '…'}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <Button variant="ghost" className="w-full" onClick={() => setQuickLogOpen(false)}>Cancel</Button>
+          </div>
+        </div>
+      )}
 
       <WearRatingModal
         open={Boolean(editWear)}
         fragranceName={editWear ? labels[editWear.fragranceId]?.name ?? '…' : ''}
+        catalogImage={editWear ? labels[editWear.fragranceId]?.image : null}
         editMode
         initial={editWear ? { rating: editWear.rating, compliment: editWear.compliment, notes: editWear.notes } : undefined}
         onSubmit={saveWearEdit}

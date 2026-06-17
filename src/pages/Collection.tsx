@@ -1,18 +1,23 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
-import { Heart, Plus, Search, Star, Trash2 } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
+import { Heart, Plus, Search, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FamilyIcon } from '@/components/ui/FamilyIcon';
 import { useApp } from '@/context/AppContext';
 import { getFragrance, getWishlist, removeFromWishlist } from '@/db';
 import type { Fragrance, WishlistItem } from '@/types';
 import { formatCurrency } from '@/lib/utils';
-import { BottleCard } from '@/components/collection/BottleCard';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { FAMILY_COLORS } from '@/lib/stats';
-import { chipActive, chipInactive, inputFieldLg, segmentActive, segmentBar, segmentInactive, textMuted, textSubtle } from '@/lib/ui-classes';
+import { chipActive, chipInactive, inputFieldLg, textSubtle } from '@/lib/ui-classes';
+import { SegmentedControl } from '@/components/premium/SegmentedControl';
+import { hapticLight } from '@/lib/premium/haptics';
+import { enrichFragranceImages } from '@/services/seed';
+import { WardrobeCabinet, WardrobeShelf } from '@/components/wardrobe/WardrobeCabinet';
+import { WardrobeShelfBottle } from '@/components/wardrobe/WardrobeShelfBottle';
+import { WishlistEditorialCard } from '@/components/wardrobe/WishlistEditorialCard';
+import { FragranceThumb } from '@/components/collection/FragranceThumb';
+import { parseBaseName } from '@/services/onlineCatalog';
 
 type WardrobeTab = 'owned' | 'want' | 'tested';
 
@@ -21,6 +26,12 @@ const TABS: { id: WardrobeTab; label: string; icon: typeof Heart }[] = [
   { id: 'want', label: 'Want', icon: Heart },
   { id: 'tested', label: 'Tested', icon: Star },
 ];
+
+function chunk<T>(arr: T[], size: number): T[][] {
+  const rows: T[][] = [];
+  for (let i = 0; i < arr.length; i += size) rows.push(arr.slice(i, i + size));
+  return rows;
+}
 
 export function CollectionPage() {
   const { collection, refresh } = useApp();
@@ -40,6 +51,10 @@ export function CollectionPage() {
 
   useEffect(() => {
     Promise.all(collection.map(async (c) => ({ c, f: await getFragrance(c.fragranceId) }))).then(setItems);
+    void enrichFragranceImages(collection.map((c) => c.fragranceId)).then(async () => {
+      const rows = await Promise.all(collection.map(async (c) => ({ c, f: await getFragrance(c.fragranceId) })));
+      setItems(rows);
+    });
   }, [collection]);
 
   useEffect(() => {
@@ -51,6 +66,7 @@ export function CollectionPage() {
   }, [tab, collection]);
 
   const switchTab = (next: WardrobeTab) => {
+    if (next !== tab) hapticLight();
     setTab(next);
     setQ('');
     setFamily(null);
@@ -72,7 +88,7 @@ export function CollectionPage() {
     if (!q) return true;
     const s = `${f?.brand} ${f?.name}`.toLowerCase();
     const tokens = q.toLowerCase().split(/\s+/).filter(Boolean);
-    return tokens.every((t) => s.includes(t) || f?.brand.toLowerCase().includes(t) || f?.name.toLowerCase().includes(t));
+    return tokens.every((t) => s.includes(t));
   });
 
   const filteredWishlist = wishlist.filter(({ f }) => {
@@ -82,15 +98,24 @@ export function CollectionPage() {
   });
 
   const totalValue = collection.reduce((s, c) => s + (c.purchasePrice ?? 0), 0);
-  const countLabel = tab === 'owned' ? collection.length : wishlist.length;
+  const signatureItem = items.find(({ c }) => c.isSignature) ?? items.find(({ c }) => c.isFavorite);
+  const shelfRows = chunk(filteredOwned, 2);
+
+  const removeWishlistItem = async (w: WishlistItem) => {
+    await removeFromWishlist(w.id);
+    await refresh();
+    const list = await getWishlist(tab as 'want' | 'tested');
+    const rows = await Promise.all(list.map(async (item) => ({ w: item, f: await getFragrance(item.fragranceId) })));
+    setWishlist(rows);
+  };
 
   if (tab === 'owned' && !collection.length) {
     return (
       <div className="safe-pt px-5 py-6 max-w-2xl mx-auto">
         <EmptyState
           eyebrow="Wardrobe"
-          title="No bottles yet"
-          description="Search thousands of fragrances or add your own. Your collection stays on this device."
+          title="Your cabinet is empty"
+          description="Search the live catalog and build a collection that feels like a fragrance magazine — on your device."
           action={{ label: 'Add first bottle', to: '/add' }}
         />
       </div>
@@ -99,36 +124,71 @@ export function CollectionPage() {
 
   return (
     <div className="safe-pt px-5 py-6 max-w-2xl mx-auto space-y-5">
-      <div className="flex items-end justify-between">
-        <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-[var(--color-accent)]">Wardrobe</p>
-          <h1 className="text-3xl font-semibold mt-1">
-            {tab === 'owned' ? `${collection.length} bottles` : `${countLabel} ${tab === 'want' ? 'on wishlist' : 'tested'}`}
-          </h1>
-          {tab === 'owned' && (
-            <p className={`text-sm ${textMuted}`}>{formatCurrency(totalValue)} collection value</p>
-          )}
-        </div>
-        <Link to={tab === 'owned' ? '/add' : `/add?list=${tab}`}>
-          <Button size="sm"><Plus size={16} /></Button>
-        </Link>
-      </div>
-
-      <div className={segmentBar}>
-        {TABS.map(({ id, label, icon: Icon }) => (
-          <button
-            key={id}
-            type="button"
-            onClick={() => switchTab(id)}
-            className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${
-              tab === id ? segmentActive : segmentInactive
-            }`}
+      <header className="wardrobe-masthead">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-caption text-[var(--color-text-tertiary)]">Wardrobe</p>
+            <h1 className="text-display mt-0.5">
+              {tab === 'owned' ? 'My cabinet' : tab === 'want' ? 'Wishlist' : 'Tested'}
+            </h1>
+            {tab === 'owned' && collection.length > 0 && (
+              <p className="text-subhead text-[var(--color-text-secondary)] mt-1">
+                {collection.length} bottle{collection.length !== 1 ? 's' : ''}
+                {totalValue > 0 && ` · ${formatCurrency(totalValue)}`}
+              </p>
+            )}
+          </div>
+          <Button
+            to={tab === 'owned' ? '/add' : `/add?list=${tab}`}
+            size="sm"
+            className="btn-glow !min-h-[36px] !rounded-xl shrink-0"
+            haptic="medium"
           >
-            <Icon size={14} />
-            {label}
-          </button>
-        ))}
-      </div>
+            <Plus size={16} />
+          </Button>
+        </div>
+      </header>
+
+      {tab === 'owned' && signatureItem?.f && !q && !family && (
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="wardrobe-featured-spread"
+          style={{ '--featured-aura': FAMILY_COLORS[signatureItem.f.family] ?? '#0a84ff' } as React.CSSProperties}
+        >
+          <p className="text-caption text-[var(--color-text-tertiary)]">Featured</p>
+          <div className="wardrobe-featured-inner">
+            <FragranceThumb
+              brand={signatureItem.f.brand}
+              name={signatureItem.f.name}
+              family={signatureItem.f.family}
+              catalogImage={signatureItem.f.image}
+              fragrance={signatureItem.f}
+              size="hero"
+              className="wardrobe-featured-bottle !h-[120px] !bg-transparent"
+            />
+            <div className="min-w-0 flex-1">
+              <p className="text-xs uppercase tracking-wider text-[var(--color-text-tertiary)]">
+                {signatureItem.f.brand}
+              </p>
+              <p className="text-title leading-tight mt-0.5">
+                {parseBaseName(signatureItem.f.name)}
+              </p>
+              <p className="text-xs text-[var(--color-accent)] mt-1">{signatureItem.f.concentration}</p>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      <SegmentedControl
+        options={TABS.map(({ id, label, icon: Icon }) => ({
+          value: id,
+          label,
+          icon: <Icon size={13} strokeWidth={2.25} />,
+        }))}
+        value={tab}
+        onChange={switchTab}
+      />
 
       <div className="relative">
         <Search size={16} className={`absolute left-4 top-1/2 -translate-y-1/2 ${textSubtle}`} />
@@ -158,39 +218,40 @@ export function CollectionPage() {
       )}
 
       {tab === 'owned' ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {filteredOwned.map(({ c, f }, i) => (
-            <motion.div key={c.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
-              <BottleCard c={c} f={f} />
-            </motion.div>
-          ))}
-        </div>
+        <WardrobeCabinet label={filteredOwned.length ? `${filteredOwned.length} on display` : undefined}>
+          {shelfRows.length === 0 ? null : (
+            shelfRows.map((row, rowIdx) => (
+              <WardrobeShelf key={rowIdx}>
+                {row.map(({ c, f }, i) => (
+                  <motion.div
+                    key={c.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: rowIdx * 0.06 + i * 0.04 }}
+                  >
+                    <WardrobeShelfBottle c={c} f={f} />
+                  </motion.div>
+                ))}
+              </WardrobeShelf>
+            ))
+          )}
+        </WardrobeCabinet>
       ) : (
-        <div className="space-y-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {filteredWishlist.map(({ w, f }, i) => (
-            <motion.div key={w.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
-              <Card className="flex items-center gap-3 py-3">
-                <FamilyIcon family={f?.family} size={18} />
-                <div className="flex-1 min-w-0">
-                  <p className={`text-xs ${textSubtle}`}>{f?.brand ?? 'Unknown brand'}</p>
-                  <p className="font-medium truncate text-[var(--color-text-primary)]">{f?.name ?? w.fragranceId}</p>
-                  {f && <p className={`text-xs ${textSubtle}`}>{f.concentration}</p>}
-                </div>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    await removeFromWishlist(w.id);
-                    await refresh();
-                    const list = await getWishlist(tab);
-                    const rows = await Promise.all(list.map(async (item) => ({ w: item, f: await getFragrance(item.fragranceId) })));
-                    setWishlist(rows);
-                  }}
-                  className="p-2 text-stone-500 hover:text-red-400"
-                  aria-label="Remove"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </Card>
+            <motion.div
+              key={w.id}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.04 }}
+            >
+              <WishlistEditorialCard
+                w={w}
+                f={f}
+                tab={tab}
+                index={i}
+                onRemove={() => void removeWishlistItem(w)}
+              />
             </motion.div>
           ))}
         </div>

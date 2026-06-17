@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, PieChart, Pie, Cell } from 'recharts';
 import { Card } from '@/components/ui/card';
 import { ChartFrame } from '@/components/ui/ChartFrame';
@@ -10,7 +11,9 @@ import {
   FAMILY_COLORS,
   avgLongevityLabel,
   avgProjectionLabel,
+  blindSpotBottles,
   complimentCount,
+  costPerWearRows,
   leastWornIds,
   rotationHealth,
   versatileFragranceCount,
@@ -66,9 +69,17 @@ export function AnalyticsPage() {
 
     const pie = Object.entries(familyDist).map(([name, value]) => ({ name, value }));
 
+    const nameById = new Map<string, string>();
+    for (const [id, f] of fragrances) {
+      if (f) nameById.set(id, `${f.brand} ${f.name}`);
+    }
+
+    const costRows = costPerWearRows(collection, history, nameById).slice(0, 6);
+    const blindSpots = blindSpotBottles(collection, history, nameById);
+
     return {
       designer, niche, me, totalValue, totalMl,
-      mostWorn, leastWorn, pie,
+      mostWorn, leastWorn, pie, costRows, blindSpots,
       rotation: rotationHealth(collection, history),
       streak: wearStreak(history),
       monthWears: wearsThisMonth(history),
@@ -106,6 +117,48 @@ export function AnalyticsPage() {
         <Card><p className="text-xs text-stone-500">Avg projection</p><p className="text-lg font-semibold">{stats.avgProjection}</p></Card>
         <Card><p className="text-xs text-stone-500">Avg longevity</p><p className="text-lg font-semibold">{stats.avgLongevity}</p></Card>
       </div>
+
+      {stats.costRows.length > 0 && (
+        <Card>
+          <p className="font-medium mb-1">Cost per wear</p>
+          <p className="text-xs text-[var(--color-text-tertiary)] mb-4">Bottles with a logged price — higher means under-worn spend.</p>
+          <ul className="space-y-3">
+            {stats.costRows.map((row) => (
+              <li key={row.collectionId}>
+                <Link to={`/fragrance/${row.collectionId}`} className="flex justify-between items-center gap-3 text-sm hover:text-[var(--color-accent)]">
+                  <span className="truncate">{row.name}</span>
+                  <span className="shrink-0 text-right">
+                    {row.costPerWear != null ? (
+                      <span className="font-semibold">{formatCurrency(row.costPerWear)}<span className="text-[var(--color-text-tertiary)] font-normal">/wear</span></span>
+                    ) : (
+                      <span className="text-[var(--color-text-tertiary)]">No wears yet</span>
+                    )}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      )}
+
+      {stats.blindSpots.length > 0 && (
+        <Card className="border-orange-500/20">
+          <p className="font-medium mb-1">Blind spots</p>
+          <p className="text-xs text-[var(--color-text-tertiary)] mb-4">Pricier bottles not worn in 30+ days — money on the shelf.</p>
+          <ul className="space-y-3">
+            {stats.blindSpots.map((row) => (
+              <li key={row.collectionId}>
+                <Link to={`/fragrance/${row.collectionId}`} className="flex justify-between items-center gap-3 text-sm hover:text-[var(--color-accent)]">
+                  <span className="truncate">{row.name}</span>
+                  <span className="shrink-0 text-orange-400 text-xs font-semibold">
+                    {row.daysSince == null ? 'Never worn' : `${row.daysSince}d idle`}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      )}
 
       {stats.mostWorn.length > 0 && (
         <Card>

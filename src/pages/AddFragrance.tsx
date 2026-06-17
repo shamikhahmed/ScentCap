@@ -1,22 +1,31 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Camera, PenLine, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { FamilyIcon } from '@/components/ui/FamilyIcon';
+import { OptionPill } from '@/components/ui/OptionPill';
+import { useKeyboardInset, scrollInputIntoView } from '@/hooks/useKeyboardInset';
+import { hapticSelection, hapticSuccess } from '@/lib/premium/haptics';
 import {
   addToCollection,
   addToWishlist,
   getAllCollection,
   getFragrance,
-  getRecentAdditions,
   getWishlistByFragrance,
   putFragrance,
   savePhoto,
-  searchFragranceGroups,
 } from '@/db';
 import { enrichFragranceOnce } from '@/services/seed';
-import { hasOnlineCatalog, searchOnlineCatalog } from '@/services/onlineCatalog';
+import {
+  ensureFragranceCatalogEntry,
+  getRecentAdditionsWithImages,
+  searchCatalogWithImages,
+  type FragranceGroup,
+} from '@/services/catalogSearch';
+import { concentrationLabel, parseBaseName } from '@/services/onlineCatalog';
+import { CatalogEditorialCard } from '@/components/catalog/CatalogEditorialCard';
+import { DidYouMeanBanner } from '@/components/catalog/DidYouMeanBanner';
+import { FragranceThumb } from '@/components/collection/FragranceThumb';
 import { useApp } from '@/context/AppContext';
 import { usePro } from '@/context/ProContext';
 import type { BottleType, Concentration, Fragrance, GenderLean, Longevity, Projection, WishlistList } from '@/types';
@@ -40,15 +49,24 @@ export function AddFragrance() {
 
   const [tab, setTab] = useState<'search' | 'manual'>(listTarget ? 'search' : 'search');
   const [q, setQ] = useState('');
-  const [groups, setGroups] = useState<Awaited<ReturnType<typeof searchFragranceGroups>>>([]);
+  const [groups, setGroups] = useState<FragranceGroup[]>([]);
   const [recents, setRecents] = useState<Fragrance[]>([]);
   const [picked, setPicked] = useState<Fragrance | null>(null);
+  const [activeGroup, setActiveGroup] = useState<FragranceGroup | null>(null);
+  const [pickingImage, setPickingImage] = useState(false);
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [meta, setMeta] = useState({ sizeMl: '100', price: '', opened: '', purchase: '' });
   const [bottleType, setBottleType] = useState<BottleType>('full');
   const [parentCollectionId, setParentCollectionId] = useState('');
   const [parentOptions, setParentOptions] = useState<{ id: string; label: string }[]>([]);
   const [saving, setSaving] = useState(false);
+  const [searchingOnline, setSearchingOnline] = useState(false);
+  const [didYouMean, setDidYouMean] = useState<string | null>(null);
+  const [searchedAs, setSearchedAs] = useState<string | null>(null);
+  const keyboardInset = useKeyboardInset();
+
+  const inputClass = 'w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm input-premium outline-none';
 
   useEffect(() => {
     (async () => {
@@ -68,29 +86,60 @@ export function AddFragrance() {
   const loadResults = async (query: string) => {
     if (!query.trim()) {
       setGroups([]);
-      setRecents(await getRecentAdditions());
+      setDidYouMean(null);
+      setSearchedAs(null);
+      setRecents(await getRecentAdditionsWithImages());
       return;
     }
     setRecents([]);
-    let groups = await searchFragranceGroups(query);
-    if (groups.length < 5 && hasOnlineCatalog()) {
-      const online = await searchOnlineCatalog(query, 15);
-      for (const f of online) {
-        await putFragrance(f);
-      }
-      if (online.length) groups = await searchFragranceGroups(query);
+    setSearchingOnline(true);
+    try {
+      const result = await searchCatalogWithImages(query, 20);
+      setGroups(result.groups);
+      setDidYouMean(result.didYouMean);
+      setSearchedAs(result.searchedAs);
+    } finally {
+      setSearchingOnline(false);
     }
-    setGroups(groups);
   };
 
   useEffect(() => {
-    loadResults('');
+    void loadResults('');
   }, []);
 
-  const search = async (query: string) => {
+  const search = (query: string) => {
     setQ(query);
     setPicked(null);
-    await loadResults(query);
+    setActiveGroup(null);
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+    searchTimer.current = setTimeout(() => {
+      void loadResults(query);
+    }, 280);
+  };
+
+  const applySuggestion = (suggestion: string) => {
+    hapticSelection();
+    setQ(suggestion);
+    setPicked(null);
+    setActiveGroup(null);
+    void loadResults(suggestion);
+  };
+
+  const openGroup = (g: FragranceGroup) => {
+    hapticSelection();
+    setActiveGroup(g);
+    setPicked(null);
+  };
+
+  const pickVariant = async (f: Fragrance) => {
+    hapticSelection();
+    setPickingImage(true);
+    try {
+      const enriched = await ensureFragranceCatalogEntry(f);
+      setPicked(enriched);
+    } finally {
+      setPickingImage(false);
+    }
   };
 
   const confirmAdd = async (f: Fragrance) => {
@@ -126,6 +175,7 @@ export function AddFragrance() {
         estimatedWearsRemaining: estimateWearsRemaining('full', f.concentration),
       });
       await refresh();
+      hapticSuccess();
       navigate('/collection');
     } finally {
       setSaving(false);
@@ -146,6 +196,7 @@ export function AddFragrance() {
         });
       }
       await refresh();
+      hapticSuccess();
       navigate(`/collection?tab=${list}`);
     } finally {
       setSaving(false);
@@ -169,46 +220,27 @@ export function AddFragrance() {
       casual_score: 75, layering_tags: ['fresh'],
     };
     await putFragrance(f);
+    const enriched = await enrichFragranceOnce(f);
     if (listTarget === 'want' || listTarget === 'tested') {
-      await addToList(f, listTarget);
+      await addToList(enriched, listTarget);
       return;
     }
-    setPicked(f);
-    await confirmAdd(f);
+    setPicked(enriched);
+    await confirmAdd(enriched);
   };
 
   const needsParent = bottleType === 'decant' || bottleType === 'travel';
   const canAdd = !needsParent || Boolean(parentCollectionId);
   const atBottleLimit = !canAddBottle();
 
-  const renderGroup = (g: { key: string; brand: string; name: string; variants: Fragrance[] }) => (
-    <Card key={g.key} className="py-3">
-      <div className="flex items-center gap-3">
-        <FamilyIcon family={g.variants[0]?.family} size={16} />
-        <div className="flex-1 min-w-0">
-          <p className="text-xs text-stone-500">{g.brand}</p>
-          <p className="font-medium truncate">{g.name}</p>
-        </div>
-      </div>
-      <div className="flex flex-wrap gap-2 mt-3">
-        {g.variants.map((v) => (
-          <button
-            key={v.id}
-            type="button"
-            onClick={() => setPicked(v)}
-            className="px-3 py-1.5 rounded-full text-xs font-semibold bg-white/5 border border-white/10 hover:border-[var(--color-accent)]"
-          >
-            {v.concentration}
-          </button>
-        ))}
-      </div>
-    </Card>
-  );
-
   return (
-    <div className="safe-pt px-5 py-6 max-w-lg mx-auto space-y-6">
+    <div
+      className="safe-pt px-5 py-6 max-w-lg mx-auto space-y-6"
+      style={{ paddingBottom: keyboardInset > 0 ? keyboardInset + 24 : undefined }}
+    >
       <div>
-        <h1 className="text-3xl font-semibold">Add fragrance</h1>
+        <p className="text-caption text-[var(--color-text-tertiary)] mb-1">The Catalog</p>
+        <h1 className="text-display">Add fragrance</h1>
         {listTarget && (
           <p className="text-sm text-[var(--color-accent)] mt-1">
             Adding to {listTarget === 'want' ? 'Want list' : 'Tested list'}
@@ -246,23 +278,22 @@ export function AddFragrance() {
           <p className="text-xs uppercase text-stone-500">Bottle type</p>
           <div className="flex gap-2 flex-wrap">
             {BOTTLE_TYPES.map((t) => (
-              <button
+              <OptionPill
                 key={t.id}
-                type="button"
-                onClick={() => { setBottleType(t.id); if (t.id === 'full') setParentCollectionId(''); }}
-                className={`px-3 py-2 rounded-xl text-xs font-semibold ${
-                  bottleType === t.id ? 'bg-[var(--color-accent)] text-stone-950' : 'bg-white/5 text-stone-400'
-                }`}
-              >
-                {t.label}
-              </button>
+                label={t.label}
+                selected={bottleType === t.id}
+                onSelect={() => {
+                  setBottleType(t.id);
+                  if (t.id === 'full') setParentCollectionId('');
+                }}
+              />
             ))}
           </div>
           {needsParent && (
             <div className="space-y-1">
               <label className="text-xs text-stone-500">Link to parent bottle</label>
               <select
-                className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm"
+                className={`${inputClass} py-2`}
                 value={parentCollectionId}
                 onChange={(e) => setParentCollectionId(e.target.value)}
               >
@@ -283,10 +314,10 @@ export function AddFragrance() {
         <Card className="space-y-3">
           <p className="text-xs uppercase text-stone-500">Bottle details (optional)</p>
           <div className="grid grid-cols-2 gap-2">
-            <input className="rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm" placeholder="Size (ml)" value={meta.sizeMl} onChange={(e) => setMeta({ ...meta, sizeMl: e.target.value })} />
-            <input className="rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm" placeholder="Price $" value={meta.price} onChange={(e) => setMeta({ ...meta, price: e.target.value })} />
-            <input type="date" className="rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm" title="Purchased" value={meta.purchase} onChange={(e) => setMeta({ ...meta, purchase: e.target.value })} />
-            <input type="date" className="rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm" title="Opened" value={meta.opened} onChange={(e) => setMeta({ ...meta, opened: e.target.value })} />
+            <input className={inputClass} placeholder="Size (ml)" value={meta.sizeMl} onChange={(e) => setMeta({ ...meta, sizeMl: e.target.value })} onFocus={(e) => scrollInputIntoView(e.currentTarget)} />
+            <input className={inputClass} placeholder="Price $" value={meta.price} onChange={(e) => setMeta({ ...meta, price: e.target.value })} onFocus={(e) => scrollInputIntoView(e.currentTarget)} />
+            <input type="date" className={inputClass} title="Purchased" value={meta.purchase} onChange={(e) => setMeta({ ...meta, purchase: e.target.value })} onFocus={(e) => scrollInputIntoView(e.currentTarget)} />
+            <input type="date" className={inputClass} title="Opened" value={meta.opened} onChange={(e) => setMeta({ ...meta, opened: e.target.value })} onFocus={(e) => scrollInputIntoView(e.currentTarget)} />
           </div>
           <label className="flex items-center gap-2 text-sm text-stone-400 cursor-pointer">
             <Camera size={16} />
@@ -299,29 +330,62 @@ export function AddFragrance() {
 
       {tab === 'search' ? (
         <>
-          <input
-            className="w-full rounded-2xl bg-white/5 border border-white/10 px-4 py-3 outline-none focus:border-[var(--color-accent)]"
-            placeholder="Search by brand or name…"
-            value={q}
-            onChange={(e) => search(e.target.value)}
-          />
+          <div className="relative">
+            <Search size={16} className={`absolute left-4 top-1/2 -translate-y-1/2 ${textSubtle}`} />
+            <input
+              className={`${inputClass} rounded-2xl py-3 pl-11`}
+              placeholder="Search by brand or name…"
+              value={q}
+              onChange={(e) => search(e.target.value)}
+              onFocus={(e) => scrollInputIntoView(e.currentTarget)}
+            />
+          </div>
+
+          {didYouMean && q.trim() && (
+            <DidYouMeanBanner
+              suggestion={didYouMean}
+              searchedAs={searchedAs}
+              originalQuery={q}
+              onSelect={applySuggestion}
+            />
+          )}
+
           {picked ? (
-            <Card className="space-y-3 border-[var(--color-accent)]/40">
-              <div className="flex gap-3 items-center">
-                <FamilyIcon family={picked.family} />
-                <div>
-                  <p className="text-xs text-stone-500">{picked.brand}</p>
-                  <p className="font-semibold">{picked.name}</p>
-                  <p className="text-sm text-[var(--color-accent)]">{picked.concentration}</p>
-                </div>
+            <Card className="catalog-confirm-card space-y-3">
+              <p className="text-caption text-[var(--color-accent)]">Confirm your bottle</p>
+              <div className="catalog-confirm-hero">
+                <FragranceThumb
+                  brand={picked.brand}
+                  name={picked.name}
+                  family={picked.family}
+                  catalogImage={picked.image}
+                  fragrance={picked}
+                  size="hero"
+                  className="catalog-confirm-bottle !h-[160px] mx-auto w-full max-w-[200px]"
+                />
               </div>
+              <div className="text-center">
+                <p className="text-xs text-stone-500">{picked.brand}</p>
+                <p className="text-title mt-0.5">{parseBaseName(picked.name)}</p>
+                <p className="text-sm text-[var(--color-accent)] font-medium mt-1">
+                  {concentrationLabel(picked.concentration)}
+                </p>
+              </div>
+              {picked.top_notes.length > 0 && (
+                <div className="rounded-xl bg-white/[0.03] border border-white/10 px-3 py-2.5">
+                  <p className="text-[10px] uppercase tracking-wider text-[var(--color-text-tertiary)] mb-1">Notes</p>
+                  <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
+                    {[...picked.top_notes.slice(0, 2), ...picked.heart_notes.slice(0, 2), ...picked.base_notes.slice(0, 2)].join(' · ')}
+                  </p>
+                </div>
+              )}
               {listTarget ? (
                 <Button className="w-full" onClick={() => addToList(picked, listTarget)} disabled={saving}>
                   Add to {listTarget === 'want' ? 'Want list' : 'Tested list'}
                 </Button>
               ) : (
                 <>
-                  <Button className="w-full" onClick={() => confirmAdd(picked)} disabled={!canAdd || saving}>
+                  <Button className="w-full" onClick={() => confirmAdd(picked)} disabled={!canAdd || saving} haptic="success">
                     Add to wardrobe
                   </Button>
                   <div className="flex gap-2">
@@ -334,28 +398,65 @@ export function AddFragrance() {
                   </div>
                 </>
               )}
-              <Button variant="ghost" className="w-full" onClick={() => setPicked(null)}>Back</Button>
+              <Button variant="ghost" className="w-full" onClick={() => { setPicked(null); setActiveGroup(null); }}>Back</Button>
             </Card>
           ) : (
-            <div className="space-y-2 max-h-[50vh] overflow-y-auto">
+            <div className="catalog-results space-y-4 max-h-[55vh] overflow-y-auto pb-2">
               {!q && recents.length > 0 && (
                 <>
-                  <p className="text-xs uppercase tracking-wider text-stone-500 px-1">Recent additions</p>
-                  {recents.map((f) => renderGroup({
-                    key: `${f.brand}::${f.name}`,
-                    brand: f.brand,
-                    name: f.name,
-                    variants: [f],
-                  }))}
+                  <p className="text-caption text-[var(--color-text-tertiary)] px-1">Recently added</p>
+                  {recents.map((f, i) => (
+                    <CatalogEditorialCard
+                      key={`${f.brand}::${f.name}`}
+                      group={{
+                        key: `${f.brand}::${f.name}`,
+                        brand: f.brand,
+                        name: f.name,
+                        variants: [f],
+                      }}
+                      isOpen={activeGroup?.key === `${f.brand}::${f.name}`}
+                      picked={picked}
+                      pickingImage={pickingImage}
+                      onOpen={() => openGroup({
+                        key: `${f.brand}::${f.name}`,
+                        brand: f.brand,
+                        name: f.name,
+                        variants: [f],
+                      })}
+                      onPickVariant={pickVariant}
+                      index={i}
+                    />
+                  ))}
                 </>
               )}
               {!q && !recents.length && (
-                <p className={`text-sm ${textSubtle} text-center py-6`}>Search 1,000+ real fragrances or add manually</p>
+                <div className="catalog-empty-state text-center py-10 px-4">
+                  <p className="text-caption text-[var(--color-accent)] mb-2">Live catalog</p>
+                  <p className={`text-subhead ${textSubtle}`}>
+                    Search thousands of fragrances — real bottle photos, concentrations, and notes.
+                  </p>
+                </div>
               )}
-              {q && !groups.length && (
-                <p className="text-sm text-stone-500 text-center py-6">No matches — try fewer letters or add manually</p>
+              {q && searchingOnline && (
+                <p className={`text-sm ${textSubtle} text-center py-6`}>Searching catalog…</p>
               )}
-              {groups.map(renderGroup)}
+              {q && !groups.length && !searchingOnline && !didYouMean && (
+                <p className="text-sm text-stone-500 text-center py-6">
+                  No matches — check spelling or add manually
+                </p>
+              )}
+              {groups.map((g, i) => (
+                <CatalogEditorialCard
+                  key={g.key}
+                  group={g}
+                  isOpen={activeGroup?.key === g.key}
+                  picked={picked}
+                  pickingImage={pickingImage}
+                  onOpen={() => openGroup(g)}
+                  onPickVariant={pickVariant}
+                  index={i}
+                />
+              ))}
             </div>
           )}
         </>
@@ -365,19 +466,21 @@ export function AddFragrance() {
           {(['name', 'brand'] as const).map((k) => (
             <input
               key={k}
-              className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 capitalize"
+              className={`${inputClass} capitalize`}
               placeholder={k === 'name' ? 'Fragrance name' : 'Brand'}
               value={manual[k]}
               onChange={(e) => setManual({ ...manual, [k]: e.target.value })}
+              onFocus={(e) => scrollInputIntoView(e.currentTarget)}
             />
           ))}
-          <select className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3" value={manual.concentration} onChange={(e) => setManual({ ...manual, concentration: e.target.value as Concentration })}>
+          <select className={inputClass} value={manual.concentration} onChange={(e) => setManual({ ...manual, concentration: e.target.value as Concentration })}>
             {CONCENTRATIONS.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
           <Button
             className="w-full"
             onClick={addManual}
             disabled={!manual.name || !manual.brand || (!listTarget && !canAdd) || saving}
+            haptic="success"
           >
             {listTarget === 'want' ? 'Save to Want list' : listTarget === 'tested' ? 'Save to Tested' : 'Save to wardrobe'}
           </Button>

@@ -11,6 +11,7 @@ export interface ScoreBreakdown {
   repeatPenalty: number;
   projectionPenalty: number;
   signatureBonus: number;
+  personalBonus: number;
   reasons: string[];
 }
 
@@ -86,6 +87,25 @@ function repeatPenalty(fragranceId: string, history: WearRecord[]): { penalty: n
   return { penalty: 0, daysSince: days };
 }
 
+function personalHistoryBonus(fragranceId: string, history: WearRecord[]): { bonus: number; reason?: string } {
+  const wears = history.filter((h) => h.fragranceId === fragranceId);
+  if (!wears.length) return { bonus: 0 };
+
+  const rated = wears.filter((h) => h.rating != null);
+  if (rated.length >= 2) {
+    const avg = rated.reduce((s, h) => s + (h.rating ?? 0), 0) / rated.length;
+    if (avg >= 4) return { bonus: 18, reason: `You rate this highly (${avg.toFixed(1)}/5 avg)` };
+    if (avg <= 2) return { bonus: -22, reason: `Low past ratings (${avg.toFixed(1)}/5 avg)` };
+    if (avg >= 3.5) return { bonus: 8, reason: 'Solid track record in your log' };
+  }
+
+  const compliments = wears.filter((h) => h.compliment).length;
+  if (compliments >= 2) return { bonus: 12, reason: `${compliments} complimented wears` };
+  if (compliments === 1) return { bonus: 6, reason: 'Got compliments before' };
+
+  return { bonus: 0 };
+}
+
 function projectionPenalty(f: Fragrance, input: AdvisorInput, _prefs: Preferences): number {
   if (input.occasion !== 'work' && input.dressLevel !== 'professional') return 0;
   const proj = { soft: 0, moderate: 5, strong: 18, beast: 35 }[f.projection];
@@ -123,14 +143,16 @@ export function scoreFragrance(
   const projPen = projectionPenalty(fragrance, input, prefs);
   const sigBonus = signatureBonus(item, prefs, input);
   const rotation = daysSince && daysSince >= 14 ? 10 : 0;
+  const { bonus: personalBonus, reason: personalReason } = personalHistoryBonus(fragrance.id, history);
 
   if (wReason) reasons.push(wReason);
   if (repeat > 0) reasons.push(`Worn recently (${daysSince ?? 0}d ago)`);
   if (rotation > 0) reasons.push('Rotation boost — neglected bottle');
   if (sigBonus > 0) reasons.push('Signature scent match');
+  if (personalReason) reasons.push(personalReason);
 
   const total = Math.round(
-    occasion + dress + vibe + weatherPts + profilePts + timePts + rotation + sigBonus - repeat - projPen,
+    occasion + dress + vibe + weatherPts + profilePts + timePts + rotation + sigBonus + personalBonus - repeat - projPen,
   );
 
   return {
@@ -144,6 +166,7 @@ export function scoreFragrance(
     repeatPenalty: repeat,
     projectionPenalty: projPen,
     signatureBonus: sigBonus,
+    personalBonus,
     reasons,
   };
 }

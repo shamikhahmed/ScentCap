@@ -17,12 +17,14 @@ export function DemoBanner() {
   };
 
   return (
-    <div className="demo-banner sticky top-0 z-40 mx-5 md:mx-0 mt-3 mb-1 flex items-center justify-between gap-3 rounded-xl px-4 py-2.5 text-sm">
-      <p className="flex items-center gap-2">
-        <Sparkles size={16} className="shrink-0 text-[var(--color-accent)]" />
-        <span>You&apos;re viewing a demo wardrobe</span>
+    <div className="sticky top-0 z-40 mx-5 md:mx-0 mt-3 mb-2 flex items-center justify-between gap-3 glass-premium-subtle rounded-2xl px-4 py-3 text-sm">
+      <p className="flex items-center gap-2.5 font-medium">
+        <span className="w-8 h-8 rounded-xl bg-[var(--color-accent-muted)] flex items-center justify-center shrink-0">
+          <Sparkles size={15} className="text-[var(--color-accent)]" />
+        </span>
+        <span className="text-[var(--color-text-secondary)]">Demo wardrobe</span>
       </p>
-      <Button size="sm" variant="outline" className="shrink-0" onClick={startFresh}>
+      <Button size="sm" variant="glass" className="shrink-0 !rounded-xl" onClick={startFresh}>
         Start my own
       </Button>
     </div>

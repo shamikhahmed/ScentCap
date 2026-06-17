@@ -6,23 +6,24 @@ import {
   saveProfile,
   saveWeatherCache,
 } from '@/db';
+import { loadCatalogBySlug } from '@/services/catalogSearch';
 import { ensureSeedLoaded } from '@/services/seed';
 import { todayKey, uid } from '@/lib/utils';
-import type { BottleLevel, CollectionItem, Preferences, UserProfile, WearRecord } from '@/types';
+import type { BottleLevel, CollectionItem, Fragrance, Preferences, UserProfile, WearRecord } from '@/types';
 
-const DEMO_FRAGRANCES: { id: string; level: BottleLevel; favorite?: boolean; signature?: boolean }[] = [
-  { id: 'dior-sauvage-edp', level: '75', favorite: true, signature: true },
-  { id: 'chanel-bleu-de-chanel-edp', level: '50', favorite: true },
-  { id: 'armani-acqua-di-gio-edp', level: 'full' },
-  { id: 'ysl-y-edp', level: '75' },
-  { id: 'creed-aventus', level: '25', favorite: true },
-  { id: 'tom-ford-ombre-leather', level: '50' },
-  { id: 'mfk-baccarat-rouge-540', level: '25' },
-  { id: 'lattafa-khamrah', level: 'full' },
-  { id: 'prada-aura-211', level: '75' },
-  { id: 'dolce-gabbana-code-241', level: '50' },
-  { id: 'versace-nuit-139', level: '75' },
-  { id: 'chanel-nuit-rose-51', level: '50' },
+const DEMO_CATALOG: { slug: string; level: BottleLevel; favorite?: boolean; signature?: boolean }[] = [
+  { slug: 'sauvage-eau-de-parfum', level: '75', favorite: true, signature: true },
+  { slug: 'bleu-de-chanel-eau-de-parfum', level: '50', favorite: true },
+  { slug: 'acqua-di-gio', level: 'full' },
+  { slug: 'y-eau-de-parfum', level: '75' },
+  { slug: 'aventus', level: '25', favorite: true },
+  { slug: 'ombre-leather-16', level: '50' },
+  { slug: 'baccarat-rouge-540', level: '25' },
+  { slug: 'khamrah', level: 'full' },
+  { slug: 'luna-rossa-carbon', level: '75' },
+  { slug: 'light-blue-pour-homme-dolce-gabbana-cologne', level: '50' },
+  { slug: 'eros-eau-de-parfum', level: '75' },
+  { slug: 'coco-mademoiselle-parfum', level: '50' },
 ];
 
 const OCCASIONS = ['work', 'casual', 'date', 'event', 'home'] as const;
@@ -63,15 +64,21 @@ export async function loadDemoData(): Promise<void> {
   await ensureSeedLoaded();
   await clearUserData();
 
+  const fragrances: { meta: (typeof DEMO_CATALOG)[number]; f: Fragrance }[] = [];
+  for (const meta of DEMO_CATALOG) {
+    const f = await loadCatalogBySlug(meta.slug);
+    if (f) fragrances.push({ meta, f });
+  }
+
   const now = new Date().toISOString();
-  const collection: CollectionItem[] = DEMO_FRAGRANCES.map((f) => ({
+  const collection: CollectionItem[] = fragrances.map(({ meta, f }) => ({
     id: uid(),
     fragranceId: f.id,
-    bottleLevel: f.level,
+    bottleLevel: meta.level,
     bottleSizeMl: 100,
-    isFavorite: Boolean(f.favorite),
-    isSignature: Boolean(f.signature),
-    signatureRole: f.signature ? 'work' as const : undefined,
+    isFavorite: Boolean(meta.favorite),
+    isSignature: Boolean(meta.signature),
+    signatureRole: meta.signature ? 'work' as const : undefined,
     addedAt: now,
   }));
 

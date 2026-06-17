@@ -1,23 +1,22 @@
-import { motion } from 'framer-motion';
+import { GlassCard } from '@/components/premium/GlassCard';
 import { cn } from '@/lib/utils';
 
 export function Card({
   className,
   children,
   delay = 0,
+  glow,
+  padding = 'default',
 }: {
   className?: string;
   children: React.ReactNode;
   delay?: number;
+  glow?: string;
+  padding?: 'none' | 'default' | 'lg';
 }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.25, delay, ease: 'easeOut' }}
-      className={cn('surface-card rounded-2xl p-5', className)}
-    >
+    <GlassCard className={cn(className)} delay={delay} glow={glow} padding={padding}>
       {children}
-    </motion.div>
+    </GlassCard>
   );
 }

@@ -32,6 +32,8 @@ export interface Fragrance {
   casual_score: number;
   layering_tags: string[];
   image?: string;
+  /** Fraganty catalog slug — ties bottle image + notes to one product */
+  catalogSlug?: string;
 }
 
 export interface CollectionItem {
@@ -146,6 +148,25 @@ export interface SprayGuidance {
   clothingAreas: string[];
   warnings: string[];
   concentrationNote: string;
+  bodyVariant: 'male' | 'female' | 'neutral';
+  activeZones: {
+    id: import('@/lib/sprayZones').SprayZoneId;
+    label: string;
+    shortLabel: string;
+    type: 'pulse' | 'skin' | 'clothing';
+    sprayNumber: number;
+    optional?: boolean;
+    fragranceRole?: 'base' | 'accent';
+    fragranceName?: string;
+    fragranceBrand?: string;
+  }[];
+  applicationSteps: string[];
+  techniqueNote: string;
+  isLayered: boolean;
+  layeringRoles?: {
+    base: { fragranceId: string; name: string; brand: string; sprays: number };
+    accent: { fragranceId: string; name: string; brand: string; sprays: number };
+  };
 }
 
 export interface AdvisorResult {
@@ -157,6 +178,9 @@ export interface AdvisorResult {
     order: string;
     guidance: string;
     compatibilityScore: number;
+    /** Which scent is base vs accent for placement */
+    baseFragranceId: string;
+    accentFragranceId: string;
   };
   spray: SprayGuidance;
   reasoning: string[];

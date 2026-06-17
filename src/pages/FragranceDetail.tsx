@@ -23,6 +23,7 @@ import { FAMILY_COLORS } from '@/lib/stats';
 import { estimateWearsRemaining, formatCurrency } from '@/lib/utils';
 import { downloadBlob, exportShareCardPng, fragranceToShareInput, shareWearCard } from '@/lib/shareCard';
 import { scrim, textMuted } from '@/lib/ui-classes';
+import { FragranceWearGuide } from '@/components/fragrance/FragranceWearGuide';
 import { format } from 'date-fns';
 
 const LEVELS = ['full', '75', '50', '25', '10', 'empty'] as const;
@@ -37,7 +38,7 @@ const SIG_ROLES: { role: SignatureRole; label: string }[] = [
 export function FragranceDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { history, refresh } = useApp();
+  const { history, refresh, profile, prefs, collection } = useApp();
   const fileRef = useRef<HTMLInputElement>(null);
   const [item, setItem] = useState<CollectionItem | null>(null);
   const [fragrance, setFragrance] = useState<Fragrance | null>(null);
@@ -51,7 +52,13 @@ export function FragranceDetail() {
   const [editMeta, setEditMeta] = useState({ sizeMl: '', price: '', opened: '', purchase: '' });
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteCascade, setDeleteCascade] = useState(false);
+  const [wardrobeFragrances, setWardrobeFragrances] = useState<Fragrance[]>([]);
   const [editWear, setEditWear] = useState<WearRecord | null>(null);
+
+  useEffect(() => {
+    Promise.all(collection.map(async (c) => getFragrance(c.fragranceId)))
+      .then((rows) => setWardrobeFragrances(rows.filter(Boolean) as Fragrance[]));
+  }, [collection]);
 
   const loadItem = async () => {
     const col = await getAllCollection();
@@ -192,19 +199,28 @@ export function FragranceDetail() {
   return (
     <div className="safe-pt pb-8 max-w-lg mx-auto">
       <div
-        className="relative h-56 md:h-64 rounded-b-[2rem] overflow-hidden detail-hero"
+        className="detail-hero-premium mx-0"
         style={{ '--hero-aura': aura } as React.CSSProperties}
       >
         {photoUrl ? (
-          <img src={photoUrl} alt="" className="w-full h-full object-cover opacity-80" />
+          <img src={photoUrl} alt="" className="absolute inset-0 w-full h-full object-cover opacity-90" />
+        ) : fragrance.image ? (
+          <img src={fragrance.image} alt="" className="absolute inset-0 w-full h-full object-contain p-8 pb-24 opacity-95" />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <BottleVisual brand={fragrance.brand} name={fragrance.name} family={fragrance.family} size="hero" />
+          <div className="absolute inset-0 flex items-center justify-center pt-6">
+            <BottleVisual
+              brand={fragrance.brand}
+              name={fragrance.name}
+              family={fragrance.family}
+              catalogImage={fragrance.image}
+              size="hero"
+            />
           </div>
         )}
+        <div className="detail-hero-scrim" />
         <button
           type="button"
-          className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/40 backdrop-blur flex items-center justify-center"
+          className="absolute top-4 right-4 w-10 h-10 rounded-full glass-premium-subtle flex items-center justify-center pressable z-10"
           onClick={() => fileRef.current?.click()}
         >
           <Camera size={18} />
@@ -213,10 +229,10 @@ export function FragranceDetail() {
           const f = e.target.files?.[0];
           if (f) onPhoto(f);
         }} />
-        <div className="absolute bottom-0 inset-x-0 p-5 photo-card-scrim">
-          <Link to="/collection" className="text-xs text-[var(--color-accent)]">← Wardrobe</Link>
-          <p className={`text-sm ${textMuted}`}>{fragrance.brand}</p>
-          <h1 className="text-2xl font-semibold">{fragrance.name}</h1>
+        <div className="absolute bottom-0 inset-x-0 p-6 z-10">
+          <Link to="/collection" className="text-xs font-semibold text-[var(--color-accent)]">← Wardrobe</Link>
+          <p className={`text-sm ${textMuted} mt-2 font-medium`}>{fragrance.brand}</p>
+          <h1 className="text-display mt-0.5">{fragrance.name}</h1>
           {(item.bottleType === 'decant' || item.bottleType === 'travel') && (
             <span className="inline-block mt-1 text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-[var(--color-accent)]/20 text-[var(--color-accent)]">
               {item.bottleType === 'decant' ? 'Decant' : 'Travel bottle'}
@@ -287,6 +303,15 @@ export function FragranceDetail() {
             <p><span className="text-[var(--color-accent)]">Base</span> · {fragrance.base_notes.join(', ') || '—'}</p>
           </div>
         </Card>
+
+        {profile && (
+          <FragranceWearGuide
+            fragrance={fragrance}
+            wardrobe={wardrobeFragrances}
+            profile={profile}
+            prefs={prefs}
+          />
+        )}
 
         <Card>
           <p className="font-medium mb-1">Bottle level</p>
@@ -359,8 +384,8 @@ export function FragranceDetail() {
           <div><p className="text-stone-500 text-xs">Casual</p><p className="font-semibold">{fragrance.casual_score}</p></div>
         </Card>
 
-        <Link to="/advisor"><Button className="w-full"><Sparkles size={16} /> Wear today</Button></Link>
-        <Link to="/layering" state={{ primaryId: fragrance.id }}><Button variant="ghost" className="w-full">Open in Layer Lab</Button></Link>
+        <Button to="/advisor" className="w-full"><Sparkles size={16} /> Wear today</Button>
+        <Button to="/layering" linkState={{ primaryId: fragrance.id }} variant="ghost" className="w-full">Open in Layer Lab</Button>
       </div>
 
       <AnimatePresence>
@@ -404,6 +429,7 @@ export function FragranceDetail() {
       <WearRatingModal
         open={Boolean(editWear)}
         fragranceName={`${fragrance.brand} ${fragrance.name}`}
+        catalogImage={fragrance.image}
         editMode
         initial={editWear ? { rating: editWear.rating, compliment: editWear.compliment, notes: editWear.notes } : undefined}
         onSubmit={saveWearEdit}

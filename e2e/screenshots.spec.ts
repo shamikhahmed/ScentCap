@@ -57,7 +57,7 @@ test.describe('App Store screenshots', () => {
     await page.getByRole('link', { name: 'Advisor' }).click();
     await expect(page.getByRole('heading', { name: 'Scent Advisor' })).toBeVisible();
     await page.getByRole('button', { name: 'Get recommendation' }).click();
-    await expect(page.getByText('Application map')).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText('Where to spray')).toBeVisible({ timeout: 15_000 });
     await page.screenshot({ path: join(SCREENSHOT_DIR, SHOTS[2].file), fullPage: true });
 
     // 4 — Layering Lab

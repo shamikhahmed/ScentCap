@@ -1,4 +1,5 @@
 import type { Fragrance } from '@/types';
+import { resolveBaseAccent } from '@/engines/spray';
 
 const COMPAT: Record<string, Record<string, number>> = {
   citrus: { woody: 90, musky: 85, fresh: 70, vanilla: 60, amber: 75, oud: 40, sweet: 55 },
@@ -41,13 +42,17 @@ function tagCompatibility(a: string[], b: string[]): { score: number; guidance: 
   }
   const guidance =
     best >= 85
-      ? `Excellent layer (${pair}). Apply richer scent first on skin, lighter on clothes.`
+      ? `Excellent match (${pair}). Base on chest/neck, lighter scent on wrists and ears.`
       : best >= 70
-        ? `Good layer (${pair}). Space sprays 30 seconds apart.`
+        ? `Good match (${pair}). Apply base first, wait 30 seconds, then accent on pulse points.`
         : best >= 50
-          ? `Moderate compatibility. Use lightly.`
+          ? `Moderate compatibility — use 1 spray each, spaced apart on body.`
           : 'Not recommended to layer these.';
   return { score: best, guidance };
+}
+
+function shortName(f: Fragrance): string {
+  return f.name.split(' ').slice(0, 3).join(' ');
 }
 
 export function findBestLayering(primary: Fragrance, candidates: Fragrance[]): {
@@ -56,21 +61,23 @@ export function findBestLayering(primary: Fragrance, candidates: Fragrance[]): {
   order: string;
   guidance: string;
   warn?: string;
+  baseFragranceId: string;
+  accentFragranceId: string;
 } | null {
   let best: ReturnType<typeof findBestLayering> = null;
   for (const c of candidates) {
     if (c.id === primary.id) continue;
     const { score, guidance, warn } = tagCompatibility(primary.layering_tags, c.layering_tags);
     if (!best || score > best.score) {
-      const primaryFirst = primary.concentration === 'Parfum' || primary.concentration === 'EDP';
+      const { base, accent } = resolveBaseAccent(primary, c);
       best = {
         secondary: c,
         score,
-        order: primaryFirst
-          ? `${primary.name} on skin first → ${c.name} on clothes`
-          : `${c.name} base → ${primary.name} on pulse points`,
+        order: `${shortName(base)} on skin (chest/neck) → ${shortName(accent)} on pulse points (wrists/ears)`,
         guidance,
         warn,
+        baseFragranceId: base.id,
+        accentFragranceId: accent.id,
       };
     }
   }

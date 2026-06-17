@@ -97,3 +97,71 @@ export function leastWornIds(collection: CollectionItem[], history: WearRecord[]
     .slice(0, limit)
     .map(([id]) => id);
 }
+
+export interface CostPerWearRow {
+  collectionId: string;
+  fragranceId: string;
+  name: string;
+  wears: number;
+  price: number;
+  costPerWear: number | null;
+}
+
+export function costPerWearRows(
+  collection: CollectionItem[],
+  history: WearRecord[],
+  nameById: Map<string, string>,
+): CostPerWearRow[] {
+  const wearCount: Record<string, number> = {};
+  for (const h of history) wearCount[h.fragranceId] = (wearCount[h.fragranceId] ?? 0) + 1;
+
+  return collection
+    .filter((c) => c.purchasePrice != null && c.purchasePrice > 0)
+    .map((c) => {
+      const wears = wearCount[c.fragranceId] ?? 0;
+      const name = nameById.get(c.fragranceId) ?? 'Unknown';
+      return {
+        collectionId: c.id,
+        fragranceId: c.fragranceId,
+        name,
+        wears,
+        price: c.purchasePrice!,
+        costPerWear: wears > 0 ? Math.round((c.purchasePrice! / wears) * 100) / 100 : null,
+      };
+    })
+    .sort((a, b) => {
+      if (a.costPerWear == null && b.costPerWear == null) return b.price - a.price;
+      if (a.costPerWear == null) return 1;
+      if (b.costPerWear == null) return -1;
+      return b.costPerWear - a.costPerWear;
+    });
+}
+
+export interface BlindSpotRow {
+  collectionId: string;
+  fragranceId: string;
+  name: string;
+  daysSince: number | null;
+  price: number;
+}
+
+/** Owned bottles with price but no recent wears — rotation blind spots. */
+export function blindSpotBottles(
+  collection: CollectionItem[],
+  history: WearRecord[],
+  nameById: Map<string, string>,
+  minPrice = 50,
+): BlindSpotRow[] {
+  return collection
+    .filter((c) => (c.purchasePrice ?? 0) >= minPrice)
+    .map((c) => ({
+      collectionId: c.id,
+      fragranceId: c.fragranceId,
+      name: nameById.get(c.fragranceId) ?? 'Unknown',
+      daysSince: daysSinceWear(c.fragranceId, history),
+      price: c.purchasePrice ?? 0,
+    }))
+    .filter((r) => r.daysSince === null || r.daysSince >= 30)
+    .sort((a, b) => (b.daysSince ?? 999) - (a.daysSince ?? 999))
+    .slice(0, 8);
+}

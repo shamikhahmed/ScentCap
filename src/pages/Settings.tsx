@@ -2,16 +2,18 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Crown, Shield, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { PageHeader } from '@/components/premium/PageHeader';
+import { GlassCard } from '@/components/premium/GlassCard';
 import { ProfileEditor } from '@/components/settings/ProfileEditor';
+import { CityWeatherInput } from '@/components/settings/CityWeatherInput';
 import { useApp } from '@/context/AppContext';
 import { usePro } from '@/context/ProContext';
 import { exportAllData, exportWearHistoryCsv, importAllData } from '@/db';
 import { exitDemo, loadDemoData } from '@/services/demo';
-import { getDailyWeather, requestLocation } from '@/services/weather';
 import { LAUNCH_PREVIEW } from '@/lib/pro';
 
 export function SettingsPage() {
-  const { profile, prefs, setPrefs, setProfile, refresh, collection } = useApp();
+  const { prefs, setPrefs, refresh, collection } = useApp();
   const { isPro, openPaywall, deactivatePro } = usePro();
   const navigate = useNavigate();
 
@@ -46,22 +48,11 @@ export function SettingsPage() {
     input.click();
   };
 
-  const refreshLocation = async () => {
-    if (!profile) return;
-    const loc = await requestLocation();
-    const nextProfile = loc
-      ? { ...profile, lat: loc.lat, lon: loc.lon, cityLabel: loc.label }
-      : profile;
-    if (loc) await setProfile(nextProfile);
-    await getDailyWeather(nextProfile, true);
-    await refresh();
-  };
-
   return (
     <div className="safe-pt px-5 py-6 max-w-lg mx-auto space-y-6">
-      <h1 className="text-3xl font-semibold">Settings</h1>
+      <PageHeader eyebrow="Preferences" title="Settings" large />
 
-      <Card className={`space-y-4 ${isPro ? 'border-[var(--color-accent)]/40' : ''}`} data-testid="pro-settings-card">
+      <GlassCard className={`space-y-4 ${isPro ? '!border-[var(--color-accent)]/30' : ''}`} data-testid="pro-settings-card">
         <div className="flex items-start gap-3">
           <div className="w-10 h-10 rounded-xl bg-[var(--color-accent-muted)] flex items-center justify-center shrink-0">
             {LAUNCH_PREVIEW ? <Sparkles size={20} className="text-[var(--color-accent)]" /> : <Crown size={20} className="text-[var(--color-accent)]" />}
@@ -97,7 +88,7 @@ export function SettingsPage() {
             </Button>
           </div>
         )}
-      </Card>
+      </GlassCard>
 
       <Card className="privacy-badge border-[var(--color-accent)]/30 bg-[var(--color-accent-muted)] space-y-3">
         <div className="flex items-start gap-3">
@@ -127,7 +118,10 @@ export function SettingsPage() {
       <Link to="/analytics" className="text-sm text-[var(--color-accent)]">
         Collection analytics
       </Link>
-      <Link to="/travel" className="text-sm text-[var(--color-accent)] block">
+      <Link to="/layering" className="text-sm text-[var(--color-accent)] block mt-2">
+        Layering Lab
+      </Link>
+      <Link to="/travel" className="text-sm text-[var(--color-accent)] block mt-2">
         Travel kit planner
       </Link>
 
@@ -159,9 +153,8 @@ export function SettingsPage() {
       </Card>
 
       <Card className="space-y-3">
-        <p className="font-medium">Weather & location</p>
-        <Button variant="ghost" className="w-full" onClick={refreshLocation}>Update location & weather</Button>
-        {profile?.cityLabel && <p className="text-xs text-stone-500">{profile.cityLabel}</p>}
+        <p className="font-medium">Weather</p>
+        <CityWeatherInput />
       </Card>
 
       <Card className="space-y-3">
