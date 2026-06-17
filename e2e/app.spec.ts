@@ -3,6 +3,7 @@ import {
   addFragranceFromSearch,
   completeOnboarding,
   installTestMocks,
+  loadDemoWardrobe,
 } from './helpers';
 
 test.describe('ScentCap PWA', () => {
@@ -18,12 +19,7 @@ test.describe('ScentCap PWA', () => {
   });
 
   test('demo flow loads sample wardrobe on home', async ({ page }) => {
-    await page.goto('./onboarding');
-    await expect(page.getByRole('heading', { name: /Your fragrance OS/i })).toBeVisible();
-    await page.getByRole('button', { name: /Try demo collection/i }).click();
-
-    await expect(page).not.toHaveURL(/onboarding/, { timeout: 30_000 });
-    await expect(page.getByText(/You're viewing a demo wardrobe/i)).toBeVisible({ timeout: 15_000 });
+    await loadDemoWardrobe(page);
     await expect(page.getByText('Bottles', { exact: true })).toBeVisible();
     await expect(page.getByRole('button', { name: /Wear this today/i })).toBeVisible({ timeout: 20_000 });
   });
@@ -32,7 +28,7 @@ test.describe('ScentCap PWA', () => {
     await completeOnboarding(page);
     await addFragranceFromSearch(page, 'Dior');
 
-    await expect(page.getByText(/1 bottles/i)).toBeVisible();
+    await expect(page.getByText(/1 bottle/i)).toBeVisible();
     await page.getByRole('link', { name: 'Today' }).click();
     await expect(page.getByRole('button', { name: /Wear this today/i })).toBeVisible({ timeout: 20_000 });
   });
@@ -42,20 +38,18 @@ test.describe('ScentCap PWA', () => {
     await addFragranceFromSearch(page, 'Dior');
 
     await page.getByRole('link', { name: 'Wardrobe' }).click();
-    await expect(page.getByText(/1 bottles/i)).toBeVisible();
+    await expect(page.getByText(/1 bottle/i)).toBeVisible();
     await page.locator('a[href*="/fragrance/"]').first().click();
     await expect(page.getByRole('button', { name: 'Delete' })).toBeVisible({ timeout: 10_000 });
 
     await page.getByRole('button', { name: 'Delete' }).click();
     await page.getByRole('button', { name: 'Delete' }).last().click();
     await expect(page).toHaveURL(/\/collection/, { timeout: 15_000 });
-    await expect(page.getByText(/No bottles yet/i)).toBeVisible();
+    await expect(page.getByText(/Your cabinet is empty/i)).toBeVisible();
   });
 
   test('travel kit persists trip name after reload', async ({ page }) => {
-    await page.goto('./onboarding');
-    await page.getByRole('button', { name: /Try demo collection/i }).click();
-    await expect(page).not.toHaveURL(/onboarding/, { timeout: 30_000 });
+    await loadDemoWardrobe(page);
 
     await page.goto('./travel');
     await expect(page.getByRole('heading', { name: 'Travel kit' })).toBeVisible({ timeout: 10_000 });
@@ -73,13 +67,11 @@ test.describe('ScentCap PWA', () => {
     await page.getByRole('link', { name: 'Advisor' }).click();
     await expect(page.getByRole('heading', { name: 'Scent Advisor' })).toBeVisible({ timeout: 10_000 });
     await page.getByRole('button', { name: 'Get recommendation' }).click();
-    await expect(page.getByText('Primary')).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText(/Primary pick/i)).toBeVisible({ timeout: 15_000 });
   });
 
   test('calendar month prev/next navigation', async ({ page }) => {
-    await page.goto('./onboarding');
-    await page.getByRole('button', { name: /Try demo collection/i }).click();
-    await expect(page).not.toHaveURL(/onboarding/, { timeout: 30_000 });
+    await loadDemoWardrobe(page);
 
     await page.goto('./calendar');
     await expect(page.getByRole('heading', { name: 'Wear calendar' })).toBeVisible({ timeout: 10_000 });
@@ -98,11 +90,10 @@ test.describe('ScentCap PWA', () => {
     const pageErrors: string[] = [];
     page.on('pageerror', (err) => pageErrors.push(err.message));
 
-    await page.goto('./onboarding');
-    await page.getByRole('button', { name: /Try demo collection/i }).click();
+    await loadDemoWardrobe(page);
     await expect(page.getByRole('button', { name: /Wear this today/i })).toBeVisible({ timeout: 20_000 });
 
-    await page.getByRole('button', { name: /Share today's pick/i }).click();
+    await page.getByRole('button', { name: 'Share' }).click();
     await expect(page.getByText(/Shared!|Copied to clipboard|Saved as PNG/)).toBeVisible({ timeout: 10_000 });
     expect(pageErrors).toHaveLength(0);
   });
@@ -116,9 +107,7 @@ test.describe('ScentCap launch preview', () => {
   });
 
   test('Pro features accessible without paywall during launch preview', async ({ page }) => {
-    await page.goto('./onboarding');
-    await page.getByRole('button', { name: /Try demo collection/i }).click();
-    await expect(page).not.toHaveURL(/onboarding/, { timeout: 30_000 });
+    await loadDemoWardrobe(page);
 
     await page.goto('./travel');
     await expect(page.getByRole('heading', { name: 'Travel kit' })).toBeVisible({ timeout: 10_000 });
@@ -130,9 +119,7 @@ test.describe('ScentCap launch preview', () => {
   });
 
   test('Pro roadmap modal opens from settings', async ({ page }) => {
-    await page.goto('./onboarding');
-    await page.getByRole('button', { name: /Try demo collection/i }).click();
-    await expect(page).not.toHaveURL(/onboarding/, { timeout: 30_000 });
+    await loadDemoWardrobe(page);
 
     await page.goto('./settings');
     await page.getByTestId('pro-roadmap-btn').click();

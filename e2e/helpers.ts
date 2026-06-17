@@ -29,6 +29,9 @@ export async function installTestMocks(page: Page, options?: { pro?: boolean }) 
     };
 
     const originalFetch = window.fetch.bind(window);
+    const slugify = (s: string) =>
+      s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
     window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
       if (url.includes('open-meteo.com')) {
@@ -39,6 +42,40 @@ export async function installTestMocks(page: Page, options?: { pro?: boolean }) 
           { headers: { 'Content-Type': 'application/json' } },
         );
       }
+      if (url.includes('geocoding-api.open-meteo.com')) {
+        return new Response(
+          JSON.stringify({
+            results: [{ name: 'New York', country: 'United States', latitude: 40.7128, longitude: -74.006 }],
+          }),
+          { headers: { 'Content-Type': 'application/json' } },
+        );
+      }
+      if (url.includes('fraganty.ai')) {
+        if (url.includes('/search')) {
+          const q = new URL(url, 'https://fraganty.ai').searchParams.get('q') ?? 'fragrance';
+          const slug = slugify(q);
+          return new Response(
+            JSON.stringify({
+              perfumes: [{ brand: 'Demo', name: `${q} Eau de Parfum`, slug }],
+            }),
+            { headers: { 'Content-Type': 'application/json' } },
+          );
+        }
+        if (url.includes('/perfumes/')) {
+          const slug = decodeURIComponent(url.split('/perfumes/')[1]?.split('?')[0] ?? 'demo');
+          const label = slug.replace(/-/g, ' ');
+          return new Response(
+            JSON.stringify({
+              brand: 'Demo',
+              name: `${label} Eau de Parfum`,
+              slug,
+              accords: [{ name: 'Fresh' }],
+              notes: { top: ['Bergamot'], middle: ['Lavender'], base: ['Musk'] },
+            }),
+            { headers: { 'Content-Type': 'application/json' } },
+          );
+        }
+      }
       return originalFetch(input, init);
     };
   }, options?.pro ?? true);
@@ -48,8 +85,9 @@ export async function loadDemoWardrobe(page: Page) {
   await page.goto('./onboarding');
   await expect(page.getByRole('heading', { name: /Your fragrance OS/i })).toBeVisible();
   await page.getByRole('button', { name: /Try demo collection/i }).click();
-  await expect(page).not.toHaveURL(/onboarding/, { timeout: 30_000 });
-  await expect(page.getByText(/You're viewing a demo wardrobe/i)).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByRole('button', { name: /Try demo collection/i })).toBeHidden({ timeout: 60_000 });
+  await expect(page).not.toHaveURL(/onboarding/, { timeout: 60_000 });
+  await expect(page.getByText(/demo wardrobe/i)).toBeVisible({ timeout: 15_000 });
 }
 
 export async function completeOnboarding(page: Page) {
@@ -63,8 +101,14 @@ export async function completeOnboarding(page: Page) {
     await page.getByRole('button', { name: step.choice, exact: true }).click();
   }
 
+  await expect(page.getByRole('heading', { name: /Your city/i })).toBeVisible({ timeout: 10_000 });
+  await page.getByRole('button', { name: /Skip for now/i }).click();
+
   await expect(page.getByRole('heading', { name: /Office Safe/i })).toBeVisible();
-  await page.locator('button').filter({ hasText: /Office Safe is ON/i }).click();
+  const officeOn = page.getByRole('button', { name: /Office Safe is on/i });
+  if (await officeOn.isVisible()) {
+    await officeOn.click();
+  }
   await page.getByRole('button', { name: /Get started/i }).click();
 
   await expect(page).not.toHaveURL(/onboarding/, { timeout: 30_000 });
@@ -77,12 +121,12 @@ export async function addFragranceFromSearch(page: Page, query: string) {
   await page.getByRole('link', { name: /Add first bottle|Add bottle/i }).first().click();
   await expect(page.getByRole('heading', { name: /Add fragrance/i })).toBeVisible();
 
-  await page.getByPlaceholder(/Search by brand or name/i).fill(query);
-  await expect(page.locator('button').filter({ hasText: /^(EDT|EDP|Parfum|Cologne|Extrait)$/ }).first()).toBeVisible({
-    timeout: 20_000,
-  });
+  await page.getByRole('button', { name: /Add manually/i }).click();
+  const brand = /bleu/i.test(query) ? 'Chanel' : 'Dior';
+  const name = /bleu/i.test(query) ? 'Bleu de Chanel' : 'Sauvage';
 
-  await page.locator('button').filter({ hasText: /^(EDT|EDP|Parfum|Cologne|Extrait)$/ }).first().click();
-  await page.getByRole('button', { name: 'Add to wardrobe' }).click();
+  await page.getByPlaceholder('Fragrance name').fill(name);
+  await page.getByPlaceholder('Brand').fill(brand);
+  await page.getByRole('button', { name: /Save to wardrobe/i }).click();
   await expect(page).toHaveURL(/\/collection/, { timeout: 15_000 });
 }

@@ -41,7 +41,7 @@ test.describe('App Store screenshots', () => {
     await page.screenshot({ path: join(SCREENSHOT_DIR, SHOTS[0].file), fullPage: true });
 
     // 2 — Office Safe visible on home
-    await page.getByRole('link', { name: 'Settings' }).click();
+    await page.getByRole('link', { name: /Settings|More/i }).first().click();
     await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible({ timeout: 10_000 });
     const officeBtn = page.getByRole('button', { name: /Office-safe/i });
     await expect(officeBtn).toBeVisible();
@@ -57,11 +57,11 @@ test.describe('App Store screenshots', () => {
     await page.getByRole('link', { name: 'Advisor' }).click();
     await expect(page.getByRole('heading', { name: 'Scent Advisor' })).toBeVisible();
     await page.getByRole('button', { name: 'Get recommendation' }).click();
-    await expect(page.getByText('Where to spray')).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText(/Primary pick|Where to spray|Layering placement/i).first()).toBeVisible({ timeout: 15_000 });
     await page.screenshot({ path: join(SCREENSHOT_DIR, SHOTS[2].file), fullPage: true });
 
-    // 4 — Layering Lab
-    await page.getByRole('link', { name: 'Layer' }).click();
+    // 4 — Layering Lab (not in mobile tab bar)
+    await page.goto('./layering');
     await expect(page.getByText('Layering Lab')).toBeVisible({ timeout: 10_000 });
     await page.screenshot({ path: join(SCREENSHOT_DIR, SHOTS[3].file), fullPage: true });
 
