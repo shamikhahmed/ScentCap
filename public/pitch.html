@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--amber:#c9a87c;--gold:#8b6914;--warm:#e8d4b8;
+:root{--accent:#c9a87c;--amber:#c9a87c;--gold:#8b6914;--warm:#e8d4b8;
   --muted:rgba(245,240,232,.55);--dim:rgba(245,240,232,.25);font-size:16px}
 html{scroll-behavior:smooth}
 body{font-family:Inter,-apple-system,sans-serif;background:#1a1614;color:#f5f0e8;overflow-x:hidden}
@@ -67,6 +67,13 @@ h2{font-size:clamp(1.6rem,4.5vw,2.8rem);font-weight:800;letter-spacing:-.03em;ma
 .trust{max-width:560px;margin:2rem auto 0;padding:20px 24px;border-radius:20px;
   background:rgba(201,168,124,.06);border:1px solid rgba(201,168,124,.2);font-weight:600;line-height:1.6}
 @media print{#nav-dots,#export-btn{display:none!important}.slide{page-break-after:always;min-height:100vh}.reveal,.reveal-left,.reveal-right{opacity:1!important;transform:none!important}}
+
+.deck-shot{display:block;width:100%;height:auto;margin:0;object-fit:cover;object-position:top center}
+.phone-b:has(.deck-shot),.phone-body:has(.deck-shot),.phone-screen:has(.deck-shot),.phone-inner:has(.deck-shot),.term-b:has(.deck-shot){padding:0!important;min-height:0!important;overflow:hidden}
+.term-b .deck-shot{border-radius:0 0 12px 12px}
+.deck-shot-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin:1.5rem 0}
+.deck-shot-frame{width:min(100%,280px);border-radius:24px;overflow:hidden;border:2px solid rgba(255,255,255,.12);box-shadow:0 20px 50px rgba(0,0,0,.35)}
+
 </style>
 
   <link rel="stylesheet" href="css/capricorn-core.css">
@@ -91,19 +98,19 @@ h2{font-size:clamp(1.6rem,4.5vw,2.8rem);font-weight:800;letter-spacing:-.03em;ma
 
 <section class="slide" id="s2">
   <div style="max-width:800px;width:100%">
-    <h2 class="reveal">Fragrance collectors track <span style="color:var(--accent,inherit)">broken.</span></h2>
-    <p class="sub reveal delay-1">Bottles in drawers. Wear history in memory. Layering experiments forgotten. Weather ignored.</p>
+    <h2 class="reveal">Your wardrobe is <span style="color:var(--accent)">scattered.</span></h2>
+    <p class="sub reveal delay-1">Fragrance collectors track bottles in notes apps — no levels, wear history, or rotation health.</p>
     <div class="cards">
-      <div class="card reveal-left delay-1"><h3>📱 Fragrance collectors track bottles in notes apps</h3><p>Fragrance collectors track bottles in notes apps — no levels, wear history, or rotation health.</p></div>
-      <div class="card reveal-right delay-2"><h3>🌡️ Weather and occasion should shape daily picks</h3><p>Weather and occasion should shape daily picks — but spreadsheets cannot advise.</p></div>
-      <div class="card reveal-left delay-3"><h3>🧪 Beauty apps want accounts, ads, and scent profil</h3><p>Beauty apps want accounts, ads, and scent profiles uploaded to their cloud.</p></div>
+      <div class="card reveal-left delay-1"><h3>📱 Fragrance collectors track bottles in n…</h3><p>Fragrance collectors track bottles in notes apps — no levels, wear history, or rotation health.</p></div>
+      <div class="card reveal-right delay-2"><h3>🌡️ Weather and occasion should shape daily…</h3><p>Weather and occasion should shape daily picks — but spreadsheets cannot advise.</p></div>
+      <div class="card reveal-left delay-3"><h3>🧪 Beauty apps want accounts, ads, and sce…</h3><p>Beauty apps want accounts, ads, and scent profiles uploaded to their cloud.</p></div>
     </div>
   </div>
 </section>
 
 <section class="slide" id="s3">
   <div style="max-width:700px;width:100%">
-    <h2 class="reveal section-title" id="s3-cycler">Spreadsheets don't smell.</h2>
+    <h2 class="reveal section-title" id="s3-cycler">One wardrobe. Every season.</h2>
     <p class="sub reveal delay-2" style="color:var(--amber);font-weight:700">Collectors deserve a wardrobe OS — not another grid.</p>
   </div>
 </section>
@@ -143,8 +150,7 @@ h2{font-size:clamp(1.6rem,4.5vw,2.8rem);font-weight:800;letter-spacing:-.03em;ma
     <h2 class="reveal section-title">Today at a glance.</h2>
     <div class="phone reveal delay-1" style="margin-bottom:1.5rem">
       <div class="phone-h">🏠 Today</div>
-      <div class="phone-b">
-        <div style="font-size:11px;color:var(--muted);font-weight:700">Good morning — 18°C, clear</div>
+      <div class="phone-b"><img class="deck-shot" src="https://shamikhahmed.github.io/assets/screenshots/scentcap-2.png" alt="ScentCap Today home dashboard" width="280" height="606" loading="lazy" decoding="async"></div>
         <div class="big-num">92</div>
         <div style="text-align:center;font-size:10px;font-weight:700;color:var(--muted)">advisor match score</div>
         <div class="wear" style="margin-top:10px">Creed Aventus · Office preset · Wear today</div>
@@ -160,7 +166,11 @@ h2{font-size:clamp(1.6rem,4.5vw,2.8rem);font-weight:800;letter-spacing:-.03em;ma
   <div style="max-width:900px;width:100%">
     <h2 class="reveal section-title">Wardrobe intelligence.</h2>
     <div class="cards">
-      <div class="card reveal delay-1"><h3>🔍 Seed database</h3><p>Search thousands of fragrances — add with concentration and bottle level.</p></div>
+      <div class="card reveal delay-1"><h3>Today dashboard</h3><p>Today's pick, weather, occasion presets, and one-tap wear logging all in one view.</p></div>
+      <div class="card reveal delay-2"><h3>Wardrobe catalog</h3><p>Add bottles from the seed database, track how full they are, mark your signature scent.</p></div>
+      <div class="card reveal delay-3"><h3>Smart Advisor</h3><p>Picks a scent for your day based on weather, occasion, and what you haven't worn recently.</p></div>
+      <div class="card reveal delay-4"><h3>Layering Lab</h3><p>Save combinations that work together and keep notes on what you want to try.</p></div>
+    </div>
       <div class="card reveal delay-2"><h3>⭐ Signature scent</h3><p>Mark favorites and your daily signature — advisor weights accordingly.</p></div>
       <div class="card reveal delay-3"><h3>📅 Wear calendar</h3><p>Heatmap shows gaps — rediscover bottles you forgot.</p></div>
       <div class="card reveal delay-4"><h3>🧪 Layering Lab</h3><p>Save base + top combos that work on your skin chemistry.</p></div>
