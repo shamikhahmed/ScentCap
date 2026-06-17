@@ -38,14 +38,14 @@ export function HeroPick({
 
   return (
     <motion.div
-      className="hero-pick-premium"
+      className="hero-pick-premium cap-hero-3d"
       style={{ '--aura': familyColor } as React.CSSProperties}
       initial={{ opacity: 0, y: 16, scale: 0.98 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] }}
     >
       <div className="hero-aura-glow" aria-hidden />
-      <div className="hero-pick-inner">
+      <div className="hero-pick-inner cap-hero-3d-inner">
         <div className="flex flex-col items-center text-center pt-2 pb-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.85 }}

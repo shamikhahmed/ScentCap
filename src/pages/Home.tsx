@@ -17,6 +17,7 @@ import { FragranceThumb } from '@/components/collection/FragranceThumb';
 import { StatPill } from '@/components/premium/StatPill';
 import { GlassCard } from '@/components/premium/GlassCard';
 import { timeGreeting, scentMood } from '@/lib/greetings';
+import { CapKineticHeadline } from '@/components/premium/CapKineticHeadline';
 import { FAMILY_COLORS, rotationHealth, wearStreak, wearsThisMonth, daysSinceWear } from '@/lib/stats';
 import { weatherUnavailableMessage } from '@/services/weather';
 import { uid } from '@/lib/utils';
@@ -258,7 +259,9 @@ export function Home() {
               <span>{greeting.emoji}</span>
               {greeting.line}
             </p>
-            <h1 className="text-display mt-1.5">{mood}</h1>
+            <h1 className="text-display mt-1.5">
+              <CapKineticHeadline lines={[mood]} gradient />
+            </h1>
             {prefs.officeSafeMode && (
               <span className="inline-flex items-center gap-1.5 mt-3 text-caption text-[var(--color-accent)] bg-[var(--color-accent-muted)] px-2.5 py-1 rounded-full">
                 <Briefcase size={11} /> Office Safe

@@ -79,6 +79,7 @@ export function AppShell() {
   return (
     <div className="min-h-dvh flex flex-col md:flex-row md:max-w-[1440px] md:mx-auto md:w-full relative">
       <AmbientBackground />
+      <div className="cap-scroll-progress" aria-hidden="true" />
 
       <aside className="hidden md:flex md:w-64 md:flex-shrink-0 md:flex-col md:border-r md:border-[var(--color-separator)] md:safe-pt md:p-6 md:gap-1 md:sticky md:top-0 md:h-dvh md:overflow-y-auto md:bg-[var(--color-bg)]/80 md:backdrop-blur-xl">
         <div className="mb-8">

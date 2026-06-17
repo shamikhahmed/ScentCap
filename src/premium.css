@@ -1038,3 +1038,43 @@ body.light .wardrobe-shelf-board {
   right: 0.65rem;
 }
 
+/* ─── Premium motion (3D / kinetic) ─── */
+.cap-scene-canvas,
+#cap-scene {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.55;
+}
+
+body.cap-has-scene #root,
+body.cap-has-scene main {
+  position: relative;
+  z-index: 1;
+}
+
+.cap-scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 9999;
+  transform-origin: 0 50%;
+  transform: scaleX(var(--cap-scroll-progress, 0));
+  background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+  pointer-events: none;
+}
+
+.cap-kinetic-line > span {
+  display: inline-block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cap-scene-canvas,
+  #cap-scene { display: none !important; }
+}
+
