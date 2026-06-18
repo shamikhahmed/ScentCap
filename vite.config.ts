@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import path from 'path';
+import versionManifest from './VERSION.json';
 
 const isCapacitor = process.env.CAPACITOR === 'true' || process.env.VITE_CAPACITOR === 'true';
 const base = isCapacitor ? '/' : '/ScentCap/';
@@ -20,8 +21,8 @@ export default defineConfig({
         name: 'ScentCap',
         short_name: 'ScentCap',
         description: 'Your personal fragrance operating system',
-        theme_color: '#000000',
-        background_color: '#000000',
+        theme_color: '#0c0a09',
+        background_color: '#0c0a09',
         display: 'standalone',
         orientation: 'portrait',
         start_url: startUrl,
@@ -32,6 +33,7 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,json,woff2}'],
+        cacheId: versionManifest.swCache,
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/api\.open-meteo\.com\/.*/i,
