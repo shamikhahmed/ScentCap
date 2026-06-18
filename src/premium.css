@@ -1078,3 +1078,52 @@ body.cap-has-scene main {
   #cap-scene { display: none !important; }
 }
 
+/* App fast mode — bundled for React shell (body data-cap-app="1") */
+body[data-cap-app="1"] .cap-scene-canvas,
+body[data-cap-app="1"] #cap-scene,
+body[data-cap-app="1"] #mist-canvas,
+body[data-cap-app="1"] .cap-ambient,
+body[data-cap-app="1"] .cap-scroll-progress {
+  display: none !important;
+}
+
+body[data-cap-app="1"] .cap-reveal,
+body[data-cap-app="1"] .cap-reveal-scale,
+body[data-cap-app="1"] .cap-reveal-lines,
+body[data-cap-app="1"] .cap-reveal-lines .cap-line > span,
+body[data-cap-app="1"] .cap-kinetic .cap-kinetic-line > span,
+body[data-cap-app="1"] .cap-stagger > * {
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+body[data-cap-app="1"] .glass-premium,
+body[data-cap-app="1"] .glass-card,
+body[data-cap-app="1"] .glass-tile,
+body[data-cap-app="1"] .cap-glass,
+body[data-cap-app="1"] .cap-glass-heavy,
+body[data-cap-app="1"] .cap-glass-light,
+body[data-cap-app="1"] [class*="glass"],
+body[data-cap-app="1"] .os-card {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+body[data-cap-app="1"] [data-cap-parallax],
+body[data-cap-app="1"] .cap-hero-3d-inner,
+body[data-cap-app="1"] .cap-float,
+body[data-cap-app="1"] .cap-magnetic {
+  will-change: auto !important;
+  transform: none !important;
+}
+
+body[data-cap-app="1"] .screen,
+body[data-cap-app="1"] .page,
+body[data-cap-app="1"] #view > .screen {
+  animation: none !important;
+  transition: none !important;
+}
+

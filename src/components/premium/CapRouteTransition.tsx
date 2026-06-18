@@ -6,6 +6,9 @@ const reduced =
   typeof window !== 'undefined' &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+const isAppShell =
+  typeof document !== 'undefined' && document.body?.getAttribute('data-cap-app') === '1';
+
 const WIDGET_SEL = [
   '.cap-reveal',
   '.cap-stagger > *',
@@ -32,7 +35,7 @@ export function CapRouteTransition({ children, className }: CapRouteTransitionPr
 
   useLayoutEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el || isAppShell) return;
 
     if (reduced) {
       gsap.set(el, { clearProps: 'all' });
@@ -77,7 +80,7 @@ export function CapRouteTransition({ children, className }: CapRouteTransitionPr
   }, [location.pathname]);
 
   return (
-    <div ref={ref} className={className} data-cap-dashboard>
+    <div ref={isAppShell ? undefined : ref} className={className} data-cap-dashboard>
       {children}
     </div>
   );

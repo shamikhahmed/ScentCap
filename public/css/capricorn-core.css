@@ -992,6 +992,7 @@ body.cap-has-scene > #root {
 .cap-tab,
 .div-tab,
 .tab-pill,
+.search-chip,
 .perf-tab,
 #pg-family-body button.cap-tab {
   flex-shrink: 0;
@@ -1013,12 +1014,14 @@ body.cap-has-scene > #root {
 .cap-tab:hover,
 .div-tab:hover,
 .tab-pill:hover,
+.search-chip:hover,
 .perf-tab:hover { color: var(--cap-text, var(--text, var(--os-text, #f3f4f6))); }
 
 .cap-tab.on,
 .cap-tab.active,
 .div-tab.active,
 .tab-pill.on,
+.search-chip.on,
 .perf-tab.active {
   background: var(--cap-accent, var(--accent, var(--os-accent, #2563eb)));
   border-color: var(--cap-accent, var(--accent, var(--os-accent, #2563eb)));
@@ -1167,7 +1170,8 @@ body.cap-has-scene > #root {
   .cap-tab-panel { padding-left: 20px; padding-right: 20px; }
 }
 
-/* Nested tab bars (e.g. performance header) */
+/* Nested / inline tab bars (modals, sticky search, performance header) */
+.cap-tab-bar--flush,
 .perf-header .cap-tab-bar {
   border-bottom: none;
   padding: 0;
