@@ -2,10 +2,12 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https:; connect-src 'self' https://api.open-meteo.com; frame-src 'none'; object-src 'none'; base-uri 'self'" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#0c0a09" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="ScentCap" />
     <meta name="description" content="Your personal fragrance operating system — daily picks, DNA-style scoring, and a full scent wardrobe on your device." />
@@ -23,6 +25,7 @@
     <title>ScentCap — Fragrance Wardrobe</title>
   </head>
   <body data-cap-app="1">
+    <a href="#main" class="cap-skip-link">Skip to content</a>
     <script>
       (function (l) {
         if (l.search[1] === '/') {
@@ -40,5 +43,6 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <script src="js/capricorn-motion.js"></script>
+    <script src="js/cap-demo-mode.js"></script>
 </body>
 </html>

@@ -2,29 +2,15 @@ import {
   addToCollection,
   clearUserData,
   logWear,
+  putFragrance,
   savePreferences,
   saveProfile,
   saveWeatherCache,
 } from '@/db';
-import { loadCatalogBySlug } from '@/services/catalogSearch';
-import { ensureSeedLoaded } from '@/services/seed';
+import { DEMO_BOTTLE_META, DEMO_FRAGRANCES } from '@/data/demoFragrances';
+import { markDemoSession } from '@/lib/demoMode';
 import { todayKey, uid } from '@/lib/utils';
-import type { BottleLevel, CollectionItem, Fragrance, Preferences, UserProfile, WearRecord } from '@/types';
-
-const DEMO_CATALOG: { slug: string; level: BottleLevel; favorite?: boolean; signature?: boolean }[] = [
-  { slug: 'sauvage-eau-de-parfum', level: '75', favorite: true, signature: true },
-  { slug: 'bleu-de-chanel-eau-de-parfum', level: '50', favorite: true },
-  { slug: 'acqua-di-gio', level: 'full' },
-  { slug: 'y-eau-de-parfum', level: '75' },
-  { slug: 'aventus', level: '25', favorite: true },
-  { slug: 'ombre-leather-16', level: '50' },
-  { slug: 'baccarat-rouge-540', level: '25' },
-  { slug: 'khamrah', level: 'full' },
-  { slug: 'luna-rossa-carbon', level: '75' },
-  { slug: 'light-blue-pour-homme-dolce-gabbana-cologne', level: '50' },
-  { slug: 'eros-eau-de-parfum', level: '75' },
-  { slug: 'coco-mademoiselle-parfum', level: '50' },
-];
+import type { CollectionItem, Preferences, UserProfile, WearRecord } from '@/types';
 
 const OCCASIONS = ['work', 'casual', 'date', 'event', 'home'] as const;
 const DRESS_LEVELS = ['casual', 'smart_casual', 'professional', 'formal'] as const;
@@ -60,29 +46,34 @@ function buildWearHistory(collection: CollectionItem[]): WearRecord[] {
   return records.sort((a, b) => b.wornAt.localeCompare(a.wornAt));
 }
 
+/** Load offline demo wardrobe — no network calls (fixes onboarding loader hang). */
 export async function loadDemoData(): Promise<void> {
-  await ensureSeedLoaded();
   await clearUserData();
+  markDemoSession();
 
-  const fragrances: { meta: (typeof DEMO_CATALOG)[number]; f: Fragrance }[] = [];
-  for (const meta of DEMO_CATALOG) {
-    const f = await loadCatalogBySlug(meta.slug);
-    if (f) fragrances.push({ meta, f });
+  const bySlug = new Map(DEMO_FRAGRANCES.map((f) => [f.catalogSlug!, f]));
+  for (const f of DEMO_FRAGRANCES) {
+    await putFragrance(f);
   }
 
   const now = new Date().toISOString();
-  const collection: CollectionItem[] = fragrances.map(({ meta, f }) => ({
-    id: uid(),
-    fragranceId: f.id,
-    bottleLevel: meta.level,
-    bottleSizeMl: 100,
-    isFavorite: Boolean(meta.favorite),
-    isSignature: Boolean(meta.signature),
-    signatureRole: meta.signature ? 'work' as const : undefined,
-    addedAt: now,
-  }));
+  const collection: CollectionItem[] = [];
 
-  for (const item of collection) {
+  for (const meta of DEMO_BOTTLE_META) {
+    const f = bySlug.get(meta.catalogSlug);
+    if (!f) continue;
+    const item: CollectionItem = {
+      id: uid(),
+      fragranceId: f.id,
+      bottleLevel: meta.level,
+      bottleSizeMl: 100,
+      purchasePrice: meta.purchasePrice,
+      isFavorite: Boolean(meta.favorite),
+      isSignature: Boolean(meta.signature),
+      signatureRole: meta.signature ? 'work' as const : undefined,
+      addedAt: now,
+    };
+    collection.push(item);
     await addToCollection(item);
   }
 
@@ -130,5 +121,7 @@ export async function loadDemoData(): Promise<void> {
 }
 
 export async function exitDemo(): Promise<void> {
+  const { clearDemoSession } = await import('@/lib/demoMode');
+  clearDemoSession();
   await clearUserData();
 }

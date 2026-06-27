@@ -46,6 +46,7 @@ export function Onboarding() {
   const [locationError, setLocationError] = useState<string | null>(null);
   const [pendingLocation, setPendingLocation] = useState<CityLocation | null>(null);
   const [loadingDemo, setLoadingDemo] = useState(false);
+  const [demoError, setDemoError] = useState<string | null>(null);
   const [finishing, setFinishing] = useState(false);
 
   const current = STEPS[step];
@@ -113,10 +114,14 @@ export function Onboarding() {
 
   const tryDemo = async () => {
     setLoadingDemo(true);
+    setDemoError(null);
     try {
       await loadDemoData();
       await refresh();
-      navigate('/');
+      navigate('/', { replace: true });
+    } catch (err) {
+      console.error('[ScentCap] Demo load failed', err);
+      setDemoError('Could not load demo collection. Try again or add ?demo=1 to the URL.');
     } finally {
       setLoadingDemo(false);
     }
@@ -161,6 +166,7 @@ export function Onboarding() {
             {loadingDemo ? 'Loading…' : 'Try demo collection'}
           </Button>
           {loadingDemo && <CyclingShimmerText messages={DEMO_LOADING_MESSAGES} className="text-center" />}
+          {demoError && <p className="text-xs text-amber-400 mt-2 text-center">{demoError}</p>}
           <Button size="lg" variant="glass" className="w-full" onClick={() => setWelcome(false)}>
             Quick setup
           </Button>

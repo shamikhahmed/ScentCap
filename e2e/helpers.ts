@@ -87,7 +87,7 @@ export async function loadDemoWardrobe(page: Page) {
   await page.getByRole('button', { name: /Try demo collection/i }).click();
   await expect(page.getByRole('button', { name: /Try demo collection/i })).toBeHidden({ timeout: 60_000 });
   await expect(page).not.toHaveURL(/onboarding/, { timeout: 60_000 });
-  await expect(page.getByText(/demo wardrobe/i)).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByText(/demo mode|sample wardrobe/i)).toBeVisible({ timeout: 15_000 });
 }
 
 export async function completeOnboarding(page: Page) {
@@ -114,12 +114,13 @@ export async function completeOnboarding(page: Page) {
   await expect(page).not.toHaveURL(/onboarding/, { timeout: 30_000 });
   await expect(
     page.getByRole('heading', { name: /Your wardrobe awaits|Keep it airy|Balanced weather|Rich scents|Let longevity/i }),
-  ).toBeVisible({ timeout: 15_000 });
+  ).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByRole('link', { name: /Add first bottle|Add bottle/i }).first()).toBeVisible({ timeout: 15_000 });
 }
 
 export async function addFragranceFromSearch(page: Page, query: string) {
-  await page.getByRole('link', { name: /Add first bottle|Add bottle/i }).first().click();
-  await expect(page.getByRole('heading', { name: /Add fragrance/i })).toBeVisible();
+  await page.getByRole('link', { name: /Add first bottle|Add bottle/i }).first().click({ timeout: 15_000 });
+  await expect(page.getByRole('heading', { name: /Add fragrance/i })).toBeVisible({ timeout: 15_000 });
 
   await page.getByRole('button', { name: /Add manually/i }).click();
   const brand = /bleu/i.test(query) ? 'Chanel' : 'Dior';
@@ -128,5 +129,6 @@ export async function addFragranceFromSearch(page: Page, query: string) {
   await page.getByPlaceholder('Fragrance name').fill(name);
   await page.getByPlaceholder('Brand').fill(brand);
   await page.getByRole('button', { name: /Save to wardrobe/i }).click();
-  await expect(page).toHaveURL(/\/collection/, { timeout: 15_000 });
+  await expect(page).toHaveURL(/\/collection/, { timeout: 20_000 });
+  await expect(page.getByText(/\d+ bottle/i)).toBeVisible({ timeout: 15_000 });
 }

@@ -24,6 +24,7 @@ const TravelKit = lazy(() => import('@/pages/TravelKit').then((m) => ({ default:
 const basename = import.meta.env.BASE_URL.replace(/\/$/, '') || undefined;
 
 import { CenteredLoader } from '@/components/layout/CenteredLoader';
+import { OfflineBanner } from '@/components/layout/OfflineBanner';
 
 function Guard({ children }: { children: React.ReactNode }) {
   const { ready, profile } = useApp();
@@ -60,6 +61,7 @@ export default function App() {
     <BrowserRouter basename={basename}>
       <ProProvider>
         <AppProvider>
+          <OfflineBanner />
           <ProSync />
           <PaywallModal />
           <AppRoutes />

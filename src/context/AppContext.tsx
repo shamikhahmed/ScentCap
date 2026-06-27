@@ -7,6 +7,8 @@ import {
   savePreferences,
   saveProfile,
 } from '@/db';
+import { isDemoUrl } from '@/lib/demoMode';
+import { loadDemoData } from '@/services/demo';
 import { ensureSeedLoaded } from '@/services/seed';
 import { getDailyWeather, type WeatherUnavailableReason } from '@/services/weather';
 import type { CollectionItem, Preferences, UserProfile, WearRecord, WeatherCache } from '@/types';
@@ -59,7 +61,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    refresh();
+    let cancelled = false;
+    (async () => {
+      if (isDemoUrl()) {
+        try {
+          await loadDemoData();
+        } catch (err) {
+          console.error('[ScentCap] Demo boot failed', err);
+        }
+      }
+      if (!cancelled) await refresh();
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [refresh]);
 
   useEffect(() => {

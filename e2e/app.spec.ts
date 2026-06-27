@@ -51,7 +51,8 @@ test.describe('ScentCap PWA', () => {
   test('travel kit persists trip name after reload', async ({ page }) => {
     await loadDemoWardrobe(page);
 
-    await page.goto('./travel');
+    await page.getByRole('link', { name: 'Settings' }).click();
+    await page.getByRole('link', { name: /Travel kit planner/i }).click();
     await expect(page.getByRole('heading', { name: 'Travel kit' })).toBeVisible({ timeout: 10_000 });
     await page.getByLabel(/Trip name/i).fill('Dubai work trip');
     await page.waitForTimeout(600);
@@ -73,7 +74,7 @@ test.describe('ScentCap PWA', () => {
   test('calendar month prev/next navigation', async ({ page }) => {
     await loadDemoWardrobe(page);
 
-    await page.goto('./calendar');
+    await page.getByRole('complementary').getByRole('link', { name: 'Calendar', exact: true }).click();
     await expect(page.getByRole('heading', { name: 'Wear calendar' })).toBeVisible({ timeout: 10_000 });
 
     const monthLabel = page.locator('p.text-sm.font-medium').filter({ hasText: /\w+ \d{4}/ });
@@ -109,11 +110,12 @@ test.describe('ScentCap launch preview', () => {
   test('Pro features accessible without paywall during launch preview', async ({ page }) => {
     await loadDemoWardrobe(page);
 
-    await page.goto('./travel');
+    await page.getByRole('link', { name: 'Settings' }).click();
+    await page.getByRole('link', { name: /Travel kit planner/i }).click();
     await expect(page.getByRole('heading', { name: 'Travel kit' })).toBeVisible({ timeout: 10_000 });
     await expect(page.getByTestId('paywall-modal')).not.toBeVisible();
 
-    await page.goto('./analytics');
+    await page.getByRole('link', { name: 'Analytics' }).click();
     await expect(page.getByRole('heading', { name: 'Analytics' })).toBeVisible({ timeout: 10_000 });
     await expect(page.getByTestId('pro-gate')).not.toBeVisible();
   });
@@ -121,9 +123,11 @@ test.describe('ScentCap launch preview', () => {
   test('Pro roadmap modal opens from settings', async ({ page }) => {
     await loadDemoWardrobe(page);
 
-    await page.goto('./settings');
+    await page.getByRole('link', { name: 'Settings' }).click();
+    await expect(page.getByRole('heading', { name: /Settings/i })).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByTestId('pro-roadmap-btn')).toBeVisible({ timeout: 15_000 });
     await page.getByTestId('pro-roadmap-btn').click();
-    await expect(page.getByTestId('paywall-modal')).toBeVisible({ timeout: 10_000 });
-    await expect(page.getByRole('heading', { name: /coming soon/i })).toBeVisible();
+    await expect(page.getByTestId('paywall-modal')).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('heading', { name: /Pro — coming soon/i })).toBeVisible({ timeout: 10_000 });
   });
 });

@@ -1,5 +1,6 @@
 @import "tailwindcss";
-@import "./premium.css";
+@import "./styles/cap-premium-base.css";
+@import "./scent-premium-overrides.css";
 
 /* Cap Neutral — Apple-inspired design tokens */
 @theme {
@@ -30,6 +31,19 @@
 
   --color-scent-50: #f5f5f7;
   --color-scent-950: #000000;
+}
+
+/* Bridge to Capricorn shared tokens (capricorn-core / portfolio consistency) */
+:root {
+  --cap-accent: var(--color-accent);
+  --cap-accent-contrast: #ffffff;
+  --cap-bg: var(--color-bg);
+  --cap-surface: var(--color-surface);
+  --cap-text: var(--color-text-primary);
+  --cap-text-dim: var(--color-text-secondary);
+  --cap-border: var(--color-border);
+  --cap-font-body: var(--font-sans);
+  --cap-touch-target: 44px;
 }
 
 * { -webkit-tap-highlight-color: transparent; }

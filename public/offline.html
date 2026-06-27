@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0c0a09">
+  <title>ScentCap — Offline</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      background: #0c0a09;
+      color: #fafaf9;
+      text-align: center;
+    }
+    .card {
+      max-width: 360px;
+      width: 100%;
+      padding: 32px 24px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    h1 { font-size: 1.35rem; margin-bottom: 8px; font-weight: 700; }
+    p { color: rgba(250,250,249,0.65); line-height: 1.55; font-size: 0.95rem; margin-bottom: 20px; }
+    button {
+      min-height: 44px;
+      padding: 0 20px;
+      border: none;
+      border-radius: 12px;
+      background: #d97706;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:focus-visible { outline: 2px solid #fbbf24; outline-offset: 2px; }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div style="font-size:2.5rem;margin-bottom:12px" aria-hidden="true">🌸</div>
+    <h1>You&apos;re offline</h1>
+    <p>ScentCap needs a connection for some features. Your saved wardrobe is still available when you reopen the app.</p>
+    <button type="button" onclick="location.reload()">Try again</button>
+  </main>
+</body>
+</html>
