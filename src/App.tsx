@@ -1,5 +1,5 @@
-import { Suspense, lazy } from 'react';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { Suspense, lazy, useEffect } from 'react';
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { AppProvider, useApp } from '@/context/AppContext';
 import { ProProvider } from '@/context/ProContext';
 import { PaywallModal } from '@/components/pro/PaywallModal';
@@ -33,9 +33,32 @@ function Guard({ children }: { children: React.ReactNode }) {
   return children;
 }
 
+const PAGE_TITLES: Record<string, string> = {
+  '/': 'Home',
+  '/collection': 'Collection',
+  '/add': 'Add Fragrance',
+  '/advisor': 'Advisor',
+  '/calendar': 'Calendar',
+  '/analytics': 'Analytics',
+  '/settings': 'Settings',
+  '/layering': 'Layering Lab',
+  '/travel': 'Travel Kit',
+  '/onboarding': 'Welcome',
+};
+
+function TitleSync() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    const label = PAGE_TITLES[pathname] ?? pathname.split('/').filter(Boolean).map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ') || 'Home';
+    document.title = label + ' — ScentCap';
+  }, [pathname]);
+  return null;
+}
+
 function AppRoutes() {
   return (
     <Suspense fallback={<CenteredLoader />}>
+      <TitleSync />
       <Routes>
         <Route path="/onboarding" element={<Onboarding />} />
         <Route element={<Guard><AppShell /></Guard>}>
