@@ -49,7 +49,7 @@ const PAGE_TITLES: Record<string, string> = {
 function TitleSync() {
   const { pathname } = useLocation();
   useEffect(() => {
-    const label = PAGE_TITLES[pathname] ?? pathname.split('/').filter(Boolean).map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ') || 'Home';
+    const label = PAGE_TITLES[pathname] ?? (pathname.split('/').filter(Boolean).map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ') || 'Home');
     document.title = label + ' — ScentCap';
   }, [pathname]);
   return null;

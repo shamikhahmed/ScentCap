@@ -1,0 +1,127 @@
+{
+  "app": "ScentCap",
+  "version": "1.3.0",
+  "generated": "2026-07-11T16:05:38.009Z",
+  "shots": [
+    {
+      "file": "desktop-00-onboarding.png",
+      "label": "Onboarding",
+      "route": "/onboarding",
+      "viewport": "desktop"
+    },
+    {
+      "file": "desktop-01-today.png",
+      "label": "Today",
+      "route": "/",
+      "viewport": "desktop"
+    },
+    {
+      "file": "desktop-02-collection.png",
+      "label": "Collection",
+      "route": "/collection",
+      "viewport": "desktop"
+    },
+    {
+      "file": "desktop-03-add.png",
+      "label": "Add Fragrance",
+      "route": "/add",
+      "viewport": "desktop"
+    },
+    {
+      "file": "desktop-04-advisor.png",
+      "label": "Advisor",
+      "route": "/advisor",
+      "viewport": "desktop"
+    },
+    {
+      "file": "desktop-05-calendar.png",
+      "label": "Calendar",
+      "route": "/calendar",
+      "viewport": "desktop"
+    },
+    {
+      "file": "desktop-06-analytics.png",
+      "label": "Analytics",
+      "route": "/analytics",
+      "viewport": "desktop"
+    },
+    {
+      "file": "desktop-07-layering.png",
+      "label": "Layering Lab",
+      "route": "/layering",
+      "viewport": "desktop"
+    },
+    {
+      "file": "desktop-08-travel.png",
+      "label": "Travel Kit",
+      "route": "/travel",
+      "viewport": "desktop"
+    },
+    {
+      "file": "desktop-09-settings.png",
+      "label": "Settings",
+      "route": "/settings",
+      "viewport": "desktop"
+    },
+    {
+      "file": "mobile-00-onboarding.png",
+      "label": "Onboarding",
+      "route": "/onboarding",
+      "viewport": "mobile"
+    },
+    {
+      "file": "mobile-01-today.png",
+      "label": "Today",
+      "route": "/",
+      "viewport": "mobile"
+    },
+    {
+      "file": "mobile-02-collection.png",
+      "label": "Collection",
+      "route": "/collection",
+      "viewport": "mobile"
+    },
+    {
+      "file": "mobile-03-add.png",
+      "label": "Add Fragrance",
+      "route": "/add",
+      "viewport": "mobile"
+    },
+    {
+      "file": "mobile-04-advisor.png",
+      "label": "Advisor",
+      "route": "/advisor",
+      "viewport": "mobile"
+    },
+    {
+      "file": "mobile-05-calendar.png",
+      "label": "Calendar",
+      "route": "/calendar",
+      "viewport": "mobile"
+    },
+    {
+      "file": "mobile-06-analytics.png",
+      "label": "Analytics",
+      "route": "/analytics",
+      "viewport": "mobile"
+    },
+    {
+      "file": "mobile-07-layering.png",
+      "label": "Layering Lab",
+      "route": "/layering",
+      "viewport": "mobile"
+    },
+    {
+      "file": "mobile-08-travel.png",
+      "label": "Travel Kit",
+      "route": "/travel",
+      "viewport": "mobile"
+    },
+    {
+      "file": "mobile-09-settings.png",
+      "label": "Settings",
+      "route": "/settings",
+      "viewport": "mobile"
+    }
+  ]
+}

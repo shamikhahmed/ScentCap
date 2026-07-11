@@ -29,7 +29,19 @@ npm run build
 npm run preview    # production preview
 npm run generate-icons
 npm run test:e2e   # Playwright tests
+npm run verify     # lint + build + full e2e (CI gate)
 ```
+
+## Screen gallery
+
+Every screen, mobile + desktop, auto-captured with Playwright:
+
+```bash
+npm run gallery        # regenerate docs/screenshots/gallery/
+npm run gallery:view   # then open http://127.0.0.1:8771/screen-gallery.html
+```
+
+Regenerate on each release so [screen-gallery.html](./screen-gallery.html) stays current.
 
 ## Deploy
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0] - 2026-07-11
+- Cap Standard pilot: full screen gallery (20 shots, mobile + desktop) via `npm run gallery` + browsable `screen-gallery.html`.
+- CI now gates Pages deploys on `npm run verify` (lint + build + 13 Playwright e2e tests).
+- Fix TS5076 build break in TitleSync (`??`/`||` precedence).
+- Per-route document titles (TitleSync), offline demo wardrobe, offline banner (from 1.2.x sweep).
+- MIT LICENSE added; package.json version synced with VERSION.json.
+
 ## [1.2.0] - 2026-06-15
 - Launch preview: all features unlocked (Analytics, Layering Lab, Travel Kit, unlimited bottles, export) until App Store IAP ships.
 - Premium empty states on Home, Wardrobe, and Analytics with demo collection shortcut on Today.
