@@ -7,7 +7,7 @@
 Fragrance OS — wardrobe, weather-aware daily picks, layering lab, analytics. CAP STANDARD REFERENCE APP.
 
 ## Facts
-**Version:** 1.3.1
+**Version:** 1.3.2
 **Live:** https://shamikhahmed.github.io/ScentCap/
 **Repo:** https://github.com/shamikhahmed/ScentCap
 **Stack:** React 19 + TypeScript + Vite 8 + Tailwind v4. IndexedDB (idb). vite-plugin-pwa. Capacitor iOS shell. Playwright.

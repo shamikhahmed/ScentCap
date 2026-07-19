@@ -1,5 +1,7 @@
 # ScentCap — Fragrance OS
 
+**Version:** 1.3.2
+
 Offline-first PWA for fragrance wardrobe management. Build a collection, get daily weather-aware picks, layer with confidence, and track every wear — all on your device.
 
 **Live demo:** [https://shamikhahmed.github.io/ScentCap/](https://shamikhahmed.github.io/ScentCap/)
