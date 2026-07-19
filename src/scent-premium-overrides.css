@@ -70,8 +70,10 @@
 }
 
 .brand-mark-icon {
-  color: var(--color-accent);
-  opacity: 0.92;
+  display: block;
+  width: 56%;
+  height: auto;
+  opacity: 0.95;
 }
 
 /* Legacy — hide if any remain */

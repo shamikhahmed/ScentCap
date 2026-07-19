@@ -1,10 +1,9 @@
-import { Droplets } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-/** Refined in-app mark — glass + icon, not a solid blue blob */
+/** Capricorn OS mark — gold bottle from public/mark.svg */
 export function BrandMark({ size = 'lg', className }: { size?: 'sm' | 'lg'; className?: string }) {
   const dim = size === 'sm' ? 48 : 72;
-  const icon = size === 'sm' ? 22 : 30;
+  const icon = size === 'sm' ? 28 : 40;
 
   return (
     <div
@@ -12,7 +11,14 @@ export function BrandMark({ size = 'lg', className }: { size?: 'sm' | 'lg'; clas
       style={{ width: dim, height: dim }}
       aria-hidden
     >
-      <Droplets size={icon} strokeWidth={1.75} className="brand-mark-icon" />
+      <img
+        src={`${import.meta.env.BASE_URL}mark.svg`}
+        alt=""
+        width={icon}
+        height={icon}
+        className="brand-mark-icon"
+        draggable={false}
+      />
     </div>
   );
 }

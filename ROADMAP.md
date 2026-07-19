@@ -1,9 +1,9 @@
 # ScentCap — Roadmap
 
-> Updated 2026-07-11. Fleet order & standard: `capricorn-tooling/shared/CAP-STANDARD.md`.
+> Updated 2026-07-19. Fleet order & standard: `capricorn-tooling/shared/CAP-STANDARD.md`.
 
-## Now — v1.3.0
-Current shipped state. See `CHANGELOG.md` for how we got here.
+## Now — v1.3.1
+Capricorn OS brand lock shipped (icons, apple-touch, maskable, in-app mark). See `CHANGELOG.md`.
 
 ## Cap Standard gaps
 | Cap Standard item | Status |

@@ -81,9 +81,20 @@ export function AppShell() {
       <div className="cap-scroll-progress" aria-hidden="true" />
 
       <aside className="hidden md:flex md:w-64 md:flex-shrink-0 md:flex-col md:border-r md:border-[var(--color-separator)] md:safe-pt md:p-6 md:gap-1 md:sticky md:top-0 md:h-dvh md:overflow-y-auto md:bg-[var(--color-bg)]/80 md:backdrop-blur-xl">
-        <div className="mb-8">
-          <p className="text-caption text-[var(--color-text-tertiary)]">ScentCap</p>
-          <h1 className="text-title mt-1.5">Fragrance OS</h1>
+        <div className="mb-8 flex items-center gap-3">
+          <img
+            src={`${import.meta.env.BASE_URL}mark.svg`}
+            alt=""
+            width={36}
+            height={36}
+            className="shrink-0"
+            aria-hidden
+            draggable={false}
+          />
+          <div className="min-w-0">
+            <p className="text-caption text-[var(--color-text-tertiary)]">ScentCap</p>
+            <h1 className="text-title mt-0.5">Fragrance OS</h1>
+          </div>
         </div>
         {desktopNav.map((item) => (
           <DesktopNavLink key={item.to} {...item} />

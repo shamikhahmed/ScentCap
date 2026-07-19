@@ -1,13 +1,13 @@
 # ScentCap — Handover
 
 > Read this + `ROADMAP.md` + `~/Capricorn-Brain/01 Projects/ScentCap.md` before working here.
-> Last updated: 2026-07-11 · Fleet-wide standard: `capricorn-tooling/shared/CAP-STANDARD.md`
+> Last updated: 2026-07-19 · Fleet-wide standard: `capricorn-tooling/shared/CAP-STANDARD.md`
 
 ## What this is
 Fragrance OS — wardrobe, weather-aware daily picks, layering lab, analytics. CAP STANDARD REFERENCE APP.
 
 ## Facts
-**Version:** 1.3.0
+**Version:** 1.3.1
 **Live:** https://shamikhahmed.github.io/ScentCap/
 **Repo:** https://github.com/shamikhahmed/ScentCap
 **Stack:** React 19 + TypeScript + Vite 8 + Tailwind v4. IndexedDB (idb). vite-plugin-pwa. Capacitor iOS shell. Playwright.
@@ -27,8 +27,9 @@ npm run gallery:view # http://127.0.0.1:8771/screen-gallery.html
 - `screen-gallery.html` + `docs/screenshots/gallery/` + manifest
 - `.github/workflows/deploy.yml` — test job (verify) gates build -> deploy
 - `ios/` — Capacitor
+- Brand assets: `public/mark.svg`, `favicon.svg`, `icon-192/512/1024.png`, `icon-maskable-*`, `apple-touch-icon-180.png`
 
-## Cap Standard status (2026-07-11)
+## Cap Standard status (2026-07-19)
 | Cap Standard item | Status |
 |---|---|
 | Docs pack | ✅ |

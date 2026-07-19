@@ -255,10 +255,7 @@ export function Home() {
       <section className="safe-pt px-5 md:px-0 pt-5 pb-1">
         <div className="flex items-start justify-between gap-4">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-            <p className="text-subhead text-[var(--color-text-secondary)] flex items-center gap-2">
-              <span>{greeting.emoji}</span>
-              {greeting.line}
-            </p>
+            <p className="text-subhead text-[var(--color-text-secondary)]">{greeting.line}</p>
             <h1 className="text-display mt-1.5">
               <CapKineticHeadline lines={[mood]} gradient />
             </h1>
@@ -316,7 +313,9 @@ export function Home() {
           )}
         </div>
         <div className="grid grid-cols-4 gap-2.5">
-          {MOOD_PRESETS.map((p) => (
+          {MOOD_PRESETS.map((p) => {
+            const Icon = p.Icon;
+            return (
             <button
               key={p.id}
               type="button"
@@ -325,10 +324,11 @@ export function Home() {
                 activePresetId === p.id ? 'ring-2 ring-[var(--color-accent)]/60 bg-[var(--color-accent-muted)]/30' : ''
               }`}
             >
-              <span className="text-2xl">{p.icon}</span>
+              <Icon size={22} strokeWidth={1.75} className="text-[var(--color-accent)]" aria-hidden />
               <span className="text-[11px] font-semibold text-[var(--color-text-secondary)]">{p.label}</span>
             </button>
-          ))}
+            );
+          })}
         </div>
       </section>
 

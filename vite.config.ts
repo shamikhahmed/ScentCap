@@ -16,7 +16,17 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icon-192.png', 'icon-512.png'],
+      includeAssets: [
+        'favicon.svg',
+        'mark.svg',
+        'icon.svg',
+        'apple-touch-icon-180.png',
+        'icon-192.png',
+        'icon-512.png',
+        'icon-1024.png',
+        'icon-maskable-192.png',
+        'icon-maskable-512.png',
+      ],
       manifest: {
         name: 'ScentCap',
         short_name: 'ScentCap',
@@ -32,8 +42,10 @@ export default defineConfig({
           { name: 'Daily Pick', short_name: 'Daily', url: `${startUrl}daily`, icons: [{ src: 'icon-192.png', sizes: '192x192' }] },
         ],
         icons: [
-          { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },
-          { src: 'icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
+          { src: 'icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: 'icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+          { src: 'icon-maskable-192.png', sizes: '192x192', type: 'image/png', purpose: 'maskable' },
+          { src: 'icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
       workbox: {

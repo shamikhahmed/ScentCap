@@ -1,20 +1,22 @@
+import type { LucideIcon } from 'lucide-react';
+import { Briefcase, Coffee, Heart, Sparkles } from 'lucide-react';
 import { defaultAdvisorInput } from '@/engines/advisor';
 import type { AdvisorInput, UserProfile } from '@/types';
 
 export type MoodPreset = {
   id: string;
   label: string;
-  icon: string;
+  Icon: LucideIcon;
   occasion: AdvisorInput['occasion'];
   dressLevel: AdvisorInput['dressLevel'];
   vibe: AdvisorInput['vibe'];
 };
 
 export const MOOD_PRESETS: MoodPreset[] = [
-  { id: 'office', label: 'Office', icon: '💼', occasion: 'work', dressLevel: 'professional', vibe: 'subtle' },
-  { id: 'date', label: 'Date', icon: '🌹', occasion: 'date', dressLevel: 'smart_casual', vibe: 'romantic' },
-  { id: 'weekend', label: 'Weekend', icon: '☕', occasion: 'casual', dressLevel: 'casual', vibe: 'confident' },
-  { id: 'gala', label: 'Gala', icon: '✨', occasion: 'event', dressLevel: 'formal', vibe: 'bold' },
+  { id: 'office', label: 'Office', Icon: Briefcase, occasion: 'work', dressLevel: 'professional', vibe: 'subtle' },
+  { id: 'date', label: 'Date', Icon: Heart, occasion: 'date', dressLevel: 'smart_casual', vibe: 'romantic' },
+  { id: 'weekend', label: 'Weekend', Icon: Coffee, occasion: 'casual', dressLevel: 'casual', vibe: 'confident' },
+  { id: 'gala', label: 'Gala', Icon: Sparkles, occasion: 'event', dressLevel: 'formal', vibe: 'bold' },
 ];
 
 export function initialAdvisorInput(profile?: UserProfile): AdvisorInput {
@@ -38,9 +40,11 @@ export function advisorInputFromPreset(preset: MoodPreset): AdvisorInput {
 }
 
 export function presetForInput(input: AdvisorInput): MoodPreset | null {
-  return MOOD_PRESETS.find(
-    (p) => p.occasion === input.occasion && p.dressLevel === input.dressLevel && p.vibe === input.vibe,
-  ) ?? null;
+  return (
+    MOOD_PRESETS.find(
+      (p) => p.occasion === input.occasion && p.dressLevel === input.dressLevel && p.vibe === input.vibe,
+    ) ?? null
+  );
 }
 
 export function moodLabel(input: AdvisorInput): string {

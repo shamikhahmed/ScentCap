@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.3.1] - 2026-07-19
+- Cap Family Mega-Wave: Capricorn OS brand lock — wired `mark.svg`, favicon, apple-touch-icon-180, and separate any/maskable PWA icons in manifest + `index.html`.
+- In-app BrandMark and desktop nav use gold bottle mark; removed unused Vite template `icons.svg`.
+- Apple polish: greeting and mood tiles drop emoji chrome for Lucide icons; gallery viewer accent aligned to Cap Neutral.
+- Version / SW cache bump (`scentcap-v131`); gallery regenerated for release.
+
 ## [1.3.0] - 2026-07-11
 - Cap Standard pilot: full screen gallery (20 shots, mobile + desktop) via `npm run gallery` + browsable `screen-gallery.html`.
 - CI now gates Pages deploys on `npm run verify` (lint + build + 13 Playwright e2e tests).
