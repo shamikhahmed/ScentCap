@@ -1,3 +1,8 @@
+## [1.3.2] — 2026-07-19
+
+- Capricorn QR asset in SW allowlist (`assets/qr-scentcap.png`)
+- SW `scentcap-v132`
+
 # Changelog
 
 ## [1.3.1] - 2026-07-19
