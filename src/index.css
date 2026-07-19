@@ -2,35 +2,35 @@
 @import "./styles/cap-premium-base.css";
 @import "./scent-premium-overrides.css";
 
-/* Cap Neutral — Apple-inspired design tokens */
+/* Cap Neutral — perfume blotter / flacon material */
 @theme {
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", system-ui, sans-serif;
-  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+  --font-sans: "DM Sans", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-display: "Cormorant Garamond", "Libre Baskerville", Georgia, serif;
 
-  --color-bg: #000000;
-  --color-bg-secondary: #1c1c1e;
-  --color-surface: #1c1c1e;
-  --color-surface-elevated: #2c2c2e;
-  --color-border: rgba(255, 255, 255, 0.12);
-  --color-border-subtle: rgba(255, 255, 255, 0.06);
-  --color-text-primary: #f5f5f7;
-  --color-text-secondary: #98989d;
-  --color-text-tertiary: #636366;
-  --color-accent: #0a84ff;
-  --color-accent-dim: #409cff;
-  --color-accent-muted: rgba(10, 132, 255, 0.14);
-  --color-separator: rgba(84, 84, 88, 0.65);
+  --color-bg: #0c0a09;
+  --color-bg-secondary: #1a1614;
+  --color-surface: #1c1814;
+  --color-surface-elevated: #2a241e;
+  --color-border: rgba(212, 175, 120, 0.14);
+  --color-border-subtle: rgba(212, 175, 120, 0.08);
+  --color-text-primary: #f5efe6;
+  --color-text-secondary: #a89888;
+  --color-text-tertiary: #7a6c5c;
+  --color-accent: #c9a227;
+  --color-accent-dim: #d4af37;
+  --color-accent-muted: rgba(201, 162, 39, 0.16);
+  --color-separator: rgba(120, 100, 70, 0.35);
 
-  --radius-xl: 24px;
-  --glass-bg: rgba(28, 28, 30, 0.78);
-  --glass-bg-subtle: rgba(44, 44, 46, 0.55);
-  --glass-border: rgba(255, 255, 255, 0.09);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.38);
-  --glass-shadow-sm: 0 2px 12px rgba(0, 0, 0, 0.22);
-  --tab-bar-bg: rgba(28, 28, 30, 0.88);
+  --radius-xl: 18px;
+  --glass-bg: rgba(28, 24, 20, 0.82);
+  --glass-bg-subtle: rgba(42, 36, 30, 0.55);
+  --glass-border: rgba(212, 175, 120, 0.12);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --glass-shadow-sm: 0 2px 12px rgba(0, 0, 0, 0.25);
+  --tab-bar-bg: rgba(28, 24, 20, 0.92);
 
-  --color-scent-50: #f5f5f7;
-  --color-scent-950: #000000;
+  --color-scent-50: #f5efe6;
+  --color-scent-950: #0c0a09;
 }
 
 /* Bridge to Capricorn shared tokens (capricorn-core / portfolio consistency) */
@@ -59,25 +59,25 @@ body {
 }
 
 body.light {
-  --color-bg: #f2f2f7;
-  --color-bg-secondary: #ffffff;
-  --color-surface: #ffffff;
-  --color-surface-elevated: #f2f2f7;
-  --color-border: rgba(0, 0, 0, 0.08);
-  --color-border-subtle: rgba(0, 0, 0, 0.05);
-  --color-text-primary: #1d1d1f;
-  --color-text-secondary: #6e6e73;
-  --color-text-tertiary: #aeaeb2;
-  --color-accent: #0071e3;
-  --color-accent-dim: #0077ed;
-  --color-accent-muted: rgba(0, 113, 227, 0.1);
-  --color-separator: rgba(60, 60, 67, 0.22);
-  --glass-bg: rgba(255, 255, 255, 0.82);
-  --glass-bg-subtle: rgba(255, 255, 255, 0.65);
-  --glass-border: rgba(0, 0, 0, 0.06);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-  --glass-shadow-sm: 0 2px 12px rgba(0, 0, 0, 0.05);
-  --tab-bar-bg: rgba(255, 255, 255, 0.92);
+  --color-bg: #f7f3ec;
+  --color-bg-secondary: #fffcf7;
+  --color-surface: #fffcf7;
+  --color-surface-elevated: #f0e8dc;
+  --color-border: rgba(90, 70, 40, 0.12);
+  --color-border-subtle: rgba(90, 70, 40, 0.07);
+  --color-text-primary: #1c1810;
+  --color-text-secondary: #5c5344;
+  --color-text-tertiary: #8a7a6c;
+  --color-accent: #a67c1a;
+  --color-accent-dim: #b8860b;
+  --color-accent-muted: rgba(166, 124, 26, 0.12);
+  --color-separator: rgba(90, 70, 40, 0.18);
+  --glass-bg: rgba(255, 252, 247, 0.88);
+  --glass-bg-subtle: rgba(255, 252, 247, 0.7);
+  --glass-border: rgba(90, 70, 40, 0.08);
+  --glass-shadow: 0 8px 32px rgba(60, 40, 20, 0.08);
+  --glass-shadow-sm: 0 2px 12px rgba(60, 40, 20, 0.05);
+  --tab-bar-bg: rgba(255, 252, 247, 0.94);
 }
 
 /* Surfaces — no heavy glass blur */

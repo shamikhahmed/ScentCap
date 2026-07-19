@@ -8,7 +8,7 @@ import { chipInactive, textSubtle } from '@/lib/ui-classes';
 
 export function BottleCard({ c, f }: { c: CollectionItem; f?: Fragrance }) {
   const photoUrl = usePhotoUrl(c.photoBlobId);
-  const aura = FAMILY_COLORS[f?.family ?? ''] ?? '#0a84ff';
+  const aura = FAMILY_COLORS[f?.family ?? ''] ?? '#c9a227';
 
   return (
     <PressableLink to={`/fragrance/${c.id}`} className="block h-full w-full">

@@ -1,3 +1,10 @@
+## [1.4.0] — 2026-07-20
+
+### Beauty — perfume blotter / flacon
+- Blotter-strip boot loader; brass/amber tokens (kill iOS blue)
+- Cormorant + DM Sans; bottle cards as blotter stubs
+- SW `scentcap-v140`
+
 ## [1.3.2] — 2026-07-19
 
 - Capricorn QR asset in SW allowlist (`assets/qr-scentcap.png`)

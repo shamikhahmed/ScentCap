@@ -111,16 +111,18 @@
 
 /* Bottle card premium */
 .bottle-card-premium {
-  border-radius: 20px;
+  border-radius: 6px 14px 14px 6px;
   overflow: hidden;
   background: var(--glass-bg-subtle);
   border: 1px solid var(--glass-border);
+  border-left: 3px solid var(--color-accent);
   box-shadow: var(--glass-shadow-sm);
   transition: box-shadow 0.25s, border-color 0.25s;
 }
 
 .bottle-card-premium:hover {
-  border-color: color-mix(in srgb, var(--color-accent) 35%, transparent);
+  border-color: color-mix(in srgb, var(--color-accent) 45%, transparent);
+  border-left-color: var(--color-accent);
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.25);
 }
 
