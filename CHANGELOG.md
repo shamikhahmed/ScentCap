@@ -1,3 +1,11 @@
+## [1.4.1] — 2026-07-20
+
+### Beauty — mist / flacon remint
+- Blush `#D4A8B8` + amber `#C9A47B` + marble cream tokens
+- Playfair Display (bottle names) + Source Sans 3 body
+- Onboarding splash: flacon silhouette + mist orbs (not passport desk)
+- SW `scentcap-v141`
+
 ## [1.4.0] — 2026-07-20
 
 ### Beauty — perfume blotter / flacon

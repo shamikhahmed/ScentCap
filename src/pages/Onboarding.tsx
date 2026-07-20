@@ -8,7 +8,6 @@ import { loadDemoData } from '@/services/demo';
 import { geocodeCity, requestLocation, type CityLocation } from '@/services/weather';
 import type { UserProfile } from '@/types';
 import { AmbientBackground } from '@/components/premium/AmbientBackground';
-import { BrandMark } from '@/components/premium/BrandMark';
 import { CyclingShimmerText, DEMO_LOADING_MESSAGES } from '@/components/ui/CyclingShimmerText';
 import { hapticSelection, hapticSuccess } from '@/lib/premium/haptics';
 
@@ -150,38 +149,45 @@ export function Onboarding() {
   if (welcome) {
     return shell(
       <motion.div
-        className="text-center"
+        className="text-center onboarding-splash"
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
       >
-        <BrandMark className="mx-auto mb-10" />
-        <p className="text-caption text-[var(--color-text-tertiary)]">ScentCap</p>
-        <h1 className="text-display mt-3">Your fragrance OS</h1>
-        <p className="text-subhead text-[var(--color-text-secondary)] mt-4 max-w-[17rem] mx-auto leading-relaxed">
-          Daily picks from your wardrobe. Private. On your device.
-        </p>
-        <div className="flex flex-col gap-3 mt-12">
-          <Button size="lg" className="w-full btn-glow" onClick={tryDemo} disabled={loadingDemo} haptic="medium">
-            {loadingDemo ? 'Loading…' : 'Try demo collection'}
-          </Button>
-          {loadingDemo && <CyclingShimmerText messages={DEMO_LOADING_MESSAGES} className="text-center" />}
-          {demoError && <p className="text-xs text-amber-400 mt-2 text-center">{demoError}</p>}
-          <Button size="lg" variant="glass" className="w-full" onClick={() => setWelcome(false)}>
-            Quick setup
-          </Button>
-          <button
-            type="button"
-            className="text-sm text-[var(--color-text-tertiary)] py-2 hover:text-[var(--color-accent)] transition-colors"
-            onClick={() => finishOnboarding()}
-            disabled={finishing}
-          >
-            {finishing ? 'Starting…' : 'Skip — use defaults'}
-          </button>
+        <div className="onboarding-mist" aria-hidden />
+        <div className="relative z-10">
+          <div className="onboarding-flacon" aria-hidden>
+            <div className="onboarding-flacon-mist" />
+            <div className="onboarding-flacon-neck" />
+            <div className="onboarding-flacon-body" />
+          </div>
+          <p className="text-caption text-[var(--color-text-tertiary)]">ScentCap</p>
+          <h1 className="text-display mt-3">Your scent counter</h1>
+          <p className="text-subhead text-[var(--color-text-secondary)] mt-4 max-w-[18rem] mx-auto leading-relaxed">
+            Blotter picks from your wardrobe. Private. On your device.
+          </p>
+          <div className="flex flex-col gap-3 mt-12">
+            <Button size="lg" className="w-full btn-glow" onClick={tryDemo} disabled={loadingDemo} haptic="medium">
+              {loadingDemo ? 'Loading…' : 'Try demo collection'}
+            </Button>
+            {loadingDemo && <CyclingShimmerText messages={DEMO_LOADING_MESSAGES} className="text-center" />}
+            {demoError && <p className="text-xs text-[var(--color-accent)] mt-2 text-center">{demoError}</p>}
+            <Button size="lg" variant="glass" className="w-full" onClick={() => setWelcome(false)}>
+              Quick setup
+            </Button>
+            <button
+              type="button"
+              className="text-sm text-[var(--color-text-tertiary)] py-2 hover:text-[var(--color-accent)] transition-colors"
+              onClick={() => finishOnboarding()}
+              disabled={finishing}
+            >
+              {finishing ? 'Starting…' : 'Skip — use defaults'}
+            </button>
+          </div>
+          <p className="text-xs text-[var(--color-text-tertiary)] mt-6 leading-relaxed">
+            12 bottles · 30 days of wear history · No account
+          </p>
         </div>
-        <p className="text-xs text-[var(--color-text-tertiary)] mt-6 leading-relaxed">
-          12 bottles · 30 days of wear history · No account
-        </p>
       </motion.div>,
     );
   }

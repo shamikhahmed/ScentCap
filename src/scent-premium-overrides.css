@@ -1,13 +1,14 @@
 /* ScentCap-only premium extensions — base layer: styles/cap-premium-base.css (synced from shared) */
 
 .btn-glow {
-  background: linear-gradient(180deg, #3a9bff 0%, #0a84ff 50%, #0071e3 100%) !important;
+  background: linear-gradient(180deg, #d4b896 0%, #c9a47b 50%, #a8844f 100%) !important;
   border: none !important;
   box-shadow:
-    0 2px 12px rgba(10, 132, 255, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+    0 2px 12px rgba(201, 164, 123, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
   font-weight: 600 !important;
   letter-spacing: -0.01em;
+  color: #1a1418 !important;
 }
 
 .btn-glow:disabled {
@@ -52,6 +53,106 @@
   align-items: center;
   justify-content: center;
   gap: 1rem;
+}
+
+/* ─── Onboarding — mist / flacon splash ─── */
+.onboarding-splash {
+  position: relative;
+}
+
+.onboarding-mist {
+  position: absolute;
+  inset: -20% -30%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.onboarding-mist::before,
+.onboarding-mist::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(48px);
+}
+
+.onboarding-mist::before {
+  top: 8%;
+  left: 10%;
+  width: 55%;
+  height: 38%;
+  background: color-mix(in srgb, var(--color-blush, #d4a8b8) 28%, transparent);
+  opacity: 0.55;
+}
+
+.onboarding-mist::after {
+  bottom: 18%;
+  right: 5%;
+  width: 48%;
+  height: 32%;
+  background: color-mix(in srgb, var(--color-accent) 22%, transparent);
+  opacity: 0.45;
+}
+
+.onboarding-flacon {
+  position: relative;
+  width: 72px;
+  height: 108px;
+  margin: 0 auto 2rem;
+}
+
+.onboarding-flacon-neck {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 18px;
+  height: 22px;
+  border-radius: 4px 4px 0 0;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--color-accent) 60%, #fff) 0%, var(--color-accent) 100%);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 50%, transparent);
+}
+
+.onboarding-flacon-body {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 56px;
+  height: 82px;
+  border-radius: 8px 8px 14px 14px;
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--color-blush, #d4a8b8) 18%, var(--color-surface)) 0%,
+    var(--color-surface-elevated) 45%,
+    color-mix(in srgb, var(--color-accent) 12%, var(--color-surface)) 100%
+  );
+  border: 1px solid color-mix(in srgb, var(--color-accent) 35%, transparent);
+  box-shadow:
+    0 8px 28px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.onboarding-flacon-body::after {
+  content: '';
+  position: absolute;
+  top: 18%;
+  left: 14%;
+  width: 22%;
+  height: 55%;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent);
+}
+
+.onboarding-flacon-mist {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90px;
+  height: 40px;
+  background: radial-gradient(ellipse 80% 60% at 50% 100%, color-mix(in srgb, var(--color-blush, #d4a8b8) 35%, transparent), transparent 70%);
+  filter: blur(6px);
+  opacity: 0.7;
 }
 
 /* Brand mark — glass squircle, not a solid blue circle */

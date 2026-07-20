@@ -4,22 +4,23 @@
 
 /* Cap Neutral — perfume blotter / flacon material */
 @theme {
-  --font-sans: "DM Sans", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  --font-display: "Cormorant Garamond", "Libre Baskerville", Georgia, serif;
+  --font-sans: "Source Sans 3", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-display: "Playfair Display", "Libre Baskerville", Georgia, serif;
 
-  --color-bg: #0c0a09;
-  --color-bg-secondary: #1a1614;
-  --color-surface: #1c1814;
-  --color-surface-elevated: #2a241e;
-  --color-border: rgba(212, 175, 120, 0.14);
-  --color-border-subtle: rgba(212, 175, 120, 0.08);
-  --color-text-primary: #f5efe6;
-  --color-text-secondary: #a89888;
-  --color-text-tertiary: #7a6c5c;
-  --color-accent: #c9a227;
-  --color-accent-dim: #d4af37;
-  --color-accent-muted: rgba(201, 162, 39, 0.16);
-  --color-separator: rgba(120, 100, 70, 0.35);
+  --color-bg: #12100f;
+  --color-bg-secondary: #1a1618;
+  --color-surface: #1e1a1c;
+  --color-surface-elevated: #2a2428;
+  --color-border: rgba(212, 168, 184, 0.16);
+  --color-border-subtle: rgba(212, 168, 184, 0.09);
+  --color-text-primary: #f7f2eb;
+  --color-text-secondary: #b8a8a0;
+  --color-text-tertiary: #8a7a74;
+  --color-accent: #c9a47b;
+  --color-accent-dim: #d4b896;
+  --color-blush: #d4a8b8;
+  --color-accent-muted: rgba(201, 164, 123, 0.18);
+  --color-separator: rgba(212, 168, 184, 0.22);
 
   --radius-xl: 18px;
   --glass-bg: rgba(28, 24, 20, 0.82);
@@ -29,8 +30,14 @@
   --glass-shadow-sm: 0 2px 12px rgba(0, 0, 0, 0.25);
   --tab-bar-bg: rgba(28, 24, 20, 0.92);
 
-  --color-scent-50: #f5efe6;
-  --color-scent-950: #0c0a09;
+  --color-scent-50: #f7f2eb;
+  --color-scent-950: #12100f;
+}
+
+.text-display,
+.catalog-editorial-name,
+.wardrobe-shelf-name {
+  font-family: var(--font-display);
 }
 
 /* Bridge to Capricorn shared tokens (capricorn-core / portfolio consistency) */
@@ -59,25 +66,26 @@ body {
 }
 
 body.light {
-  --color-bg: #f7f3ec;
-  --color-bg-secondary: #fffcf7;
-  --color-surface: #fffcf7;
-  --color-surface-elevated: #f0e8dc;
-  --color-border: rgba(90, 70, 40, 0.12);
-  --color-border-subtle: rgba(90, 70, 40, 0.07);
-  --color-text-primary: #1c1810;
-  --color-text-secondary: #5c5344;
-  --color-text-tertiary: #8a7a6c;
-  --color-accent: #a67c1a;
-  --color-accent-dim: #b8860b;
-  --color-accent-muted: rgba(166, 124, 26, 0.12);
-  --color-separator: rgba(90, 70, 40, 0.18);
-  --glass-bg: rgba(255, 252, 247, 0.88);
-  --glass-bg-subtle: rgba(255, 252, 247, 0.7);
-  --glass-border: rgba(90, 70, 40, 0.08);
-  --glass-shadow: 0 8px 32px rgba(60, 40, 20, 0.08);
-  --glass-shadow-sm: 0 2px 12px rgba(60, 40, 20, 0.05);
-  --tab-bar-bg: rgba(255, 252, 247, 0.94);
+  --color-bg: #f7f2eb;
+  --color-bg-secondary: #fdfbf8;
+  --color-surface: #fdfbf8;
+  --color-surface-elevated: #ede6dc;
+  --color-border: rgba(180, 140, 120, 0.14);
+  --color-border-subtle: rgba(180, 140, 120, 0.08);
+  --color-text-primary: #1a1418;
+  --color-text-secondary: #5c4f4a;
+  --color-text-tertiary: #8a7a74;
+  --color-accent: #a8844f;
+  --color-accent-dim: #c9a47b;
+  --color-blush: #d4a8b8;
+  --color-accent-muted: rgba(201, 164, 123, 0.14);
+  --color-separator: rgba(180, 140, 120, 0.2);
+  --glass-bg: rgba(253, 251, 248, 0.9);
+  --glass-bg-subtle: rgba(253, 251, 248, 0.72);
+  --glass-border: rgba(180, 140, 120, 0.1);
+  --glass-shadow: 0 8px 32px rgba(100, 70, 50, 0.07);
+  --glass-shadow-sm: 0 2px 12px rgba(100, 70, 50, 0.05);
+  --tab-bar-bg: rgba(253, 251, 248, 0.94);
 }
 
 /* Surfaces — no heavy glass blur */
