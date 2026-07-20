@@ -1,3 +1,6 @@
+## [1.4.2] — 2026-07-20
+- Today blotter deep: mobile stack; desktop counter / flacon / wear-ledger rails. SW `scentcap-v142`.
+
 ## [1.4.1] — 2026-07-20
 
 ### Beauty — mist / flacon remint
