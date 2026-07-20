@@ -83,7 +83,7 @@ export async function installTestMocks(page: Page, options?: { pro?: boolean }) 
 
 export async function loadDemoWardrobe(page: Page) {
   await page.goto('./onboarding');
-  await expect(page.getByRole('heading', { name: /Your fragrance OS/i })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Your scent counter/i })).toBeVisible();
   await page.getByRole('button', { name: /Try demo collection/i }).click();
   await expect(page.getByRole('button', { name: /Try demo collection/i })).toBeHidden({ timeout: 60_000 });
   await expect(page).not.toHaveURL(/onboarding/, { timeout: 60_000 });
@@ -92,7 +92,7 @@ export async function loadDemoWardrobe(page: Page) {
 
 export async function completeOnboarding(page: Page) {
   await page.goto('./onboarding');
-  await expect(page.getByRole('heading', { name: /Your fragrance OS/i })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Your scent counter/i })).toBeVisible();
   await page.getByRole('button', { name: /Quick setup/i }).click();
   await expect(page.getByRole('heading', { name: ONBOARDING_STEPS[0].heading })).toBeVisible();
 
