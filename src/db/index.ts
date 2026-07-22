@@ -1,5 +1,7 @@
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
 import type {
+  CachedImage,
+  CatalogSnapshot,
   CollectionItem,
   Fragrance,
   LayeringProfile,
@@ -22,13 +24,23 @@ export interface ScentCapDB extends DBSchema {
   statistics: { key: string; value: { key: string; data: Record<string, unknown> } };
   photos: { key: string; value: { id: string; blob: Blob } };
   wishlist: { key: string; value: WishlistItem; indexes: { 'by-list': WishlistList; 'by-fragrance': string } };
+  catalog: {
+    key: string;
+    value: CatalogSnapshot;
+    indexes: { providerId: string; brand: string; expiresAt: number };
+  };
+  images: {
+    key: string;
+    value: CachedImage;
+    indexes: { type: string; lastUsed: number };
+  };
 }
 
 let dbPromise: Promise<IDBPDatabase<ScentCapDB>> | null = null;
 
 export function getDb() {
   if (!dbPromise) {
-    dbPromise = openDB<ScentCapDB>('scentcap-v1', 3, {
+    dbPromise = openDB<ScentCapDB>('scentcap-v1', 5, {
       upgrade(db, oldVersion, _newVersion, transaction) {
         if (!db.objectStoreNames.contains('fragrances')) {
           db.createObjectStore('fragrances', { keyPath: 'id' });
@@ -74,6 +86,19 @@ export function getDb() {
           const wl = transaction.objectStore('wishlist');
           if (!wl.indexNames.contains('by-list')) wl.createIndex('by-list', 'list');
           if (!wl.indexNames.contains('by-fragrance')) wl.createIndex('by-fragrance', 'fragranceId');
+        }
+        if (oldVersion < 5) {
+          if (!db.objectStoreNames.contains('catalog')) {
+            const cat = db.createObjectStore('catalog', { keyPath: 'id' });
+            cat.createIndex('providerId', 'providerId');
+            cat.createIndex('brand', 'brand');
+            cat.createIndex('expiresAt', 'expiresAt');
+          }
+          if (!db.objectStoreNames.contains('images')) {
+            const imgs = db.createObjectStore('images', { keyPath: 'id' });
+            imgs.createIndex('type', 'type');
+            imgs.createIndex('lastUsed', 'lastUsed');
+          }
         }
       },
     });
@@ -295,6 +320,50 @@ export async function getPhoto(id: string): Promise<Blob | undefined> {
   return row?.blob;
 }
 
+export async function putCatalogSnapshot(snap: CatalogSnapshot) {
+  await (await getDb()).put('catalog', snap);
+}
+
+export async function getCatalogSnapshot(id: string): Promise<CatalogSnapshot | undefined> {
+  return (await getDb()).get('catalog', id);
+}
+
+export async function searchCatalogLocal(q: string, limit = 40): Promise<CatalogSnapshot[]> {
+  const query = q.toLowerCase().trim();
+  if (!query) return [];
+  const all = await (await getDb()).getAll('catalog');
+  return all
+    .filter((c) => c.brand.toLowerCase().includes(query) || c.name.toLowerCase().includes(query))
+    .slice(0, limit);
+}
+
+export async function putCachedImage(img: CachedImage) {
+  await (await getDb()).put('images', img);
+}
+
+export async function getCachedImage(id: string): Promise<CachedImage | undefined> {
+  return (await getDb()).get('images', id);
+}
+
+export async function touchCachedImage(id: string) {
+  const row = await getCachedImage(id);
+  if (!row) return;
+  await putCachedImage({ ...row, lastUsed: Date.now() });
+}
+
+export async function clearCatalogImages() {
+  const db = await getDb();
+  const all = await db.getAll('images');
+  for (const img of all) {
+    if (img.type === 'catalog') await db.delete('images', img.id);
+  }
+}
+
+export async function getCatalogImageCacheBytes(): Promise<number> {
+  const all = await (await getDb()).getAll('images');
+  return all.filter((i) => i.type === 'catalog').reduce((sum, i) => sum + (i.size || 0), 0);
+}
+
 export async function exportAllData(): Promise<string> {
   const db = await getDb();
   const photos = await db.getAll('photos');
@@ -302,8 +371,9 @@ export async function exportAllData(): Promise<string> {
   for (const p of photos) {
     photoExport[p.id] = await blobToBase64(p.blob);
   }
+  const catalog = await db.getAll('catalog');
   const data = {
-    version: 3,
+    version: 5,
     fragrances: await db.getAll('fragrances'),
     collection: await db.getAll('collection'),
     layering_profiles: await db.getAll('layering_profiles'),
@@ -312,6 +382,9 @@ export async function exportAllData(): Promise<string> {
     preferences: await db.getAll('preferences'),
     wishlist: await db.getAll('wishlist'),
     photos: photoExport,
+    catalog,
+    statistics: await db.getAll('statistics'),
+    imageIds: (await db.getAll('images')).map((i) => ({ id: i.id, type: i.type, size: i.size })),
   };
   return JSON.stringify(data);
 }
@@ -329,6 +402,8 @@ export async function importAllData(json: string) {
   for (const [id, b64] of Object.entries(data.photos ?? {})) {
     await savePhoto(id, base64ToBlob(b64 as string));
   }
+  for (const c of data.catalog ?? []) await db.put('catalog', c);
+  for (const s of data.statistics ?? []) await db.put('statistics', s);
 }
 
 export async function updateWearRecord(record: WearRecord) {

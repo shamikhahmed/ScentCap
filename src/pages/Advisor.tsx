@@ -110,6 +110,10 @@ export function AdvisorPage() {
       occasion: input.occasion,
       dressLevel: input.dressLevel,
       sprays,
+      weatherTempC: weather?.tempC,
+      weatherHumidity: weather?.humidity,
+      weatherCondition: weather?.condition,
+      zones: result.spray.pulsePoints?.slice(0, 6),
     });
     await refresh();
     hapticSuccess();
@@ -355,11 +359,24 @@ export function AdvisorPage() {
             </GlassCard>
           )}
 
-          <GlassCard className="!p-5" delay={0.16}>
-            <p className="font-medium mb-2">Why this scent</p>
+          <GlassCard className="!p-5" delay={0.16} data-testid="advisor-why">
+            <p className="font-medium mb-2">Why this bottle?</p>
+            <p className="text-sm text-[var(--sc-text-soft)] mb-3">Recommended because:</p>
             <ul className="text-sm text-[var(--color-text-secondary)] space-y-1.5">
-              {result.reasoning.map((r) => <li key={r}>· {r}</li>)}
+              {result.reasoning.map((r) => (
+                <li key={r}>· {r}</li>
+              ))}
             </ul>
+            {result.primary.breakdown && (
+              <div className="mt-4 grid grid-cols-2 gap-2 text-xs text-[var(--sc-text-muted)]">
+                <span>Occasion {result.primary.breakdown.occasion}</span>
+                <span>Weather {result.primary.breakdown.weather}</span>
+                <span>Dress {result.primary.breakdown.dress}</span>
+                <span>Vibe {result.primary.breakdown.vibe}</span>
+                <span>Rotation {result.primary.breakdown.rotation}</span>
+                <span>Personal {result.primary.breakdown.personalBonus}</span>
+              </div>
+            )}
           </GlassCard>
 
           <div className="flex gap-3 pt-1">

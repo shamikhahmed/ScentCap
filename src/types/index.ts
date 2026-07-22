@@ -4,7 +4,7 @@ export type Longevity = 'short' | 'medium' | 'long' | 'eternal';
 export type DayNight = 'day' | 'night' | 'versatile';
 export type GenderLean = 'masculine' | 'feminine' | 'unisex';
 export type BottleLevel = 'full' | '75' | '50' | '25' | '10' | 'empty';
-export type BottleType = 'full' | 'decant' | 'travel';
+export type BottleType = 'full' | 'decant' | 'travel' | 'sample';
 export type Season = 'spring' | 'summer' | 'fall' | 'winter';
 export type LayeringTag = 'citrus' | 'woody' | 'amber' | 'vanilla' | 'musky' | 'clean' | 'fresh' | 'spicy' | 'sweet' | 'oud' | 'floral' | 'leather' | 'smoky';
 
@@ -71,6 +71,13 @@ export interface WearRecord {
   compliment?: boolean;
   notes?: string;
   layeredWith?: string;
+  weatherTempC?: number;
+  weatherHumidity?: number;
+  weatherCondition?: string;
+  zones?: string[];
+  personalLongevity?: number;
+  personalProjection?: number;
+  mood?: string;
 }
 
 export interface UserProfile {
@@ -109,6 +116,39 @@ export interface Preferences {
   seedVersion?: number;
   /** Last 5 fragrance IDs added to collection (for catalog recents) */
   recentAdditions?: string[];
+  advisorAvoidSweet?: boolean;
+  advisorOfficeOnly?: boolean;
+  reducedMotion?: boolean;
+  catalogImageCacheClearedAt?: string;
+}
+
+export interface CatalogSnapshot {
+  id: string;
+  provider: string;
+  providerId: string;
+  name: string;
+  brand: string;
+  imageUrl?: string;
+  notes?: { top?: string[]; middle?: string[]; base?: string[] };
+  accords?: { name: string; strength?: number }[];
+  performance?: Record<string, unknown>;
+  seasons?: string[];
+  occasions?: string[];
+  fetchedAt: number;
+  expiresAt: number;
+}
+
+export interface CachedImage {
+  id: string;
+  type: 'catalog' | 'user';
+  blob: Blob;
+  mimeType: string;
+  width?: number;
+  height?: number;
+  checksum?: string;
+  size: number;
+  createdAt: number;
+  lastUsed: number;
 }
 
 export const CONCENTRATIONS: Concentration[] = ['Cologne', 'EDT', 'EDP', 'Parfum', 'Extrait'];
@@ -170,7 +210,24 @@ export interface SprayGuidance {
 }
 
 export interface AdvisorResult {
-  primary: { collectionId: string; fragrance: Fragrance; score: number };
+  primary: {
+    collectionId: string;
+    fragrance: Fragrance;
+    score: number;
+    breakdown?: {
+      occasion: number;
+      weather: number;
+      dress: number;
+      vibe: number;
+      profile: number;
+      rotation: number;
+      repeatPenalty: number;
+      projectionPenalty: number;
+      signatureBonus: number;
+      personalBonus: number;
+      reasons: string[];
+    };
+  };
   backups: { collectionId: string; fragrance: Fragrance; score: number }[];
   layering?: {
     primary: Fragrance;

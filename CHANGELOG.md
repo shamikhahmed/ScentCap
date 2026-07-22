@@ -1,3 +1,12 @@
+## [2.0.0] — 2026-07-22
+
+### Boutique wardrobe OS
+- Design system: `--sc-*` tokens, Cormorant Garamond + Manrope, marble/blotter materials, boutique splash
+- Catalog: `CatalogProvider` + Fraganty adapter; IndexedDB `catalog` + `images` blob cache (DB v5)
+- Smart Advisor prefs (avoid sweet / office-only); Why-this-bottle breakdown; wear weather/zones snapshot
+- You tab, offline banner, privacy network copy; Travel TSA disclaimer; Layering “Suggested pairing”
+- SW `scentcap-v200`
+
 ## [1.4.2] — 2026-07-20
 - Today blotter deep: mobile stack; desktop counter / flacon / wear-ledger rails. SW `scentcap-v142`.
 

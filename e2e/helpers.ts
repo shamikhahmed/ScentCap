@@ -7,6 +7,11 @@ export const ONBOARDING_STEPS = [
 
 export async function installTestMocks(page: Page, options?: { pro?: boolean }) {
   await page.addInitScript((pro) => {
+    try {
+      sessionStorage.setItem('scentcap-splash-seen', '1');
+    } catch {
+      /* ignore */
+    }
     if (pro) {
       localStorage.setItem('scentcap_pro', 'true');
     } else {

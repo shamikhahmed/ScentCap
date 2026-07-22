@@ -1,17 +1,17 @@
 # ScentCap — Handover
 
 > Read this + `ROADMAP.md` + `~/Capricorn-Brain/01 Projects/ScentCap.md` before working here.
-> Last updated: 2026-07-19 · Fleet-wide standard: `capricorn-tooling/shared/CAP-STANDARD.md`
+> Last updated: 2026-07-22 · Fleet-wide standard: `capricorn-tooling/shared/CAP-STANDARD.md`
 
 ## What this is
-Fragrance OS — wardrobe, weather-aware daily picks, layering lab, analytics. CAP STANDARD REFERENCE APP.
+Fragrance wardrobe OS — boutique blotter/flacon UI, weather-aware picks, layering lab, analytics. CAP STANDARD REFERENCE APP.
 
 ## Facts
-**Version:** 1.4.0
+**Version:** 2.0.0
 **Live:** https://shamikhahmed.github.io/ScentCap/
 **Repo:** https://github.com/shamikhahmed/ScentCap
 **Stack:** React 19 + TypeScript + Vite 8 + Tailwind v4. IndexedDB (idb). vite-plugin-pwa. Capacitor iOS shell. Playwright.
-**Data:** IndexedDB via idb. Optional Open-Meteo weather (mocked in tests). No accounts.
+**Data:** IndexedDB via idb (v5: fragrances, catalog, images blob cache). Optional Open-Meteo + Fraganty. No accounts. SW `scentcap-v200`.
 
 ## Run & verify
 ```bash

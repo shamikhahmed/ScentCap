@@ -145,6 +145,25 @@ export function scoreFragrance(
   const rotation = daysSince && daysSince >= 14 ? 10 : 0;
   const { bonus: personalBonus, reason: personalReason } = personalHistoryBonus(fragrance.id, history);
 
+  let sweetPen = 0;
+  if (prefs.advisorAvoidSweet) {
+    const sweet = fragrance.layering_tags.some((t) => t === 'sweet' || t === 'vanilla') || /gourmand/i.test(fragrance.family);
+    if (sweet) {
+      sweetPen = 22;
+      reasons.push('Avoid sweet preference applied');
+    }
+  }
+  let officeBoost = 0;
+  if (prefs.advisorOfficeOnly) {
+    officeBoost = fragrance.office_score * 0.08;
+    if (fragrance.projection === 'beast') {
+      sweetPen += 15;
+      reasons.push('Office-only: heavy projection reduced');
+    } else if (fragrance.office_score >= 70) {
+      reasons.push('Office-only: strong workplace fit');
+    }
+  }
+
   if (wReason) reasons.push(wReason);
   if (repeat > 0) reasons.push(`Worn recently (${daysSince ?? 0}d ago)`);
   if (rotation > 0) reasons.push('Rotation boost — neglected bottle');
@@ -152,7 +171,7 @@ export function scoreFragrance(
   if (personalReason) reasons.push(personalReason);
 
   const total = Math.round(
-    occasion + dress + vibe + weatherPts + profilePts + timePts + rotation + sigBonus + personalBonus - repeat - projPen,
+    occasion + dress + vibe + weatherPts + profilePts + timePts + rotation + sigBonus + personalBonus + officeBoost - repeat - projPen - sweetPen,
   );
 
   return {

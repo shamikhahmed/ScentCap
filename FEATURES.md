@@ -8,7 +8,7 @@
 - Wardrobe + catalog · Today/weather picks
 - Smart Advisor (rules) · Layering Lab · calendar/analytics
 - Travel Kit · wear history/export · demo · Cap Standard gallery
-- Brand lock + icons · Apple polish · scroll gallery · docs/push (v1.3.1)
+- Brand lock + icons · Apple polish · scroll gallery · docs/push (v2.0.0)
 
 ## W
 - _(cleared — Mega-Wave brand ship complete)_

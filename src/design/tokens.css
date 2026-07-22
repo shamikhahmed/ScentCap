@@ -1,0 +1,103 @@
+/**
+ * ScentCap 2.0 design tokens — boutique perfume counter.
+ * Components should prefer var(--sc-*). --color-* bridged for legacy.
+ */
+
+:root {
+  /* Dark boutique (default) */
+  --sc-bg: #181614;
+  --sc-surface: #221f1c;
+  --sc-panel: #2b2724;
+  --sc-sheet: #322d29;
+  --sc-border: #47403a;
+  --sc-border-soft: #393430;
+  --sc-text: #f3ede7;
+  --sc-text-soft: #c8beb5;
+  --sc-text-muted: #9b9088;
+  --sc-amber: #d29a58;
+  --sc-amber-hover: #c48948;
+  --sc-blush: #d2aba3;
+  --sc-rose: #c28b80;
+  --sc-olive: #8e9a70;
+  --sc-success: #74a074;
+  --sc-warning: #d5a75c;
+  --sc-danger: #d5776e;
+  --sc-focus: #d29a58;
+  --sc-shadow-color: rgba(0, 0, 0, 0.35);
+  --sc-marble-opacity: 0.03;
+  --sc-ink: #f3ede7;
+  --sc-glass: rgba(43, 39, 36, 0.82);
+
+  --sc-radius-btn: 16px;
+  --sc-radius-card: 24px;
+  --sc-radius-sheet: 32px;
+  --sc-radius-hero: 36px;
+
+  --sc-shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.05);
+  --sc-shadow-md: 0 10px 30px rgba(0, 0, 0, 0.08);
+  --sc-shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.12);
+
+  --sc-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --sc-dur-fast: 120ms;
+  --sc-dur: 220ms;
+  --sc-dur-large: 380ms;
+  --sc-dur-hero: 650ms;
+
+  --sc-mobile: 768px;
+  --sc-tablet: 1024px;
+  --sc-desktop: 1280px;
+}
+
+body.light {
+  --sc-bg: #f6f2eb;
+  --sc-surface: #fffdfc;
+  --sc-panel: #ffffff;
+  --sc-sheet: #fffcf8;
+  --sc-border: #ded7cf;
+  --sc-border-soft: #ece5de;
+  --sc-text: #2f2926;
+  --sc-text-soft: #746a63;
+  --sc-text-muted: #9c938b;
+  --sc-amber: #a56a2c;
+  --sc-amber-hover: #8c5822;
+  --sc-blush: #d7b8b2;
+  --sc-rose: #b8877e;
+  --sc-olive: #7a8162;
+  --sc-success: #4f7553;
+  --sc-warning: #c18c34;
+  --sc-danger: #a74e47;
+  --sc-focus: #b37b42;
+  --sc-shadow-color: rgba(53, 36, 20, 0.08);
+  --sc-marble-opacity: 0.025;
+  --sc-ink: #2f2926;
+  --sc-glass: rgba(255, 252, 248, 0.9);
+
+  --sc-shadow-sm: 0 2px 6px rgba(53, 36, 20, 0.05);
+  --sc-shadow-md: 0 10px 30px rgba(53, 36, 20, 0.08);
+  --sc-shadow-lg: 0 24px 60px rgba(53, 36, 20, 0.12);
+}
+
+/* Bridge legacy --color-* → --sc-* so existing UI picks up boutique palette */
+:root,
+body {
+  --color-bg: var(--sc-bg);
+  --color-bg-secondary: var(--sc-surface);
+  --color-surface: var(--sc-surface);
+  --color-surface-elevated: var(--sc-panel);
+  --color-border: color-mix(in srgb, var(--sc-blush) 22%, transparent);
+  --color-border-subtle: color-mix(in srgb, var(--sc-blush) 12%, transparent);
+  --color-text-primary: var(--sc-text);
+  --color-text-secondary: var(--sc-text-soft);
+  --color-text-tertiary: var(--sc-text-muted);
+  --color-accent: var(--sc-amber);
+  --color-accent-dim: color-mix(in srgb, var(--sc-amber) 85%, white);
+  --color-blush: var(--sc-blush);
+  --color-accent-muted: color-mix(in srgb, var(--sc-amber) 18%, transparent);
+  --color-separator: color-mix(in srgb, var(--sc-blush) 28%, transparent);
+  --glass-bg: var(--sc-glass);
+  --glass-bg-subtle: color-mix(in srgb, var(--sc-panel) 70%, transparent);
+  --glass-border: color-mix(in srgb, var(--sc-amber) 14%, transparent);
+  --glass-shadow: var(--sc-shadow-md);
+  --glass-shadow-sm: var(--sc-shadow-sm);
+  --tab-bar-bg: color-mix(in srgb, var(--sc-bg) 92%, transparent);
+}

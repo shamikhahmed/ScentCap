@@ -37,7 +37,7 @@ test.describe('ScentCap PWA', () => {
     await completeOnboarding(page);
     await addFragranceFromSearch(page, 'Dior');
 
-    await page.getByRole('link', { name: 'Wardrobe' }).click();
+    await page.getByRole('link', { name: 'Collection' }).click();
     await expect(page.getByText(/1 bottle/i)).toBeVisible();
     await page.locator('a[href*="/fragrance/"]').first().click();
     await expect(page.getByRole('button', { name: 'Delete' })).toBeVisible({ timeout: 10_000 });
@@ -51,7 +51,7 @@ test.describe('ScentCap PWA', () => {
   test('travel kit persists trip name after reload', async ({ page }) => {
     await loadDemoWardrobe(page);
 
-    await page.getByRole('link', { name: 'Settings' }).click();
+    await page.getByRole('link', { name: 'You' }).click();
     await page.getByRole('link', { name: /Travel kit planner/i }).click();
     await expect(page.getByRole('heading', { name: 'Travel kit' })).toBeVisible({ timeout: 10_000 });
     await page.getByLabel(/Trip name/i).fill('Dubai work trip');
@@ -110,7 +110,7 @@ test.describe('ScentCap launch preview', () => {
   test('Pro features accessible without paywall during launch preview', async ({ page }) => {
     await loadDemoWardrobe(page);
 
-    await page.getByRole('link', { name: 'Settings' }).click();
+    await page.getByRole('link', { name: 'You' }).click();
     await page.getByRole('link', { name: /Travel kit planner/i }).click();
     await expect(page.getByRole('heading', { name: 'Travel kit' })).toBeVisible({ timeout: 10_000 });
     await expect(page.getByTestId('paywall-modal')).not.toBeVisible();
@@ -123,7 +123,7 @@ test.describe('ScentCap launch preview', () => {
   test('Pro roadmap modal opens from settings', async ({ page }) => {
     await loadDemoWardrobe(page);
 
-    await page.getByRole('link', { name: 'Settings' }).click();
+    await page.getByRole('link', { name: 'You' }).click();
     await expect(page.getByRole('heading', { name: /Settings/i })).toBeVisible({ timeout: 15_000 });
     await expect(page.getByTestId('pro-roadmap-btn')).toBeVisible({ timeout: 15_000 });
     await page.getByTestId('pro-roadmap-btn').click();

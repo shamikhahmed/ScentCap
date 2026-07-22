@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect } from 'react';
+import { Suspense, lazy, useCallback, useEffect, useState } from 'react';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { AppProvider, useApp } from '@/context/AppContext';
 import { ProProvider } from '@/context/ProContext';
@@ -23,12 +23,41 @@ const TravelKit = lazy(() => import('@/pages/TravelKit').then((m) => ({ default:
 
 const basename = import.meta.env.BASE_URL.replace(/\/$/, '') || undefined;
 
+import { BoutiqueSplash } from '@/components/layout/BoutiqueSplash';
 import { CenteredLoader } from '@/components/layout/CenteredLoader';
 import { OfflineBanner } from '@/components/layout/OfflineBanner';
 
+const SPLASH_KEY = 'scentcap-splash-seen';
+
 function Guard({ children }: { children: React.ReactNode }) {
   const { ready, profile } = useApp();
-  if (!ready) return <CenteredLoader />;
+  const [splashDone, setSplashDone] = useState(() => {
+    try {
+      return sessionStorage.getItem(SPLASH_KEY) === '1';
+    } catch {
+      return false;
+    }
+  });
+  const onSplashDone = useCallback(() => {
+    try {
+      sessionStorage.setItem(SPLASH_KEY, '1');
+    } catch {
+      /* ignore */
+    }
+    setSplashDone(true);
+  }, []);
+
+  if (!ready) return <BoutiqueSplash brief />;
+  if (!splashDone) {
+    const seen = (() => {
+      try {
+        return sessionStorage.getItem(SPLASH_KEY) === '1';
+      } catch {
+        return false;
+      }
+    })();
+    return <BoutiqueSplash brief={seen} onDone={onSplashDone} />;
+  }
   if (!profile?.onboardingComplete) return <Navigate to="/onboarding" replace />;
   return children;
 }

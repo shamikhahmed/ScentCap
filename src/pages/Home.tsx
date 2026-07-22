@@ -164,6 +164,10 @@ export function Home() {
       fragranceId: result.primary.fragrance.id,
       wornAt,
       sprays: result.spray.totalSprays,
+      weatherTempC: weather?.tempC,
+      weatherHumidity: weather?.humidity,
+      weatherCondition: weather?.condition,
+      zones: result.spray.pulsePoints?.slice(0, 6),
     });
     await refresh();
     hapticSuccess();

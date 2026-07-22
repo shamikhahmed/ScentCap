@@ -41,7 +41,7 @@ test.describe('App Store screenshots', () => {
     await page.screenshot({ path: join(SCREENSHOT_DIR, SHOTS[0].file), fullPage: true });
 
     // 2 — Office Safe visible on home
-    await page.getByRole('link', { name: /Settings|More/i }).first().click();
+    await page.getByRole('link', { name: /You|Settings|More/i }).first().click();
     await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible({ timeout: 10_000 });
     const officeBtn = page.getByRole('button', { name: /Office-safe/i });
     await expect(officeBtn).toBeVisible();

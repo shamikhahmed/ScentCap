@@ -1,8 +1,9 @@
 import { Link, NavLink, Outlet } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, Droplets, Home, Layers, Plus, Settings, Sparkles, BarChart3 } from 'lucide-react';
+import { Calendar, Droplets, Home, Layers, Plus, User, Sparkles, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { DemoBanner } from '@/components/layout/DemoBanner';
+import { OfflineStatusBar } from '@/components/layout/OfflineStatusBar';
 import { AmbientBackground } from '@/components/premium/AmbientBackground';
 import { CapRouteTransition } from '@/components/premium/CapRouteTransition';
 import { Button } from '@/components/ui/button';
@@ -10,20 +11,20 @@ import { hapticLight } from '@/lib/premium/haptics';
 
 const desktopNav = [
   { to: '/', icon: Home, label: 'Today' },
-  { to: '/collection', icon: Droplets, label: 'Wardrobe' },
+  { to: '/collection', icon: Droplets, label: 'Collection' },
   { to: '/advisor', icon: Sparkles, label: 'Advisor' },
   { to: '/layering', icon: Layers, label: 'Layering' },
   { to: '/calendar', icon: Calendar, label: 'Calendar' },
   { to: '/analytics', icon: BarChart3, label: 'Analytics' },
-  { to: '/settings', icon: Settings, label: 'Settings' },
+  { to: '/settings', icon: User, label: 'You' },
 ];
 
 const mobileNav = [
   { to: '/', icon: Home, label: 'Today' },
-  { to: '/collection', icon: Droplets, label: 'Wardrobe' },
+  { to: '/collection', icon: Droplets, label: 'Collection' },
   { to: '/advisor', icon: Sparkles, label: 'Advisor' },
   { to: '/calendar', icon: Calendar, label: 'Calendar' },
-  { to: '/settings', icon: Settings, label: 'More' },
+  { to: '/settings', icon: User, label: 'You' },
 ];
 
 function DesktopNavLink({ to, icon: Icon, label }: { to: string; icon: typeof Home; label: string }) {
@@ -78,9 +79,13 @@ export function AppShell() {
   return (
     <div className="min-h-dvh flex flex-col md:flex-row md:max-w-[1440px] md:mx-auto md:w-full relative">
       <AmbientBackground />
+      <OfflineStatusBar />
       <div className="cap-scroll-progress" aria-hidden="true" />
 
-      <aside className="hidden md:flex md:w-64 md:flex-shrink-0 md:flex-col md:border-r md:border-[var(--color-separator)] md:safe-pt md:p-6 md:gap-1 md:sticky md:top-0 md:h-dvh md:overflow-y-auto md:bg-[var(--color-bg)]/80 md:backdrop-blur-xl">
+      <aside
+        data-testid="desktop-sidebar"
+        className="hidden md:flex md:w-64 md:flex-shrink-0 md:flex-col md:border-r md:border-[var(--color-separator)] md:safe-pt md:p-6 md:gap-1 md:sticky md:top-0 md:h-dvh md:overflow-y-auto md:bg-[var(--color-bg)]/80 md:backdrop-blur-xl"
+      >
         <div className="mb-8 flex items-center gap-3">
           <img
             src={`${import.meta.env.BASE_URL}mark.svg`}
@@ -93,7 +98,7 @@ export function AppShell() {
           />
           <div className="min-w-0">
             <p className="text-caption text-[var(--color-text-tertiary)]">ScentCap</p>
-            <h1 className="text-title mt-0.5">Fragrance OS</h1>
+            <h1 className="text-title mt-0.5 font-[family-name:var(--font-display)] tracking-[-0.02em]">Fragrance wardrobe</h1>
           </div>
         </div>
         {desktopNav.map((item) => (

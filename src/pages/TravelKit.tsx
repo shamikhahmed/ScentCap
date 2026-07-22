@@ -104,6 +104,9 @@ export function TravelKit() {
         <div>
           <h1 className="text-2xl font-semibold">Travel kit</h1>
           <p className="text-sm text-stone-400">Pack light — max projection, TSA-friendly picks</p>
+          <p className="text-xs text-[var(--sc-text-muted)] mt-2">
+            General travel guidance only. Check airline and destination rules.
+          </p>
         </div>
       </div>
 

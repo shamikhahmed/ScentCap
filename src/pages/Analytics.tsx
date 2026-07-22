@@ -108,7 +108,9 @@ export function AnalyticsPage() {
       <div className="grid grid-cols-2 gap-4">
         <Card><p className="text-xs text-stone-500">Value</p><p className="text-2xl font-semibold">{formatCurrency(stats.totalValue)}</p></Card>
         <Card><p className="text-xs text-stone-500">Volume</p><p className="text-2xl font-semibold">{stats.totalMl} ml</p></Card>
-        <Card><p className="text-xs text-stone-500">Rotation health</p><p className="text-2xl font-semibold">{stats.rotation}%</p></Card>
+        <Card><p className="text-xs text-stone-500">Rotation health</p><p className="text-2xl font-semibold">{stats.rotation}%</p>
+          <p className="text-[11px] text-[var(--sc-text-muted)] mt-1">Share of wardrobe worn at least once — a fragrance journal, not a streak score.</p>
+        </Card>
         <Card><p className="text-xs text-stone-500">Designer / Niche / ME</p><p className="text-lg font-semibold">{stats.designer} / {stats.niche} / {stats.me}</p></Card>
         <Card><p className="text-xs text-stone-500">Wear streak</p><p className="text-2xl font-semibold">{stats.streak}d</p></Card>
         <Card><p className="text-xs text-stone-500">This month</p><p className="text-2xl font-semibold">{stats.monthWears}</p></Card>

@@ -70,6 +70,7 @@ export async function runAdvisor(
       collectionId: top.item.id,
       fragrance: top.fragrance,
       score: top.breakdown.total,
+      breakdown: top.breakdown,
     },
     backups,
     layering: layering

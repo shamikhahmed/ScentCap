@@ -139,6 +139,25 @@ export function SettingsPage() {
       </Card>
 
       <Card className="space-y-4">
+        <p className="font-medium">Smart Advisor</p>
+        <p className="text-xs text-[var(--sc-text-muted)]">Rules engine — every pick is explainable. Never AI.</p>
+        <Button
+          size="sm"
+          variant={prefs.advisorAvoidSweet ? 'default' : 'ghost'}
+          onClick={() => setPrefs({ ...prefs, advisorAvoidSweet: !prefs.advisorAvoidSweet })}
+        >
+          {prefs.advisorAvoidSweet ? 'Avoid sweet ON' : 'Avoid sweet OFF'}
+        </Button>
+        <Button
+          size="sm"
+          variant={prefs.advisorOfficeOnly ? 'default' : 'ghost'}
+          onClick={() => setPrefs({ ...prefs, advisorOfficeOnly: !prefs.advisorOfficeOnly })}
+        >
+          {prefs.advisorOfficeOnly ? 'Office-only ON' : 'Office-only OFF'}
+        </Button>
+      </Card>
+
+      <Card className="space-y-4">
         <p className="font-medium">Office mode</p>
         <Button
           size="sm"
@@ -207,6 +226,17 @@ export function SettingsPage() {
         <Button variant="outline" className="w-full" onClick={exportData}>Export wardrobe (JSON)</Button>
         <Button variant="outline" className="w-full" onClick={exportWearCsv}>Export wear history (CSV)</Button>
         <Button variant="ghost" className="w-full" onClick={importData}>Import wardrobe</Button>
+      </Card>
+
+      <Card className="space-y-3" data-testid="privacy-network">
+        <p className="font-medium">Privacy &amp; network</p>
+        <p className="text-xs text-[var(--sc-text-soft)] leading-relaxed">
+          Your wardrobe, wears, ratings, and notes stay on this device. Catalog search sends only the name/brand query to Fraganty.
+          Weather sends coordinates to Open-Meteo when you allow location. Nothing from your collection is uploaded to Capricorn.
+        </p>
+        <p className="text-xs text-[var(--sc-text-muted)]">
+          Bottle photos may come from third-party catalog services and are cached offline. Capricorn does not claim ownership of those images.
+        </p>
       </Card>
     </div>
   );

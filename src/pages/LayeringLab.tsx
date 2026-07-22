@@ -286,6 +286,7 @@ export function LayeringLab() {
               </div>
 
               <div className="flex flex-col items-center py-2">
+                <p className="text-xs uppercase tracking-wider text-[var(--sc-text-muted)] mb-2">Suggested pairing</p>
                 <ScoreRing score={result.score} size={96} />
               </div>
 

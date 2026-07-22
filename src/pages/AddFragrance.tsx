@@ -32,12 +32,14 @@ import type { BottleType, Concentration, Fragrance, GenderLean, Longevity, Proje
 import { CONCENTRATIONS } from '@/types';
 import { estimateWearsRemaining, uid } from '@/lib/utils';
 import { FREE_BOTTLE_LIMIT } from '@/lib/pro';
+import { MIDDLE_EAST_BRANDS, POPULAR_BRANDS } from '@/catalog/brands';
 import { segmentBar, textSubtle } from '@/lib/ui-classes';
 
 const BOTTLE_TYPES: { id: BottleType; label: string }[] = [
   { id: 'full', label: 'Full bottle' },
   { id: 'decant', label: 'Decant' },
   { id: 'travel', label: 'Travel' },
+  { id: 'sample', label: 'Sample' },
 ];
 
 export function AddFragrance() {
@@ -340,6 +342,23 @@ export function AddFragrance() {
               onFocus={(e) => scrollInputIntoView(e.currentTarget)}
             />
           </div>
+
+          {!q.trim() && (
+            <div className="space-y-2" data-testid="brand-browse">
+              <p className="text-xs uppercase tracking-wider text-[var(--sc-text-muted)]">Popular</p>
+              <div className="flex flex-wrap gap-2">
+                {POPULAR_BRANDS.slice(0, 6).map((b) => (
+                  <button key={b} type="button" className="text-xs px-3 py-1.5 rounded-full border border-[var(--sc-border-soft)] text-[var(--sc-text-soft)]" onClick={() => search(b)}>{b}</button>
+                ))}
+              </div>
+              <p className="text-xs uppercase tracking-wider text-[var(--sc-text-muted)] pt-1">Middle East</p>
+              <div className="flex flex-wrap gap-2">
+                {MIDDLE_EAST_BRANDS.slice(0, 6).map((b) => (
+                  <button key={b} type="button" className="text-xs px-3 py-1.5 rounded-full border border-[var(--sc-border-soft)] text-[var(--sc-text-soft)]" onClick={() => search(b)}>{b}</button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {didYouMean && q.trim() && (
             <DidYouMeanBanner
