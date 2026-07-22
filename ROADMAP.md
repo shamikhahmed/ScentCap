@@ -2,8 +2,8 @@
 
 > Updated 2026-07-22. Fleet order & standard: `capricorn-tooling/shared/CAP-STANDARD.md`.
 
-## Now — v2.0.0 (Boutique Wardrobe)
-Shipped: `--sc-*` design system, catalog/image blob cache (IDB v5), Smart Advisor prefs + Why sheet, gallery regen. See `CHANGELOG.md`.
+## Now — v2.0.1 (Free boutique wardrobe)
+Shipped: completely free (no Stripe/IAP/Pro). See `CHANGELOG.md`. v2.0.0 design/catalog/advisor still current.
 
 ## Cap Standard gaps
 | Cap Standard item | Status |
@@ -17,9 +17,9 @@ Shipped: `--sc-*` design system, catalog/image blob cache (IDB v5), Smart Adviso
 | Demo mode | ✅ |
 
 ## Next (ordered)
-1. App Store IAP + submission (docs/APP-STORE.md, PRE-LAUNCH.md ready; launch-preview unlock currently active)
-2. Collection museum shelf / Detail dossier deep remint (desktop IA)
-3. Keep gallery regenerated each release
+1. Collection museum shelf / Detail dossier deep remint (desktop IA)
+2. Keep gallery regenerated each release
+3. Optional native shell polish (Capacitor) — still free; no IAP/Stripe
 
 ## Later
 - Additional catalog providers (adapter ready; Fraganty default)

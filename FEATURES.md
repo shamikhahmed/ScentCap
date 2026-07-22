@@ -14,4 +14,4 @@
 - _(cleared — Mega-Wave brand ship complete)_
 
 ## L
-- App Store IAP · wear-streak widgets
+- Wear-streak widgets · optional native shell polish

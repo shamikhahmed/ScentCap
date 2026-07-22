@@ -8,7 +8,7 @@ import {
 
 test.describe('ScentCap PWA', () => {
   test.beforeEach(async ({ context, page }) => {
-    await installTestMocks(page, { pro: true });
+    await installTestMocks(page);
     await context.grantPermissions(['geolocation']);
     await context.setGeolocation({ latitude: 40.7128, longitude: -74.006 });
   });
@@ -102,21 +102,19 @@ test.describe('ScentCap PWA', () => {
 
 test.describe('ScentCap PWA features', () => {
   test.beforeEach(async ({ context, page }) => {
-    await installTestMocks(page, { pro: false });
+    await installTestMocks(page);
     await context.grantPermissions(['geolocation']);
     await context.setGeolocation({ latitude: 40.7128, longitude: -74.006 });
   });
 
-  test('Analytics and Travel Kit open without paywall', async ({ page }) => {
+  test('Analytics and Travel Kit open for all users', async ({ page }) => {
     await loadDemoWardrobe(page);
 
     await page.getByRole('link', { name: 'You' }).click();
     await page.getByRole('link', { name: /Travel kit planner/i }).click();
     await expect(page.getByRole('heading', { name: 'Travel kit' })).toBeVisible({ timeout: 10_000 });
-    await expect(page.getByTestId('paywall-modal')).not.toBeVisible();
 
     await page.getByRole('link', { name: 'Analytics' }).click();
     await expect(page.getByRole('heading', { name: 'Analytics' })).toBeVisible({ timeout: 10_000 });
-    await expect(page.getByTestId('pro-gate')).not.toBeVisible();
   });
 });

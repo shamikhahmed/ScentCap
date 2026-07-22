@@ -31,7 +31,7 @@ The script (`e2e/screenshots.spec.ts`) will:
 3. Enable Office Safe in Settings, return to Home
 4. Open Advisor → Get recommendation → Application map
 5. Open Layering Lab
-6. Open Analytics (Pro enabled via test init script)
+6. Open Analytics
 7. Open Travel Kit
 
 ## App Store Connect upload order

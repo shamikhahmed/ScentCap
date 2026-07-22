@@ -1,3 +1,9 @@
+## [2.0.1] — 2026-07-22
+
+- Completely free: remove Pro/IAP/Stripe theater (`ProContext`, `ProGate`, `PaywallModal`, `iap.ts`, bottle limit).
+- All features unlocked; docs/legal (Terms/Privacy/Support/MONETIZATION) match free PWA.
+- SW `scentcap-v201`
+
 ## [2.0.0] — 2026-07-22
 
 - Remove Launch preview / Pro App Store CTA from Settings (PWA-only).

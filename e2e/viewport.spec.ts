@@ -3,7 +3,7 @@ import { installTestMocks, loadDemoWardrobe } from './helpers';
 
 test.describe('ScentCap viewport contract', () => {
   test.beforeEach(async ({ context, page }) => {
-    await installTestMocks(page, { pro: true });
+    await installTestMocks(page);
     await context.grantPermissions(['geolocation']);
     await context.setGeolocation({ latitude: 40.7128, longitude: -74.006 });
   });

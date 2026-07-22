@@ -7,11 +7,11 @@
 Fragrance wardrobe OS — boutique blotter/flacon UI, weather-aware picks, layering lab, analytics. CAP STANDARD REFERENCE APP.
 
 ## Facts
-**Version:** 2.0.0
+**Version:** 2.0.1
 **Live:** https://shamikhahmed.github.io/ScentCap/
 **Repo:** https://github.com/shamikhahmed/ScentCap
 **Stack:** React 19 + TypeScript + Vite 8 + Tailwind v4. IndexedDB (idb). vite-plugin-pwa. Capacitor iOS shell. Playwright.
-**Data:** IndexedDB via idb (v5: fragrances, catalog, images blob cache). Optional Open-Meteo + Fraganty. No accounts. SW `scentcap-v200`.
+**Data:** IndexedDB via idb (v5: fragrances, catalog, images blob cache). Optional Open-Meteo + Fraganty. No accounts. SW `scentcap-v201`.
 
 ## Run & verify
 ```bash
@@ -43,7 +43,7 @@ npm run gallery:view # http://127.0.0.1:8771/screen-gallery.html
 Gaps are tracked as tasks in `ROADMAP.md`.
 
 ## Gotchas — read before coding
-- PWA-only: all features unlocked; no Pro / App Store paywall UI in Settings.
+- Completely free: no Stripe, IAP, Pro gates, or bottle limits. All routes open.
 - Playwright mocks geolocation + Open-Meteo + fraganty.ai in helpers.ts — new network calls need mocks or CI flakes.
 
 ## Where decisions live

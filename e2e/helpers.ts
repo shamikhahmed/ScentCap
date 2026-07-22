@@ -5,17 +5,12 @@ export const ONBOARDING_STEPS = [
   { heading: /How bold should scents be/i, choice: 'Moderate' },
 ] as const;
 
-export async function installTestMocks(page: Page, options?: { pro?: boolean }) {
-  await page.addInitScript((pro) => {
+export async function installTestMocks(page: Page) {
+  await page.addInitScript(() => {
     try {
       sessionStorage.setItem('scentcap-splash-seen', '1');
     } catch {
       /* ignore */
-    }
-    if (pro) {
-      localStorage.setItem('scentcap_pro', 'true');
-    } else {
-      localStorage.removeItem('scentcap_pro');
     }
 
     navigator.geolocation.getCurrentPosition = (success) => {
@@ -83,7 +78,7 @@ export async function installTestMocks(page: Page, options?: { pro?: boolean }) 
       }
       return originalFetch(input, init);
     };
-  }, options?.pro ?? true);
+  });
 }
 
 export async function loadDemoWardrobe(page: Page) {

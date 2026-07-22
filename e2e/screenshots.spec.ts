@@ -28,7 +28,7 @@ test.describe('App Store screenshots', () => {
   });
 
   test.beforeEach(async ({ context, page }) => {
-    await installTestMocks(page, { pro: true });
+    await installTestMocks(page);
     await context.grantPermissions(['geolocation']);
     await context.setGeolocation({ latitude: 40.7128, longitude: -74.006 });
   });
@@ -65,7 +65,7 @@ test.describe('App Store screenshots', () => {
     await expect(page.getByText('Layering Lab')).toBeVisible({ timeout: 10_000 });
     await page.screenshot({ path: join(SCREENSHOT_DIR, SHOTS[3].file), fullPage: true });
 
-    // 5 — Analytics (Pro enabled via init script)
+    // 5 — Analytics
     await page.goto('./analytics');
     await expect(page.getByRole('heading', { name: 'Analytics' })).toBeVisible({ timeout: 10_000 });
     await page.screenshot({ path: join(SCREENSHOT_DIR, SHOTS[4].file), fullPage: true });

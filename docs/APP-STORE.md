@@ -106,18 +106,21 @@ Built for collectors who want clarity, not clutter.
 
 **Tagline for marketing:** _The fragrance OS that respects your nose — and your privacy._
 
+## What's New (2.0.1)
+
+- Completely free: removed Stripe/IAP/Pro paywall, bottle limits, and payment docs theater
+
 ## What's New (1.0.8)
 
-- Pre-launch: App Store screenshots automation, Terms/Support legal pages, IAP service scaffold
+- Pre-launch: App Store screenshots automation, Terms/Support legal pages
 - iOS polish: privacy usage strings, app icon generation, version 1.0.8 sync
-- E2E: delete bottle test, IAP unavailable message test
+- E2E: delete bottle test, shared helpers
 - Docs: PRE-LAUNCH.md day-1 checklist, SCREENSHOTS.md, expanded IOS-BUILD.md
 
 ## What's New (1.0.7)
 
 - Catalog search upgrade: fuzzy brand/name match, Recent additions
 - Wishlist tabs: Owned / Want / Tested (local IndexedDB)
-- ScentCap Pro paywall scaffold ($4.99/mo, $39.99/yr) — 12-bottle free tier
 - Capacitor iOS wrapper — see [IOS-BUILD.md](./IOS-BUILD.md)
 
 ## What's New (1.0.6)

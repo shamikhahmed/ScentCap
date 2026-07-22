@@ -81,7 +81,7 @@ for (const viewport of ['mobile', 'desktop'] as const) {
     });
 
     test.beforeEach(async ({ context, page }) => {
-      await installTestMocks(page, { pro: true });
+      await installTestMocks(page);
       await context.grantPermissions(['geolocation']);
       await context.setGeolocation({ latitude: 40.7128, longitude: -74.006 });
     });

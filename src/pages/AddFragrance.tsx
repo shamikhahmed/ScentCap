@@ -27,11 +27,9 @@ import { CatalogEditorialCard } from '@/components/catalog/CatalogEditorialCard'
 import { DidYouMeanBanner } from '@/components/catalog/DidYouMeanBanner';
 import { FragranceThumb } from '@/components/collection/FragranceThumb';
 import { useApp } from '@/context/AppContext';
-import { usePro } from '@/context/ProContext';
 import type { BottleType, Concentration, Fragrance, GenderLean, Longevity, Projection, WishlistList } from '@/types';
 import { CONCENTRATIONS } from '@/types';
 import { estimateWearsRemaining, uid } from '@/lib/utils';
-import { FREE_BOTTLE_LIMIT } from '@/lib/pro';
 import { MIDDLE_EAST_BRANDS, POPULAR_BRANDS } from '@/catalog/brands';
 import { segmentBar, textSubtle } from '@/lib/ui-classes';
 
@@ -44,7 +42,6 @@ const BOTTLE_TYPES: { id: BottleType; label: string }[] = [
 
 export function AddFragrance() {
   const { collection, refresh } = useApp();
-  const { canAddBottle, requestFeature } = usePro();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const listTarget = (searchParams.get('list') as WishlistList | null) ?? null;
@@ -145,10 +142,6 @@ export function AddFragrance() {
   };
 
   const confirmAdd = async (f: Fragrance) => {
-    if (!canAddBottle()) {
-      requestFeature('bottle_limit');
-      return;
-    }
     if ((bottleType === 'decant' || bottleType === 'travel') && !parentCollectionId) return;
     setSaving(true);
     try {
@@ -233,7 +226,6 @@ export function AddFragrance() {
 
   const needsParent = bottleType === 'decant' || bottleType === 'travel';
   const canAdd = !needsParent || Boolean(parentCollectionId);
-  const atBottleLimit = !canAddBottle();
 
   return (
     <div
@@ -268,12 +260,6 @@ export function AddFragrance() {
           Add manually
         </Button>
       </div>
-
-      {atBottleLimit && !listTarget && (
-        <Card className="border-amber-500/30 bg-amber-500/10 text-sm text-amber-200">
-          Free plan: {FREE_BOTTLE_LIMIT} bottles max. Upgrade to Pro for unlimited wardrobe.
-        </Card>
-      )}
 
       {!listTarget && (
         <Card className="space-y-3">
