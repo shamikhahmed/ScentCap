@@ -163,11 +163,11 @@ export function Onboarding() {
             <div className="onboarding-flacon-body" />
           </div>
           <p className="text-caption text-[var(--color-text-tertiary)]">ScentCap</p>
-          <h1 className="text-display mt-3">Your scent counter</h1>
+          <h1 className="text-display mt-3">Your scent wardrobe</h1>
           <p className="text-subhead text-[var(--color-text-secondary)] mt-4 max-w-[18rem] mx-auto leading-relaxed">
-            Add your bottles. Get a daily wear pick. Private — on this device.
+            Add bottles. Get a daily wear pick. Private on this device.
           </p>
-          <div className="mt-8 rounded-2xl border border-[var(--color-border-subtle)] bg-[var(--color-surface)]/70 p-4 text-left">
+          <div className="mt-8 rounded-2xl border border-[var(--sc-border)] bg-[var(--sc-panel)] p-4 text-left">
             <HowToGuide />
           </div>
           <div className="flex flex-col gap-3 mt-8">

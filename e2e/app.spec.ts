@@ -114,7 +114,8 @@ test.describe('ScentCap PWA features', () => {
     await page.getByRole('link', { name: /Travel kit planner/i }).click();
     await expect(page.getByRole('heading', { name: 'Travel kit' })).toBeVisible({ timeout: 10_000 });
 
-    await page.getByRole('link', { name: 'Analytics' }).click();
+    await page.getByRole('link', { name: 'You' }).click();
+    await page.getByRole('link', { name: /Collection analytics|Analytics/i }).click();
     await expect(page.getByRole('heading', { name: 'Analytics' })).toBeVisible({ timeout: 10_000 });
   });
 });

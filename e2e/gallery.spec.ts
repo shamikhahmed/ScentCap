@@ -46,7 +46,7 @@ async function captureAll(page: Page, viewport: keyof typeof VIEWPORTS) {
 
   // Onboarding first — demo load navigates away from it
   await page.goto('./onboarding');
-  await expect(page.getByRole('heading', { name: /Your scent counter/i })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Your scent (counter|wardrobe)/i })).toBeVisible();
   const onboardingFile = `${viewport}-00-onboarding.png`;
   await page.screenshot({ path: join(GALLERY_DIR, onboardingFile), fullPage: true });
   shots.push({ file: onboardingFile, label: 'Onboarding', route: '/onboarding', viewport });

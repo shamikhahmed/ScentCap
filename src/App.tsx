@@ -1,13 +1,11 @@
-import { Suspense, lazy, useCallback, useEffect, useState } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { AppProvider, useApp } from '@/context/AppContext';
 import { AppShell } from '@/components/layout/AppShell';
 import { Home } from '@/pages/Home';
-import { BoutiqueSplash } from '@/components/layout/BoutiqueSplash';
 import { CenteredLoader } from '@/components/layout/CenteredLoader';
+import { hardResetApp } from '@/components/ErrorBoundary';
 
-// Route-level code splitting — Home stays eager for instant first paint;
-// heavy pages (Analytics pulls in recharts) load on navigation.
 const Onboarding = lazy(() => import('@/pages/Onboarding').then((m) => ({ default: m.Onboarding })));
 const CollectionPage = lazy(() => import('@/pages/Collection').then((m) => ({ default: m.CollectionPage })));
 const AddFragrance = lazy(() => import('@/pages/AddFragrance').then((m) => ({ default: m.AddFragrance })));
@@ -21,30 +19,48 @@ const TravelKit = lazy(() => import('@/pages/TravelKit').then((m) => ({ default:
 
 const basename = import.meta.env.BASE_URL.replace(/\/$/, '') || undefined;
 
-const SPLASH_KEY = 'scentcap-splash-seen';
+function BootScreen({ stuck }: { stuck?: boolean }) {
+  return (
+    <div className="min-h-dvh flex flex-col items-center justify-center gap-4 px-6 safe-pt safe-pb bg-[var(--sc-bg)]">
+      <p className="text-[13px] font-semibold tracking-[0.18em] uppercase text-[var(--sc-text-muted)]">ScentCap</p>
+      {!stuck ? (
+        <CenteredLoader />
+      ) : (
+        <div className="text-center max-w-xs space-y-4">
+          <p className="text-sm text-[var(--sc-text-soft)] leading-relaxed">
+            Taking too long. Network or old cache may be blocking open.
+          </p>
+          <button
+            type="button"
+            className="w-full rounded-xl bg-[var(--sc-accent)] text-white font-semibold py-3.5"
+            onClick={() => window.location.reload()}
+          >
+            Retry
+          </button>
+          <button
+            type="button"
+            className="w-full rounded-xl border border-[var(--sc-border)] font-semibold py-3 text-[var(--sc-text)]"
+            onClick={() => void hardResetApp()}
+          >
+            Clear cache & reopen
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function Guard({ children }: { children: React.ReactNode }) {
   const { ready, profile } = useApp();
-  const [splashDone, setSplashDone] = useState(() => {
-    try {
-      return sessionStorage.getItem(SPLASH_KEY) === '1';
-    } catch {
-      return false;
-    }
-  });
-  const onSplashDone = useCallback(() => {
-    try {
-      sessionStorage.setItem(SPLASH_KEY, '1');
-    } catch {
-      /* ignore */
-    }
-    setSplashDone(true);
-  }, []);
+  const [stuck, setStuck] = useState(false);
 
-  if (!ready) return <BoutiqueSplash brief />;
-  if (!splashDone) {
-    return <BoutiqueSplash onDone={onSplashDone} />;
-  }
+  useEffect(() => {
+    if (ready) return;
+    const t = window.setTimeout(() => setStuck(true), 4500);
+    return () => window.clearTimeout(t);
+  }, [ready]);
+
+  if (!ready) return <BootScreen stuck={stuck} />;
   if (!profile?.onboardingComplete) return <Navigate to="/onboarding" replace />;
   return children;
 }
@@ -80,7 +96,7 @@ function TitleSync() {
 
 function AppRoutes() {
   return (
-    <Suspense fallback={<CenteredLoader />}>
+    <Suspense fallback={<BootScreen />}>
       <TitleSync />
       <Routes>
         <Route path="/onboarding" element={<Onboarding />} />

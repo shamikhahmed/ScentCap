@@ -12,7 +12,7 @@ test.describe('ScentCap viewport contract', () => {
     await page.setViewportSize({ width: 375, height: 812 });
     await loadDemoWardrobe(page);
     await expect(page.getByTestId('desktop-sidebar')).toBeHidden();
-    await expect(page.locator('.floating-tab-shell')).toBeVisible();
+    await expect(page.locator('.atelier-tabbar')).toBeVisible();
     await expect(page.getByRole('button', { name: /Wear this today/i })).toBeVisible({ timeout: 20_000 });
   });
 
@@ -20,7 +20,7 @@ test.describe('ScentCap viewport contract', () => {
     await page.setViewportSize({ width: 1280, height: 800 });
     await loadDemoWardrobe(page);
     await expect(page.getByTestId('desktop-sidebar')).toBeVisible();
-    await expect(page.locator('.floating-tab-shell')).toBeHidden();
+    await expect(page.locator('.atelier-tabbar')).toBeHidden();
     await expect(page.getByTestId('desktop-sidebar').getByRole('link', { name: 'Collection' })).toBeVisible();
   });
 });

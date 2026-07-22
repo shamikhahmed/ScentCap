@@ -31,33 +31,53 @@ const Ctx = createContext<AppState | null>(null);
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = useState(false);
   const [profile, setProfileState] = useState<UserProfile | undefined>();
-  const [prefs, setPrefsState] = useState<Preferences>({ id: 'preferences', officeMaxSprays: 3, officeSafeMode: false, theme: 'dark', signatures: {} });
+  const [prefs, setPrefsState] = useState<Preferences>({ id: 'preferences', officeMaxSprays: 3, officeSafeMode: false, theme: 'light', signatures: {} });
   const [collection, setCollection] = useState<CollectionItem[]>([]);
   const [history, setHistory] = useState<WearRecord[]>([]);
   const [weather, setWeather] = useState<WeatherCache | null>(null);
   const [weatherUnavailable, setWeatherUnavailable] = useState<WeatherUnavailableReason | undefined>();
 
   const refresh = useCallback(async () => {
-    await ensureSeedLoaded();
-    const [p, pr, col, hist] = await Promise.all([
-      getProfile(),
-      getPreferences(),
-      getAllCollection(),
-      getWearHistory(),
-    ]);
-    setProfileState(p);
-    setPrefsState({ ...pr, officeSafeMode: pr.officeSafeMode ?? false });
-    setCollection(col);
-    setHistory(hist);
-    if (p?.onboardingComplete) {
-      const { weather: w, unavailableReason } = await getDailyWeather(p);
-      setWeather(w);
-      setWeatherUnavailable(unavailableReason);
-    } else {
-      setWeather(null);
-      setWeatherUnavailable(undefined);
+    try {
+      await ensureSeedLoaded();
+      const [p, pr, col, hist] = await Promise.all([
+        getProfile(),
+        getPreferences(),
+        getAllCollection(),
+        getWearHistory(),
+      ]);
+      setProfileState(p);
+      let nextPrefs = { ...pr, officeSafeMode: pr.officeSafeMode ?? false };
+      try {
+        if (localStorage.getItem('scentcap_atelier_203') !== '1') {
+          nextPrefs = { ...nextPrefs, theme: 'light' };
+          localStorage.setItem('scentcap_atelier_203', '1');
+          void savePreferences(nextPrefs);
+        }
+      } catch {
+        nextPrefs = { ...nextPrefs, theme: nextPrefs.theme ?? 'light' };
+      }
+      setPrefsState(nextPrefs);
+      setCollection(col);
+      setHistory(hist);
+      if (p?.onboardingComplete) {
+        try {
+          const { weather: w, unavailableReason } = await getDailyWeather(p);
+          setWeather(w);
+          setWeatherUnavailable(unavailableReason);
+        } catch {
+          setWeather(null);
+          setWeatherUnavailable('fetch_failed');
+        }
+      } else {
+        setWeather(null);
+        setWeatherUnavailable(undefined);
+      }
+    } catch (err) {
+      console.error('[ScentCap] Boot refresh failed', err);
+    } finally {
+      setReady(true);
     }
-    setReady(true);
   }, []);
 
   useEffect(() => {
@@ -78,9 +98,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [refresh]);
 
   useEffect(() => {
-    document.body.classList.toggle('light', prefs.theme === 'light');
+    const light = prefs.theme !== 'dark';
+    document.body.classList.toggle('light', light);
     const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute('content', prefs.theme === 'light' ? '#fafaf9' : '#0c0a09');
+    if (meta) meta.setAttribute('content', light ? '#e9edf0' : '#0e1116');
   }, [prefs.theme]);
 
   const setProfile = useCallback(async (p: UserProfile) => {

@@ -1,4 +1,4 @@
-/* Marble + paper materials — ScentCap 2.0 */
+/* Atelier materials — flat, editorial, no marble theater */
 
 .sc-marble {
   position: relative;
@@ -6,42 +6,10 @@
 }
 
 .sc-marble::before {
-  content: '';
-  pointer-events: none;
-  position: absolute;
-  inset: 0;
-  opacity: var(--sc-marble-opacity);
-  background-image:
-    radial-gradient(ellipse 80% 50% at 20% 30%, var(--sc-blush), transparent 55%),
-    radial-gradient(ellipse 60% 40% at 80% 70%, var(--sc-amber), transparent 50%),
-    repeating-linear-gradient(
-      115deg,
-      transparent,
-      transparent 48px,
-      color-mix(in srgb, var(--sc-text) 40%, transparent) 48px,
-      color-mix(in srgb, var(--sc-text) 40%, transparent) 49px
-    );
-  z-index: 0;
+  display: none;
 }
 
-.sc-blotter {
-  background: var(--sc-sheet);
-  border: 1px solid var(--sc-border-soft);
-  border-radius: var(--sc-radius-card);
-  box-shadow: var(--sc-shadow-sm);
-  position: relative;
-  overflow: hidden;
-}
-
-.sc-blotter::after {
-  content: '';
-  pointer-events: none;
-  position: absolute;
-  inset: 0;
-  opacity: 0.02;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
+.sc-blotter,
 .sc-panel {
   background: var(--sc-panel);
   border: 1px solid var(--sc-border-soft);
@@ -52,20 +20,16 @@
 .catalog-bottle-thumb {
   object-fit: contain;
   object-position: center bottom;
-  filter: drop-shadow(0 8px 16px var(--sc-shadow-color));
+  filter: drop-shadow(0 10px 18px var(--sc-shadow-color));
 }
 
 .sc-offline-banner {
-  background: color-mix(in srgb, var(--sc-warning) 18%, var(--sc-sheet));
+  background: var(--sc-accent-soft);
   border-bottom: 1px solid var(--sc-border-soft);
   color: var(--sc-text);
   font-size: 13px;
+  font-weight: 600;
   padding: 8px 16px;
+  padding-top: max(8px, env(safe-area-inset-top));
   text-align: center;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .sc-marble::before {
-    animation: none !important;
-  }
 }

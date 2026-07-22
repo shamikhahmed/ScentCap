@@ -186,6 +186,22 @@ export function SettingsPage() {
         <Button variant="ghost" className="w-full" onClick={importData}>Import wardrobe</Button>
       </Card>
 
+      <Card className="space-y-3">
+        <p className="font-medium">App won&apos;t open?</p>
+        <p className="text-xs text-[var(--sc-text-soft)] leading-relaxed">
+          Old cache on iPhone can freeze the PWA after an update. Clear cache reloads a fresh install — wardrobe in IndexedDB usually stays.
+        </p>
+        <Button
+          variant="outline"
+          className="w-full"
+          onClick={() => {
+            void import('@/components/ErrorBoundary').then(({ hardResetApp }) => hardResetApp());
+          }}
+        >
+          Clear cache & reopen
+        </Button>
+      </Card>
+
       <Card className="space-y-3" data-testid="privacy-network">
         <p className="font-medium">Privacy &amp; network</p>
         <p className="text-xs text-[var(--sc-text-soft)] leading-relaxed">

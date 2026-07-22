@@ -4,36 +4,36 @@
 @import "./styles/cap-premium-base.css";
 @import "./scent-premium-overrides.css";
 
-/* ScentCap 2.0 — boutique blotter / flacon */
+/* ScentCap 2.0.3 — Atelier */
 @theme {
-  --font-sans: "Manrope", "Source Sans 3", system-ui, sans-serif;
-  --font-display: "Cormorant Garamond", "Libre Baskerville", Georgia, serif;
+  --font-sans: "Figtree", system-ui, sans-serif;
+  --font-display: "Newsreader", Georgia, serif;
 
   --color-bg: var(--sc-bg);
   --color-bg-secondary: var(--sc-surface);
   --color-surface: var(--sc-surface);
   --color-surface-elevated: var(--sc-panel);
-  --color-border: color-mix(in srgb, var(--sc-blush) 22%, transparent);
-  --color-border-subtle: color-mix(in srgb, var(--sc-blush) 12%, transparent);
+  --color-border: var(--sc-border);
+  --color-border-subtle: var(--sc-border-soft);
   --color-text-primary: var(--sc-text);
   --color-text-secondary: var(--sc-text-soft);
   --color-text-tertiary: var(--sc-text-muted);
-  --color-accent: var(--sc-amber);
-  --color-accent-dim: color-mix(in srgb, var(--sc-amber) 85%, white);
+  --color-accent: var(--sc-accent);
+  --color-accent-dim: color-mix(in srgb, var(--sc-accent) 85%, white);
   --color-blush: var(--sc-blush);
-  --color-accent-muted: color-mix(in srgb, var(--sc-amber) 18%, transparent);
-  --color-separator: color-mix(in srgb, var(--sc-blush) 28%, transparent);
+  --color-accent-muted: var(--sc-accent-soft);
+  --color-separator: var(--sc-border-soft);
 
-  --radius-xl: 24px;
+  --radius-xl: 16px;
   --glass-bg: var(--sc-glass);
-  --glass-bg-subtle: color-mix(in srgb, var(--sc-panel) 70%, transparent);
-  --glass-border: color-mix(in srgb, var(--sc-amber) 14%, transparent);
+  --glass-bg-subtle: color-mix(in srgb, var(--sc-panel) 80%, transparent);
+  --glass-border: var(--sc-border-soft);
   --glass-shadow: var(--sc-shadow-md);
   --glass-shadow-sm: var(--sc-shadow-sm);
-  --tab-bar-bg: color-mix(in srgb, var(--sc-bg) 92%, transparent);
+  --tab-bar-bg: color-mix(in srgb, var(--sc-panel) 94%, transparent);
 
-  --color-scent-50: #f6f2eb;
-  --color-scent-950: #181614;
+  --color-scent-50: #e9edf0;
+  --color-scent-950: #0e1116;
 }
 
 .text-display,

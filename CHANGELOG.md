@@ -1,3 +1,10 @@
+## [2.0.3] — 2026-07-22
+
+- Full Atelier redesign: light chalk + forest accent, Newsreader/Figtree, kill marble/glass boutique
+- Boot fix: remove long splash; stuck-timeout + Clear cache & reopen (SW recovery)
+- Home single-column layout; simpler tab bar; default light theme
+- SW `scentcap-v203`
+
 ## [2.0.2] — 2026-07-22
 
 - iPhone UX: safe-area / overflow fixes; flacon bottle placeholder always shows when photos fail

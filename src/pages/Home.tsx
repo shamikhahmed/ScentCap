@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import {
   Cloud, Droplets, Flame, Layers, Sparkles, Sun, Wind, ChevronRight, MapPin, Briefcase, AlertCircle,
 } from 'lucide-react';
@@ -15,9 +14,7 @@ import { WearRatingModal } from '@/components/ui/WearRatingModal';
 import { HeroPick } from '@/components/premium/HeroPick';
 import { FragranceThumb } from '@/components/collection/FragranceThumb';
 import { StatPill } from '@/components/premium/StatPill';
-import { GlassCard } from '@/components/premium/GlassCard';
 import { timeGreeting, scentMood } from '@/lib/greetings';
-import { CapKineticHeadline } from '@/components/premium/CapKineticHeadline';
 import { FAMILY_COLORS, rotationHealth, wearStreak, wearsThisMonth, daysSinceWear } from '@/lib/stats';
 import { weatherUnavailableMessage } from '@/services/weather';
 import { uid } from '@/lib/utils';
@@ -276,256 +273,197 @@ export function Home() {
   }
 
   return (
-    <div className="home-blotter relative pb-10">
-      <div className="home-blotter__strip" aria-hidden="true" />
+    <div className="home-atelier">
+      <header className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="home-atelier__brand">ScentCap · Today</p>
+          <h1 className="home-atelier__title">{mood}</h1>
+          <p className="text-sm text-[var(--sc-text-soft)] mt-2">{greeting.line}</p>
+          {prefs.officeSafeMode && (
+            <span className="inline-flex items-center gap-1.5 mt-3 text-xs font-semibold text-[var(--sc-accent)] bg-[var(--sc-accent-soft)] px-2.5 py-1 rounded-lg">
+              <Briefcase size={12} /> Office Safe
+            </span>
+          )}
+        </div>
+        {weather && (
+          <div className="shrink-0 rounded-2xl border border-[var(--sc-border-soft)] bg-[var(--sc-panel)] px-3 py-2 flex items-center gap-2">
+            <WIcon size={16} className="text-[var(--sc-accent)]" strokeWidth={2} />
+            <span className="text-base font-semibold tabular-nums">{Math.round(weather.tempC)}°</span>
+          </div>
+        )}
+      </header>
+
       {history.length === 0 && (
-        <div className="home-blotter-coach">
+        <div className="home-atelier__coach">
           <p className="text-sm font-semibold tracking-tight">Start here</p>
-          <p className="text-xs text-[var(--color-text-secondary)] mt-1 leading-relaxed">
-            Tap <span className="text-[var(--color-accent)] font-semibold">Wear this today</span> on your pick,
-            or open Collection to browse bottles. Advisor retunes picks by mood and weather.
+          <p className="text-xs text-[var(--sc-text-soft)] mt-1 leading-relaxed">
+            Tap <span className="font-semibold text-[var(--sc-accent)]">Wear this today</span> on your pick,
+            or open Bottles to browse. Advisor retunes by mood and weather.
           </p>
         </div>
       )}
-      <div className="home-blotter-layout">
-        <aside className="home-blotter-rail home-blotter-rail--tools" aria-label="Counter tools">
-          <p className="home-blotter-rail__label">Counter</p>
-          <section className="px-5 md:px-0 pt-3 pb-1 home-blotter-greeting">
-            <div className="flex items-start justify-between gap-4">
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-                <p className="text-subhead text-[var(--color-text-secondary)]">{greeting.line}</p>
-                <h1 className="text-display mt-1.5">
-                  <CapKineticHeadline lines={[mood]} gradient />
-                </h1>
-                {prefs.officeSafeMode && (
-                  <span className="inline-flex items-center gap-1.5 mt-3 text-caption text-[var(--color-accent)] bg-[var(--color-accent-muted)] px-2.5 py-1 rounded-full">
-                    <Briefcase size={11} /> Office Safe
-                  </span>
-                )}
-              </motion.div>
-              {weather && (
-                <motion.div
-                  className="weather-chip-premium shrink-0 home-blotter-weather-chip"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.1 }}
-                >
-                  <WIcon size={18} className="text-[var(--color-accent)]" strokeWidth={2} />
-                  <span className="text-base font-semibold tabular-nums tracking-tight">{Math.round(weather.tempC)}°</span>
-                </motion.div>
-              )}
-            </div>
-          </section>
 
-          {rotationLow && (
-            <section className="px-5 md:px-0 mt-4">
-              <GlassCard className="flex items-start gap-3 !p-4 border-orange-500/20" glow="rgba(255,159,10,0.12)">
-                <AlertCircle size={18} className="text-orange-400 shrink-0 mt-0.5" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-headline text-sm">Rotation at {rotation}%</p>
-                  <p className="text-xs text-[var(--color-text-secondary)] mt-1 leading-relaxed">
-                    Try a neglected bottle below — {collection.length - Math.round((rotation / 100) * collection.length)} haven&apos;t been worn yet.
-                  </p>
-                </div>
-                <PressableLink to="/collection" className="text-xs text-[var(--color-accent)] font-semibold shrink-0">
-                  View
-                </PressableLink>
-              </GlassCard>
-            </section>
-          )}
-
-          <div className="px-5 md:px-0 flex gap-2.5 overflow-x-auto py-5 scrollbar-none home-blotter-stats">
-            <StatPill icon={<Droplets size={15} strokeWidth={2} />} label="Bottles" value={String(collection.length)} to="/collection" delay={0.05} />
-            <StatPill icon={<Flame size={15} strokeWidth={2} />} label="Streak" value={`${streak}d`} tone={streak > 0 ? 'hot' : 'default'} to="/calendar" delay={0.1} />
-            <StatPill icon={<Sparkles size={15} strokeWidth={2} />} label="Month" value={String(monthWears)} to="/calendar" delay={0.15} />
-            <StatPill icon={<Layers size={15} strokeWidth={2} />} label="Rotation" value={`${rotation}%`} tone={rotationLow ? 'warn' : rotation >= 70 ? 'good' : 'default'} to="/analytics" delay={0.2} />
+      {rotationLow && (
+        <div className="mt-4 rounded-2xl border border-orange-500/25 bg-orange-500/10 p-4 flex items-start gap-3">
+          <AlertCircle size={18} className="text-orange-500 shrink-0 mt-0.5" />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold">Rotation at {rotation}%</p>
+            <p className="text-xs text-[var(--sc-text-soft)] mt-1 leading-relaxed">
+              Try a neglected bottle — some haven&apos;t been worn yet.
+            </p>
           </div>
-
-          <section className="px-5 md:px-0 mt-4 home-blotter-moods">
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-caption text-[var(--color-text-tertiary)]">One-tap mood</p>
-              {activePresetId && (
-                <span className="text-[11px] font-semibold text-[var(--color-accent)]">
-                  {moodLabel(advisorInput)} · re-scored
-                </span>
-              )}
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 home-blotter-mood-grid">
-              {MOOD_PRESETS.map((p) => {
-                const Icon = p.Icon;
-                return (
-                <button
-                  key={p.id}
-                  type="button"
-                  onClick={() => applyPreset(p)}
-                  className={`tile-premium flex flex-col items-center gap-2 !py-4 text-center pressable transition-all ${
-                    activePresetId === p.id ? 'ring-2 ring-[var(--color-accent)]/60 bg-[var(--color-accent-muted)]/30' : ''
-                  }`}
-                >
-                  <Icon size={22} strokeWidth={1.75} className="text-[var(--color-accent)]" aria-hidden />
-                  <span className="text-[11px] font-semibold text-[var(--color-text-secondary)]">{p.label}</span>
-                </button>
-                );
-              })}
-            </div>
-          </section>
-        </aside>
-
-        <div className="home-blotter-main px-5 md:px-0">
-          <p className="home-blotter-main__label">Today&apos;s blotter</p>
-          {loading ? (
-            <LoadingCard messages={HOME_LOADING_MESSAGES} />
-          ) : result ? (
-            <HeroPick
-              result={result}
-              familyColor={familyColor}
-              logged={logged}
-              layerSaved={layerSaved}
-              shareMsg={shareMsg}
-              photoUrl={heroPhotoUrl}
-              moodLabel={moodLabel(advisorInput)}
-              onWear={wearToday}
-              onShare={shareToday}
-              onSaveLayer={saveLayering}
-            />
-          ) : (
-            <GlassCard className="text-center !py-10">
-              <p className="text-headline">No match today</p>
-              <p className="text-subhead text-[var(--color-text-secondary)] mt-2 max-w-xs mx-auto">
-                {prefs.officeSafeMode ? 'Office Safe may be limiting picks.' : 'Customize occasion and vibe in Advisor.'}
-              </p>
-              <PressableLink to="/advisor" className="inline-flex mt-6 btn-glow text-white rounded-2xl px-8 py-3.5 font-semibold text-sm">
-                Open Advisor
-              </PressableLink>
-            </GlassCard>
-          )}
-
-          {result && result.backups.length > 0 && (
-            <div className="mt-5">
-              <p className="text-caption text-[var(--color-text-tertiary)] mb-2.5 px-0.5">Backup picks</p>
-              <div className="flex gap-2.5 overflow-x-auto scrollbar-none pb-1">
-                {result.backups.slice(0, 3).map((b) => (
-                  <PressableLink key={b.collectionId} to={`/fragrance/${b.collectionId}`} className="shrink-0 min-w-[148px]">
-                    <div className="tile-premium !py-3 !px-4">
-                      <FragranceThumb
-                        brand={b.fragrance.brand}
-                        name={b.fragrance.name}
-                        family={b.fragrance.family}
-                        catalogImage={b.fragrance.image}
-                        fragrance={b.fragrance}
-                        size="sm"
-                        className="mb-2.5 w-full"
-                      />
-                      <p className="text-[10px] text-[var(--color-text-tertiary)] truncate">{b.fragrance.brand}</p>
-                      <p className="text-sm font-semibold truncate tracking-tight">{b.fragrance.name}</p>
-                      <p className="text-xs font-semibold text-[var(--color-accent)] mt-1.5">{Math.round(b.score)}% match</p>
-                    </div>
-                  </PressableLink>
-                ))}
-              </div>
-            </div>
-          )}
+          <PressableLink to="/collection" className="text-xs text-[var(--sc-accent)] font-semibold shrink-0">
+            View
+          </PressableLink>
         </div>
+      )}
 
-        <aside className="home-blotter-rail home-blotter-rail--ledger" aria-label="Wear ledger">
-          <p className="home-blotter-rail__label">Ledger</p>
-
-          {neglectedDetails.length > 0 && (
-            <section className="mt-8 md:mt-0">
-              <div className="px-5 md:px-0 flex items-end justify-between mb-3">
-                <div>
-                  <p className="text-caption text-[var(--color-text-tertiary)]">Needs attention</p>
-                  <p className="text-subhead text-[var(--color-text-secondary)] mt-1">
-                    {neglectedDetails.length} not worn in 3+ weeks
-                  </p>
-                </div>
-                <PressableLink to="/collection" className="text-xs text-[var(--color-accent)] font-semibold flex items-center gap-0.5">
-                  All <ChevronRight size={14} />
-                </PressableLink>
-              </div>
-              <div className="flex gap-3 overflow-x-auto px-5 md:px-0 pb-2 scrollbar-none home-blotter-neglected">
-                {neglectedDetails.map((n, i) => (
-                  <PressableLink key={n.id} to={`/fragrance/${n.id}`} className="shrink-0 w-[156px] md:w-full">
-                    <motion.div
-                      className="tile-premium h-full"
-                      initial={{ opacity: 0, x: 12 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.05 }}
-                    >
-                      <FragranceThumb
-                        brand={n.f.brand}
-                        name={n.f.name}
-                        family={n.f.family}
-                        catalogImage={n.f.image}
-                        fragrance={n.f}
-                        size="sm"
-                        className="mb-3 w-full"
-                      />
-                      <p className="text-[10px] text-[var(--color-text-tertiary)] truncate">{n.f.brand}</p>
-                      <p className="text-sm font-semibold truncate tracking-tight">{n.f.name}</p>
-                      <p className="text-[11px] font-semibold text-orange-400 mt-2">
-                        {n.days === null ? 'Never worn' : `${n.days}d ago`}
-                      </p>
-                    </motion.div>
-                  </PressableLink>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {weather ? (
-            <section className="px-5 md:px-0 mt-8 md:mt-5">
-              <GlassCard className="flex items-center gap-4 !p-4">
-                <div className="w-12 h-12 rounded-2xl bg-[var(--color-accent-muted)] flex items-center justify-center shrink-0">
-                  <WIcon className="text-[var(--color-accent)]" size={22} strokeWidth={2} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold capitalize tracking-tight">{weather.condition}</p>
-                  <p className="text-sm text-[var(--color-text-secondary)] mt-0.5">
-                    {profile?.cityLabel ?? 'Local'} · {weather.tempC}° · {weather.humidity}% humidity
-                  </p>
-                </div>
-                <PressableLink to="/layering" className="text-[var(--color-accent)] text-sm font-semibold shrink-0">Layer</PressableLink>
-              </GlassCard>
-            </section>
-          ) : weatherNotice ? (
-            <section className="px-5 md:px-0 mt-8 md:mt-5">
-              <GlassCard className="flex items-start gap-3 !p-4">
-                <MapPin className="text-[var(--color-text-secondary)] shrink-0 mt-0.5" size={18} />
-                <div className="flex-1 min-w-0">
-                  <p className="text-headline text-sm">Weather unavailable</p>
-                  <p className="text-sm text-[var(--color-text-secondary)] mt-1 leading-relaxed">{weatherNotice}</p>
-                  <PressableLink to="/settings" className="inline-block text-[var(--color-accent)] text-sm font-semibold mt-2">
-                    Add your city in Settings
-                  </PressableLink>
-                </div>
-              </GlassCard>
-            </section>
-          ) : null}
-
-          {history.length > 0 && (
-            <section className="px-5 md:px-0 mt-10 md:mt-5">
-              <p className="text-caption text-[var(--color-text-tertiary)] mb-3">Recent wears</p>
-              <RecentWears history={history.slice(-4).reverse()} collection={collection} />
-            </section>
-          )}
-
-          <section className="px-5 md:px-0 mt-8 md:mt-5 grid grid-cols-2 gap-3">
-            <PressableLink to="/analytics">
-              <div className="tile-premium h-full">
-                <p className="text-headline text-sm">Analytics</p>
-                <p className="text-xs text-[var(--color-text-tertiary)] mt-1">Value & rotation</p>
-              </div>
-            </PressableLink>
-            <PressableLink to="/calendar">
-              <div className="tile-premium h-full">
-                <p className="text-headline text-sm">Calendar</p>
-                <p className="text-xs text-[var(--color-text-tertiary)] mt-1">Wear patterns</p>
-              </div>
-            </PressableLink>
-          </section>
-        </aside>
+      <div className="home-atelier__stats">
+        <StatPill icon={<Droplets size={15} strokeWidth={2} />} label="Bottles" value={String(collection.length)} to="/collection" delay={0.05} />
+        <StatPill icon={<Flame size={15} strokeWidth={2} />} label="Streak" value={`${streak}d`} tone={streak > 0 ? 'hot' : 'default'} to="/calendar" delay={0.1} />
+        <StatPill icon={<Sparkles size={15} strokeWidth={2} />} label="Month" value={String(monthWears)} to="/calendar" delay={0.15} />
+        <StatPill icon={<Layers size={15} strokeWidth={2} />} label="Rotation" value={`${rotation}%`} tone={rotationLow ? 'warn' : rotation >= 70 ? 'good' : 'default'} to="/analytics" delay={0.2} />
       </div>
+
+      <p className="home-atelier__section-label">Mood</p>
+      <div className="home-atelier__moods">
+        {MOOD_PRESETS.map((p) => {
+          const Icon = p.Icon;
+          return (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => applyPreset(p)}
+              className={`rounded-2xl border px-2 py-3 flex flex-col items-center gap-1.5 text-center transition-colors ${
+                activePresetId === p.id
+                  ? 'border-[var(--sc-accent)] bg-[var(--sc-accent-soft)]'
+                  : 'border-[var(--sc-border-soft)] bg-[var(--sc-panel)]'
+              }`}
+            >
+              <Icon size={18} strokeWidth={1.85} className="text-[var(--sc-accent)]" aria-hidden />
+              <span className="text-[11px] font-semibold text-[var(--sc-text-soft)]">{p.label}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <p className="home-atelier__section-label">Today&apos;s bottle</p>
+      {loading ? (
+        <LoadingCard messages={HOME_LOADING_MESSAGES} />
+      ) : result ? (
+        <HeroPick
+          result={result}
+          familyColor={familyColor}
+          logged={logged}
+          layerSaved={layerSaved}
+          shareMsg={shareMsg}
+          photoUrl={heroPhotoUrl}
+          moodLabel={moodLabel(advisorInput)}
+          onWear={wearToday}
+          onShare={shareToday}
+          onSaveLayer={saveLayering}
+        />
+      ) : (
+        <div className="rounded-2xl border border-[var(--sc-border-soft)] bg-[var(--sc-panel)] text-center py-10 px-5">
+          <p className="font-semibold text-lg" style={{ fontFamily: 'var(--font-display)' }}>No match today</p>
+          <p className="text-sm text-[var(--sc-text-soft)] mt-2 max-w-xs mx-auto">
+            {prefs.officeSafeMode ? 'Office Safe may be limiting picks.' : 'Customize occasion in Advisor.'}
+          </p>
+          <PressableLink to="/advisor" className="inline-flex mt-6 btn-glow rounded-xl px-8 py-3.5 font-semibold text-sm">
+            Open Advisor
+          </PressableLink>
+        </div>
+      )}
+
+      {result && result.backups.length > 0 && (
+        <div className="mt-5">
+          <p className="home-atelier__section-label !mt-0">Backup picks</p>
+          <div className="flex gap-2.5 overflow-x-auto scrollbar-none pb-1">
+            {result.backups.slice(0, 3).map((b) => (
+              <PressableLink key={b.collectionId} to={`/fragrance/${b.collectionId}`} className="shrink-0 min-w-[140px]">
+                <div className="rounded-2xl border border-[var(--sc-border-soft)] bg-[var(--sc-panel)] p-3">
+                  <FragranceThumb
+                    brand={b.fragrance.brand}
+                    name={b.fragrance.name}
+                    family={b.fragrance.family}
+                    catalogImage={b.fragrance.image}
+                    fragrance={b.fragrance}
+                    size="sm"
+                    className="mb-2.5 w-full"
+                  />
+                  <p className="text-[10px] text-[var(--sc-text-muted)] truncate">{b.fragrance.brand}</p>
+                  <p className="text-sm font-semibold truncate tracking-tight">{b.fragrance.name}</p>
+                  <p className="text-xs font-semibold text-[var(--sc-accent)] mt-1">{Math.round(b.score)}%</p>
+                </div>
+              </PressableLink>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {neglectedDetails.length > 0 && (
+        <section className="mt-2">
+          <div className="flex items-end justify-between">
+            <p className="home-atelier__section-label !mt-4">Needs attention</p>
+            <PressableLink to="/collection" className="text-xs text-[var(--sc-accent)] font-semibold flex items-center gap-0.5 mb-2">
+              All <ChevronRight size={14} />
+            </PressableLink>
+          </div>
+          <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-none">
+            {neglectedDetails.map((n) => (
+              <PressableLink key={n.id} to={`/fragrance/${n.id}`} className="shrink-0 w-[148px]">
+                <div className="rounded-2xl border border-[var(--sc-border-soft)] bg-[var(--sc-panel)] p-3 h-full">
+                  <FragranceThumb
+                    brand={n.f.brand}
+                    name={n.f.name}
+                    family={n.f.family}
+                    catalogImage={n.f.image}
+                    fragrance={n.f}
+                    size="sm"
+                    className="mb-3 w-full"
+                  />
+                  <p className="text-[10px] text-[var(--sc-text-muted)] truncate">{n.f.brand}</p>
+                  <p className="text-sm font-semibold truncate">{n.f.name}</p>
+                  <p className="text-[11px] font-semibold text-orange-500 mt-2">
+                    {n.days === null ? 'Never worn' : `${n.days}d ago`}
+                  </p>
+                </div>
+              </PressableLink>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {weatherNotice && !weather && (
+        <div className="mt-6 rounded-2xl border border-[var(--sc-border-soft)] bg-[var(--sc-panel)] p-4 flex items-start gap-3">
+          <MapPin className="text-[var(--sc-text-muted)] shrink-0 mt-0.5" size={18} />
+          <div className="min-w-0">
+            <p className="text-sm font-semibold">Weather unavailable</p>
+            <p className="text-sm text-[var(--sc-text-soft)] mt-1 leading-relaxed">{weatherNotice}</p>
+            <PressableLink to="/settings" className="inline-block text-[var(--sc-accent)] text-sm font-semibold mt-2">
+              Add city in Settings
+            </PressableLink>
+          </div>
+        </div>
+      )}
+
+      {history.length > 0 && (
+        <section className="mt-2">
+          <p className="home-atelier__section-label">Recent wears</p>
+          <RecentWears history={history.slice(-4).reverse()} collection={collection} />
+        </section>
+      )}
+
+      <section className="mt-6 grid grid-cols-2 gap-3">
+        <PressableLink to="/analytics" className="rounded-2xl border border-[var(--sc-border-soft)] bg-[var(--sc-panel)] p-4">
+          <p className="text-sm font-semibold">Analytics</p>
+          <p className="text-xs text-[var(--sc-text-muted)] mt-1">Value & rotation</p>
+        </PressableLink>
+        <PressableLink to="/layering" className="rounded-2xl border border-[var(--sc-border-soft)] bg-[var(--sc-panel)] p-4">
+          <p className="text-sm font-semibold">Layering</p>
+          <p className="text-xs text-[var(--sc-text-muted)] mt-1">Pair bottles</p>
+        </PressableLink>
+      </section>
 
       <WearRatingModal
         open={ratingOpen}

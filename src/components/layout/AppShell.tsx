@@ -1,10 +1,8 @@
 import { Link, NavLink, Outlet } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Calendar, Droplets, Home, Layers, Plus, User, Sparkles, BarChart3 } from 'lucide-react';
+import { Calendar, Droplets, Home, Plus, User, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { DemoBanner } from '@/components/layout/DemoBanner';
 import { OfflineStatusBar } from '@/components/layout/OfflineStatusBar';
-import { AmbientBackground } from '@/components/premium/AmbientBackground';
 import { CapRouteTransition } from '@/components/premium/CapRouteTransition';
 import { Button } from '@/components/ui/button';
 import { hapticLight } from '@/lib/premium/haptics';
@@ -13,9 +11,7 @@ const desktopNav = [
   { to: '/', icon: Home, label: 'Today' },
   { to: '/collection', icon: Droplets, label: 'Collection' },
   { to: '/advisor', icon: Sparkles, label: 'Advisor' },
-  { to: '/layering', icon: Layers, label: 'Layering' },
   { to: '/calendar', icon: Calendar, label: 'Calendar' },
-  { to: '/analytics', icon: BarChart3, label: 'Analytics' },
   { to: '/settings', icon: User, label: 'You' },
 ];
 
@@ -34,16 +30,16 @@ function DesktopNavLink({ to, icon: Icon, label }: { to: string; icon: typeof Ho
       onClick={() => hapticLight()}
       className={({ isActive }) =>
         cn(
-          'flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors pressable',
+          'flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors',
           isActive
-            ? 'bg-[var(--color-accent-muted)] text-[var(--color-accent)]'
-            : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-elevated)]',
+            ? 'bg-[var(--sc-accent-soft)] text-[var(--sc-accent)]'
+            : 'text-[var(--sc-text-soft)] hover:text-[var(--sc-text)] hover:bg-[var(--sc-surface)]',
         )
       }
     >
       {({ isActive }) => (
         <>
-          <Icon size={18} strokeWidth={isActive ? 2.25 : 1.75} />
+          <Icon size={18} strokeWidth={isActive ? 2.4 : 1.9} />
           {label}
         </>
       )}
@@ -56,19 +52,12 @@ function MobileTab({ to, icon: Icon, label }: { to: string; icon: typeof Home; l
     <NavLink
       to={to}
       onClick={() => hapticLight()}
-      className={({ isActive }) => cn('floating-tab-item', isActive && 'floating-tab-item--active')}
+      className={({ isActive }) => cn('atelier-tab', isActive && 'atelier-tab--on')}
     >
       {({ isActive }) => (
         <>
-          {isActive && (
-            <motion.span
-              layoutId="floating-tab-pill"
-              className="floating-tab-indicator"
-              transition={{ type: 'spring', stiffness: 420, damping: 34 }}
-            />
-          )}
-          <Icon size={20} strokeWidth={isActive ? 2.25 : 1.75} className="floating-tab-icon" />
-          <span className="floating-tab-label">{label}</span>
+          <Icon size={20} strokeWidth={isActive ? 2.35 : 1.85} />
+          <span>{label}</span>
         </>
       )}
     </NavLink>
@@ -77,42 +66,46 @@ function MobileTab({ to, icon: Icon, label }: { to: string; icon: typeof Home; l
 
 export function AppShell() {
   return (
-    <div className="min-h-dvh flex flex-col md:flex-row md:max-w-[1440px] md:mx-auto md:w-full relative">
-      <AmbientBackground />
+    <div className="min-h-dvh flex flex-col md:flex-row md:max-w-[1280px] md:mx-auto md:w-full relative bg-[var(--sc-bg)]">
       <OfflineStatusBar />
-      <div className="cap-scroll-progress" aria-hidden="true" />
 
       <aside
         data-testid="desktop-sidebar"
-        className="hidden md:flex md:w-64 md:flex-shrink-0 md:flex-col md:border-r md:border-[var(--color-separator)] md:safe-pt md:p-6 md:gap-1 md:sticky md:top-0 md:h-dvh md:overflow-y-auto md:bg-[var(--color-bg)]/80 md:backdrop-blur-xl"
+        className="hidden md:flex md:w-60 md:flex-shrink-0 md:flex-col md:border-r md:border-[var(--sc-border-soft)] md:safe-pt md:p-5 md:gap-0.5 md:sticky md:top-0 md:h-dvh md:bg-[var(--sc-panel)]"
       >
-        <div className="mb-8 flex items-center gap-3">
+        <div className="mb-8 px-3 flex items-center gap-3">
           <img
             src={`${import.meta.env.BASE_URL}mark.svg`}
             alt=""
-            width={36}
-            height={36}
+            width={32}
+            height={32}
             className="shrink-0"
             aria-hidden
             draggable={false}
           />
           <div className="min-w-0">
-            <p className="text-caption text-[var(--color-text-tertiary)]">ScentCap</p>
-            <h1 className="text-title mt-0.5 font-[family-name:var(--font-display)] tracking-[-0.02em]">Fragrance wardrobe</h1>
+            <p className="text-[11px] font-semibold tracking-[0.16em] uppercase text-[var(--sc-text-muted)]">ScentCap</p>
+            <h1 className="text-lg leading-tight mt-0.5 font-[family-name:var(--font-display)] text-[var(--sc-text)]">
+              Wardrobe
+            </h1>
           </div>
         </div>
         {desktopNav.map((item) => (
           <DesktopNavLink key={item.to} {...item} />
         ))}
-        <div className="mt-5">
-          <Button to="/add" className="w-full btn-glow" haptic="medium">
+        <div className="mt-6 px-1">
+          <Button to="/add" className="w-full" haptic="medium">
             <Plus size={18} strokeWidth={2.5} /> Add bottle
           </Button>
         </div>
       </aside>
 
-      <main id="main" tabIndex={-1} className="flex-1 overflow-x-hidden overflow-y-auto cap-has-floating-nav md:pb-10 md:px-6 lg:px-10 xl:px-12 w-full min-w-0 relative z-10">
-        <div className="mx-auto w-full max-w-2xl lg:max-w-3xl xl:max-w-4xl">
+      <main
+        id="main"
+        tabIndex={-1}
+        className="flex-1 overflow-x-hidden overflow-y-auto atelier-main w-full min-w-0 relative z-10"
+      >
+        <div className="mx-auto w-full max-w-xl lg:max-w-2xl px-0 md:px-6 md:py-4">
           <DemoBanner />
           <CapRouteTransition className="relative z-[1]">
             <Outlet />
@@ -123,19 +116,17 @@ export function AppShell() {
       <Link
         to="/add"
         onClick={() => hapticLight()}
-        className="fab-premium pressable md:hidden"
+        className="atelier-fab md:hidden"
         aria-label="Add bottle"
       >
-        <Plus size={22} strokeWidth={2.25} />
+        <Plus size={22} strokeWidth={2.4} />
       </Link>
 
-      <div className="floating-tab-shell md:hidden">
-        <nav className="floating-tab-bar" aria-label="Main">
-          {mobileNav.map((item) => (
-            <MobileTab key={item.to} {...item} />
-          ))}
-        </nav>
-      </div>
+      <nav className="atelier-tabbar md:hidden" aria-label="Main">
+        {mobileNav.map((item) => (
+          <MobileTab key={item.to} {...item} />
+        ))}
+      </nav>
     </div>
   );
 }

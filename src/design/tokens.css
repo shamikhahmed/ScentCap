@@ -1,103 +1,116 @@
 /**
- * ScentCap 2.0 design tokens — boutique perfume counter.
- * Components should prefer var(--sc-*). --color-* bridged for legacy.
+ * ScentCap 2.0.3 — Atelier Wardrobe
+ * Light-first editorial counter. Cool chalk + forest ink.
+ * Avoids marble/blush boutique and purple/cream AI defaults.
  */
 
 :root {
-  /* Dark boutique (default) */
-  --sc-bg: #181614;
-  --sc-surface: #221f1c;
-  --sc-panel: #2b2724;
-  --sc-sheet: #322d29;
-  --sc-border: #47403a;
-  --sc-border-soft: #393430;
-  --sc-text: #f3ede7;
-  --sc-text-soft: #c8beb5;
-  --sc-text-muted: #9b9088;
-  --sc-amber: #d29a58;
-  --sc-amber-hover: #c48948;
-  --sc-blush: #d2aba3;
-  --sc-rose: #c28b80;
-  --sc-olive: #8e9a70;
-  --sc-success: #74a074;
-  --sc-warning: #d5a75c;
-  --sc-danger: #d5776e;
-  --sc-focus: #d29a58;
-  --sc-shadow-color: rgba(0, 0, 0, 0.35);
-  --sc-marble-opacity: 0.03;
-  --sc-ink: #f3ede7;
-  --sc-glass: rgba(43, 39, 36, 0.82);
+  /* Light atelier (default) */
+  --sc-bg: #e9edf0;
+  --sc-surface: #f5f7f8;
+  --sc-panel: #ffffff;
+  --sc-sheet: #ffffff;
+  --sc-border: #c9d0d6;
+  --sc-border-soft: #dde3e8;
+  --sc-text: #10141a;
+  --sc-text-soft: #3d4652;
+  --sc-text-muted: #6b7582;
+  --sc-accent: #0c6b5c;
+  --sc-accent-hover: #095548;
+  --sc-accent-soft: #d4ebe6;
+  --sc-ink: #10141a;
+  --sc-line: #2a333d;
+  --sc-success: #2f7a4a;
+  --sc-warning: #b7791f;
+  --sc-danger: #b42318;
+  --sc-focus: #0c6b5c;
+  --sc-shadow-color: rgba(16, 20, 26, 0.08);
+  --sc-glass: rgba(245, 247, 248, 0.92);
+  --sc-marble-opacity: 0;
 
-  --sc-radius-btn: 16px;
-  --sc-radius-card: 24px;
-  --sc-radius-sheet: 32px;
-  --sc-radius-hero: 36px;
+  /* Legacy aliases still referenced by components */
+  --sc-amber: var(--sc-accent);
+  --sc-amber-hover: var(--sc-accent-hover);
+  --sc-blush: #7a8a96;
+  --sc-rose: #8a6a72;
+  --sc-olive: #5f7a5a;
 
-  --sc-shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.05);
-  --sc-shadow-md: 0 10px 30px rgba(0, 0, 0, 0.08);
-  --sc-shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.12);
+  --sc-radius-btn: 12px;
+  --sc-radius-card: 16px;
+  --sc-radius-sheet: 20px;
+  --sc-radius-hero: 20px;
+
+  --sc-shadow-sm: 0 1px 2px rgba(16, 20, 26, 0.04);
+  --sc-shadow-md: 0 8px 24px rgba(16, 20, 26, 0.07);
+  --sc-shadow-lg: 0 18px 48px rgba(16, 20, 26, 0.1);
 
   --sc-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
-  --sc-dur-fast: 120ms;
-  --sc-dur: 220ms;
-  --sc-dur-large: 380ms;
-  --sc-dur-hero: 650ms;
+  --sc-dur-fast: 100ms;
+  --sc-dur: 200ms;
+  --sc-dur-large: 320ms;
+  --sc-dur-hero: 480ms;
 
   --sc-mobile: 768px;
   --sc-tablet: 1024px;
   --sc-desktop: 1280px;
 }
 
-body.light {
-  --sc-bg: #f6f2eb;
-  --sc-surface: #fffdfc;
-  --sc-panel: #ffffff;
-  --sc-sheet: #fffcf8;
-  --sc-border: #ded7cf;
-  --sc-border-soft: #ece5de;
-  --sc-text: #2f2926;
-  --sc-text-soft: #746a63;
-  --sc-text-muted: #9c938b;
-  --sc-amber: #a56a2c;
-  --sc-amber-hover: #8c5822;
-  --sc-blush: #d7b8b2;
-  --sc-rose: #b8877e;
-  --sc-olive: #7a8162;
-  --sc-success: #4f7553;
-  --sc-warning: #c18c34;
-  --sc-danger: #a74e47;
-  --sc-focus: #b37b42;
-  --sc-shadow-color: rgba(53, 36, 20, 0.08);
-  --sc-marble-opacity: 0.025;
-  --sc-ink: #2f2926;
-  --sc-glass: rgba(255, 252, 248, 0.9);
-
-  --sc-shadow-sm: 0 2px 6px rgba(53, 36, 20, 0.05);
-  --sc-shadow-md: 0 10px 30px rgba(53, 36, 20, 0.08);
-  --sc-shadow-lg: 0 24px 60px rgba(53, 36, 20, 0.12);
+/* Explicit dark — cool graphite, not brown boutique */
+body:not(.light) {
+  --sc-bg: #0e1116;
+  --sc-surface: #161b22;
+  --sc-panel: #1c232c;
+  --sc-sheet: #222a34;
+  --sc-border: #333c48;
+  --sc-border-soft: #2a323c;
+  --sc-text: #eef1f4;
+  --sc-text-soft: #a8b2be;
+  --sc-text-muted: #7a8694;
+  --sc-accent: #3dbaa4;
+  --sc-accent-hover: #56c9b5;
+  --sc-accent-soft: rgba(61, 186, 164, 0.16);
+  --sc-ink: #eef1f4;
+  --sc-line: #9aa5b2;
+  --sc-focus: #3dbaa4;
+  --sc-shadow-color: rgba(0, 0, 0, 0.45);
+  --sc-glass: rgba(22, 27, 34, 0.92);
+  --sc-amber: var(--sc-accent);
+  --sc-amber-hover: var(--sc-accent-hover);
+  --sc-blush: #8a96a3;
+  --sc-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --sc-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.28);
+  --sc-shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.35);
 }
 
-/* Bridge legacy --color-* → --sc-* so existing UI picks up boutique palette */
+body.light,
+:root {
+  color-scheme: light;
+}
+
+body:not(.light) {
+  color-scheme: dark;
+}
+
 :root,
 body {
   --color-bg: var(--sc-bg);
   --color-bg-secondary: var(--sc-surface);
   --color-surface: var(--sc-surface);
   --color-surface-elevated: var(--sc-panel);
-  --color-border: color-mix(in srgb, var(--sc-blush) 22%, transparent);
-  --color-border-subtle: color-mix(in srgb, var(--sc-blush) 12%, transparent);
+  --color-border: var(--sc-border);
+  --color-border-subtle: var(--sc-border-soft);
   --color-text-primary: var(--sc-text);
   --color-text-secondary: var(--sc-text-soft);
   --color-text-tertiary: var(--sc-text-muted);
-  --color-accent: var(--sc-amber);
-  --color-accent-dim: color-mix(in srgb, var(--sc-amber) 85%, white);
+  --color-accent: var(--sc-accent);
+  --color-accent-dim: color-mix(in srgb, var(--sc-accent) 85%, white);
   --color-blush: var(--sc-blush);
-  --color-accent-muted: color-mix(in srgb, var(--sc-amber) 18%, transparent);
-  --color-separator: color-mix(in srgb, var(--sc-blush) 28%, transparent);
+  --color-accent-muted: var(--sc-accent-soft);
+  --color-separator: var(--sc-border-soft);
   --glass-bg: var(--sc-glass);
-  --glass-bg-subtle: color-mix(in srgb, var(--sc-panel) 70%, transparent);
-  --glass-border: color-mix(in srgb, var(--sc-amber) 14%, transparent);
+  --glass-bg-subtle: color-mix(in srgb, var(--sc-panel) 80%, transparent);
+  --glass-border: var(--sc-border-soft);
   --glass-shadow: var(--sc-shadow-md);
   --glass-shadow-sm: var(--sc-shadow-sm);
-  --tab-bar-bg: color-mix(in srgb, var(--sc-bg) 92%, transparent);
+  --tab-bar-bg: color-mix(in srgb, var(--sc-panel) 94%, transparent);
 }
