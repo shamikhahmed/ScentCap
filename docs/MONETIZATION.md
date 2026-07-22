@@ -5,8 +5,8 @@
 ### Why someone pays
 Fragrance collectors are one of the highest-spending hobby niches. A person with 50+ bottles and $5,000+ invested in their wardrobe will pay $4.99/mo without thinking. The free tier (12 bottles) creates real friction for serious collectors. Analytics, layering lab, and travel kit are must-haves once someone is managing a real wardrobe.
 
-### Current state (LAUNCH_PREVIEW = true)
-All features free while App Store IAP is being set up. Settings shows "Launch preview" copy + "Pro subscriptions — coming to App Store" CTA. Switch `LAUNCH_PREVIEW` to `false` in `src/lib/pro.ts` to re-enable the paywall.
+### Current state (PWA-only)
+All features unlocked. No Pro / App Store CTA in Settings. `LAUNCH_PREVIEW` stays `true` in `src/lib/pro.ts` so gates stay open; paywall UI is not shown. Native IAP is later.
 
 ### Revenue logic
 - Target: 500 MAU at 10% Pro conversion = 50 × $4.99 = **$249/mo**

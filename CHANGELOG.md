@@ -1,5 +1,7 @@
 ## [2.0.0] — 2026-07-22
 
+- Remove Launch preview / Pro App Store CTA from Settings (PWA-only).
+
 ### Boutique wardrobe OS
 - Design system: `--sc-*` tokens, Cormorant Garamond + Manrope, marble/blotter materials, boutique splash
 - Catalog: `CatalogProvider` + Fraganty adapter; IndexedDB `catalog` + `images` blob cache (DB v5)

@@ -43,7 +43,7 @@ npm run gallery:view # http://127.0.0.1:8771/screen-gallery.html
 Gaps are tracked as tasks in `ROADMAP.md`.
 
 ## Gotchas — read before coding
-- Launch preview mode unlocks Pro on web deliberately — don't 'fix' the paywall until IAP ships.
+- PWA-only: all features unlocked; no Pro / App Store paywall UI in Settings.
 - Playwright mocks geolocation + Open-Meteo + fraganty.ai in helpers.ts — new network calls need mocks or CI flakes.
 
 ## Where decisions live

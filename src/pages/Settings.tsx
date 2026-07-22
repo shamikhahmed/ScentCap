@@ -1,20 +1,16 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Crown, Shield, Sparkles } from 'lucide-react';
+import { Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { PageHeader } from '@/components/premium/PageHeader';
-import { GlassCard } from '@/components/premium/GlassCard';
 import { ProfileEditor } from '@/components/settings/ProfileEditor';
 import { CityWeatherInput } from '@/components/settings/CityWeatherInput';
 import { useApp } from '@/context/AppContext';
-import { usePro } from '@/context/ProContext';
 import { exportAllData, exportWearHistoryCsv, importAllData } from '@/db';
 import { exitDemo, loadDemoData } from '@/services/demo';
-import { LAUNCH_PREVIEW } from '@/lib/pro';
 
 export function SettingsPage() {
   const { prefs, setPrefs, refresh, collection } = useApp();
-  const { isPro, openPaywall, deactivatePro } = usePro();
   const navigate = useNavigate();
 
   const exportData = async () => {
@@ -51,44 +47,6 @@ export function SettingsPage() {
   return (
     <div className="safe-pt px-5 py-6 max-w-lg mx-auto space-y-6">
       <PageHeader eyebrow="Preferences" title="Settings" large />
-
-      <GlassCard className={`space-y-4 ${isPro ? '!border-[var(--color-accent)]/30' : ''}`} data-testid="pro-settings-card">
-        <div className="flex items-start gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[var(--color-accent-muted)] flex items-center justify-center shrink-0">
-            {LAUNCH_PREVIEW ? <Sparkles size={20} className="text-[var(--color-accent)]" /> : <Crown size={20} className="text-[var(--color-accent)]" />}
-          </div>
-          <div className="flex-1">
-            <p className="font-semibold">
-              {LAUNCH_PREVIEW ? 'Launch preview' : isPro ? 'ScentCap Pro' : 'Upgrade to Pro'}
-            </p>
-            <p className="text-sm text-stone-400 mt-1">
-              {LAUNCH_PREVIEW
-                ? 'Every feature is free while we polish the App Store release — Analytics, Layering Lab, Travel Kit, and unlimited bottles.'
-                : isPro
-                  ? 'All features unlocked — Analytics, Layering Lab, Travel Kit, and unlimited bottles.'
-                  : 'Pro unlocks analytics, layering, travel kit, export, and unlimited bottles.'}
-            </p>
-          </div>
-        </div>
-        {LAUNCH_PREVIEW ? (
-          <Button variant="outline" size="sm" onClick={() => openPaywall()} data-testid="pro-roadmap-btn">
-            Pro subscriptions — coming to App Store
-          </Button>
-        ) : isPro ? (
-          <Button variant="ghost" size="sm" onClick={deactivatePro} data-testid="pro-deactivate">
-            Reset Pro (dev)
-          </Button>
-        ) : (
-          <div className="grid gap-2 sm:grid-cols-2">
-            <Button onClick={() => openPaywall()} data-testid="upgrade-pro-btn">
-              Upgrade — $4.99/mo
-            </Button>
-            <Button variant="outline" onClick={() => openPaywall()} data-testid="upgrade-pro-yearly">
-              Yearly — $39.99/yr
-            </Button>
-          </div>
-        )}
-      </GlassCard>
 
       <Card className="privacy-badge border-[var(--color-accent)]/30 bg-[var(--color-accent-muted)] space-y-3">
         <div className="flex items-start gap-3">

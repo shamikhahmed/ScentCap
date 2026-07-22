@@ -100,14 +100,14 @@ test.describe('ScentCap PWA', () => {
   });
 });
 
-test.describe('ScentCap launch preview', () => {
+test.describe('ScentCap PWA features', () => {
   test.beforeEach(async ({ context, page }) => {
     await installTestMocks(page, { pro: false });
     await context.grantPermissions(['geolocation']);
     await context.setGeolocation({ latitude: 40.7128, longitude: -74.006 });
   });
 
-  test('Pro features accessible without paywall during launch preview', async ({ page }) => {
+  test('Analytics and Travel Kit open without paywall', async ({ page }) => {
     await loadDemoWardrobe(page);
 
     await page.getByRole('link', { name: 'You' }).click();
@@ -118,16 +118,5 @@ test.describe('ScentCap launch preview', () => {
     await page.getByRole('link', { name: 'Analytics' }).click();
     await expect(page.getByRole('heading', { name: 'Analytics' })).toBeVisible({ timeout: 10_000 });
     await expect(page.getByTestId('pro-gate')).not.toBeVisible();
-  });
-
-  test('Pro roadmap modal opens from settings', async ({ page }) => {
-    await loadDemoWardrobe(page);
-
-    await page.getByRole('link', { name: 'You' }).click();
-    await expect(page.getByRole('heading', { name: /Settings/i })).toBeVisible({ timeout: 15_000 });
-    await expect(page.getByTestId('pro-roadmap-btn')).toBeVisible({ timeout: 15_000 });
-    await page.getByTestId('pro-roadmap-btn').click();
-    await expect(page.getByTestId('paywall-modal')).toBeVisible({ timeout: 15_000 });
-    await expect(page.getByRole('heading', { name: /Pro — coming soon/i })).toBeVisible({ timeout: 10_000 });
   });
 });
