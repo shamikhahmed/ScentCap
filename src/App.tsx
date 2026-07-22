@@ -5,7 +5,6 @@ import { AppShell } from '@/components/layout/AppShell';
 import { Home } from '@/pages/Home';
 import { BoutiqueSplash } from '@/components/layout/BoutiqueSplash';
 import { CenteredLoader } from '@/components/layout/CenteredLoader';
-import { OfflineBanner } from '@/components/layout/OfflineBanner';
 
 // Route-level code splitting — Home stays eager for instant first paint;
 // heavy pages (Analytics pulls in recharts) load on navigation.
@@ -113,7 +112,6 @@ export default function App() {
   return (
     <BrowserRouter basename={basename}>
       <AppProvider>
-        <OfflineBanner />
         <AppRoutes />
       </AppProvider>
     </BrowserRouter>

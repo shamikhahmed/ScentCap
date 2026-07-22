@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { AmbientBackground } from '@/components/premium/AmbientBackground';
 import { BrandMark } from '@/components/premium/BrandMark';
 import { CyclingShimmerText, DEMO_LOADING_MESSAGES } from '@/components/ui/CyclingShimmerText';
+import { HowToGuide } from '@/components/ui/HowToGuide';
+import { FlaconPlaceholder } from '@/components/bottle/FlaconPlaceholder';
 
 interface EmptyStateProps {
   eyebrow?: string;
@@ -11,29 +13,40 @@ interface EmptyStateProps {
   description: string;
   action?: { label: string; to: string };
   secondary?: { label: string; onClick: () => void; loading?: boolean };
+  showGuide?: boolean;
 }
 
-export function EmptyState({ eyebrow, title, description, action, secondary }: EmptyStateProps) {
+export function EmptyState({
+  eyebrow,
+  title,
+  description,
+  action,
+  secondary,
+  showGuide = true,
+}: EmptyStateProps) {
   const navigate = useNavigate();
 
   return (
-    <div className="relative min-h-[65dvh] flex flex-col items-center justify-center px-6 py-14 text-center">
+    <div className="relative min-h-[70dvh] flex flex-col items-center justify-center safe-pt safe-pb px-5 py-10 text-center overflow-x-hidden">
       <AmbientBackground />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] }}
-        className="relative z-10 max-w-sm"
+        className="relative z-10 w-full max-w-sm"
       >
-        <BrandMark className="mx-auto mb-10" />
+        <div className="mx-auto mb-6 w-24 h-36">
+          <FlaconPlaceholder brand="Scent" name="Cap" family="Fresh" />
+        </div>
+        <BrandMark className="mx-auto mb-6" />
         {eyebrow && <p className="text-caption text-[var(--color-text-tertiary)]">{eyebrow}</p>}
-        <h2 className="text-display mt-3">{title}</h2>
-        <p className="text-subhead text-[var(--color-text-secondary)] mt-4 leading-relaxed max-w-[18rem] mx-auto">
+        <h2 className="text-display mt-3 px-1 break-words">{title}</h2>
+        <p className="text-subhead text-[var(--color-text-secondary)] mt-4 leading-relaxed max-w-[18rem] mx-auto px-1">
           {description}
         </p>
-        <div className="flex flex-col gap-3 mt-10">
+        <div className="flex flex-col gap-3 mt-8">
           {action && (
-            <Button size="lg" className="w-full min-w-[220px] btn-glow" haptic="medium" onClick={() => navigate(action.to)}>
+            <Button size="lg" className="w-full min-w-0 btn-glow" haptic="medium" onClick={() => navigate(action.to)}>
               {action.label}
             </Button>
           )}
@@ -41,12 +54,17 @@ export function EmptyState({ eyebrow, title, description, action, secondary }: E
             secondary.loading ? (
               <CyclingShimmerText messages={DEMO_LOADING_MESSAGES} className="text-center py-3" />
             ) : (
-              <Button variant="glass" size="lg" className="w-full" onClick={secondary.onClick} haptic="light">
+              <Button variant="glass" size="lg" className="w-full min-w-0" onClick={secondary.onClick} haptic="light">
                 {secondary.label}
               </Button>
             )
           )}
         </div>
+        {showGuide && (
+          <div className="mt-10 rounded-2xl border border-[var(--color-border-subtle)] bg-[var(--color-surface)]/80 p-4 text-left">
+            <HowToGuide />
+          </div>
+        )}
       </motion.div>
     </div>
   );

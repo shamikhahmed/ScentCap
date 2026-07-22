@@ -152,7 +152,7 @@ export function LayeringLab() {
 
   if (!items.length) {
     return (
-      <div className="safe-pt px-5 py-8 max-w-lg mx-auto pb-32">
+      <div className="safe-pt px-5 py-8 max-w-lg mx-auto">
         <PageHeader
           eyebrow="ScentCap Lab"
           title="Layering Lab"
@@ -177,7 +177,7 @@ export function LayeringLab() {
   }
 
   return (
-    <div className="safe-pt px-5 py-6 max-w-lg mx-auto space-y-8 pb-32">
+    <div className="safe-pt px-5 py-6 max-w-lg mx-auto space-y-8">
       <PageHeader
         eyebrow="ScentCap Lab"
         title="Layering Lab"
@@ -233,6 +233,7 @@ export function LayeringLab() {
                 name={f.name}
                 family={f.family}
                 catalogImage={f.image}
+                fragrance={f}
                 size="sm"
                 selected={primaryId === id}
                 className="mb-2.5 w-full"
@@ -272,7 +273,7 @@ export function LayeringLab() {
               <div className="flex items-center gap-3">
                 <div className="flex-1 text-center space-y-2">
                   <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--color-text-tertiary)]">Base</p>
-                  <FragranceThumb brand={primary.brand} name={primary.name} family={primary.family} catalogImage={primary.image} size="sm" className="mx-auto w-20" />
+                  <FragranceThumb brand={primary.brand} name={primary.name} family={primary.family} catalogImage={primary.image} fragrance={primary} size="sm" className="mx-auto w-20" />
                   <p className="text-sm font-semibold leading-tight line-clamp-2">{primary.name}</p>
                 </div>
 
@@ -280,7 +281,7 @@ export function LayeringLab() {
 
                 <div className="flex-1 text-center space-y-2">
                   <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--color-text-tertiary)]">Layer</p>
-                  <FragranceThumb brand={result.secondary.brand} name={result.secondary.name} family={result.secondary.family} catalogImage={result.secondary.image} size="sm" className="mx-auto w-20" />
+                  <FragranceThumb brand={result.secondary.brand} name={result.secondary.name} family={result.secondary.family} catalogImage={result.secondary.image} fragrance={result.secondary} size="sm" className="mx-auto w-20" />
                   <p className="text-sm font-semibold leading-tight line-clamp-2">{result.secondary.name}</p>
                 </div>
               </div>

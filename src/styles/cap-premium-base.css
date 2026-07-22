@@ -250,7 +250,7 @@ nav.nav.cap-premium-nav {
 }
 
 .floating-tab-label,
-.nav-label { position: relative; z-index: 1; font-size: 0.5625rem; font-weight: 600; letter-spacing: 0.02em; }
+.nav-label { position: relative; z-index: 1; font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.02em; }
 .floating-tab-icon,
 .nav-icon { position: relative; z-index: 1; }
 

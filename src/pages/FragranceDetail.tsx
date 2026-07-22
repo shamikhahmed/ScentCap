@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { WearRatingModal } from '@/components/ui/WearRatingModal';
-import { BottleVisual } from '@/components/ui/BottleVisual';
+import { FragranceThumb } from '@/components/collection/FragranceThumb';
 import {
   deleteCollectionItem,
   getAllCollection,
@@ -197,23 +197,23 @@ export function FragranceDetail() {
   };
 
   return (
-    <div className="safe-pt pb-8 max-w-lg mx-auto">
+    <div className="safe-pt pb-8 max-w-lg mx-auto overflow-x-hidden">
       <div
         className="detail-hero-premium mx-0"
         style={{ '--hero-aura': aura } as React.CSSProperties}
       >
         {photoUrl ? (
           <img src={photoUrl} alt="" className="absolute inset-0 w-full h-full object-cover opacity-90" />
-        ) : fragrance.image ? (
-          <img src={fragrance.image} alt="" className="absolute inset-0 w-full h-full object-contain p-8 pb-24 opacity-95" />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center pt-6">
-            <BottleVisual
+          <div className="absolute inset-0 flex items-center justify-center pt-4 pb-20 px-6">
+            <FragranceThumb
               brand={fragrance.brand}
               name={fragrance.name}
               family={fragrance.family}
               catalogImage={fragrance.image}
+              fragrance={fragrance}
               size="hero"
+              className="w-full max-w-[11rem] !h-[200px] !bg-transparent"
             />
           </div>
         )}

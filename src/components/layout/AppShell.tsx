@@ -111,7 +111,7 @@ export function AppShell() {
         </div>
       </aside>
 
-      <main id="main" tabIndex={-1} className="flex-1 overflow-y-auto pb-32 md:pb-10 md:px-6 lg:px-10 xl:px-12 w-full min-w-0 relative z-10">
+      <main id="main" tabIndex={-1} className="flex-1 overflow-x-hidden overflow-y-auto cap-has-floating-nav md:pb-10 md:px-6 lg:px-10 xl:px-12 w-full min-w-0 relative z-10">
         <div className="mx-auto w-full max-w-2xl lg:max-w-3xl xl:max-w-4xl">
           <DemoBanner />
           <CapRouteTransition className="relative z-[1]">

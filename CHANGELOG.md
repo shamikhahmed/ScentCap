@@ -1,3 +1,9 @@
+## [2.0.2] — 2026-07-22
+
+- iPhone UX: safe-area / overflow fixes; flacon bottle placeholder always shows when photos fail
+- Home image hydrate + fragrance props on thumbs; How-to guide on empty + onboarding
+- Collection/Detail/BottleCard use real bottle visuals; SW `scentcap-v202`
+
 ## [2.0.1] — 2026-07-22
 
 - Completely free: remove Pro/IAP/Stripe theater (`ProContext`, `ProGate`, `PaywallModal`, `iap.ts`, bottle limit).

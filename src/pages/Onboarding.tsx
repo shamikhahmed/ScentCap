@@ -9,6 +9,7 @@ import { geocodeCity, requestLocation, type CityLocation } from '@/services/weat
 import type { UserProfile } from '@/types';
 import { AmbientBackground } from '@/components/premium/AmbientBackground';
 import { CyclingShimmerText, DEMO_LOADING_MESSAGES } from '@/components/ui/CyclingShimmerText';
+import { HowToGuide } from '@/components/ui/HowToGuide';
 import { hapticSelection, hapticSuccess } from '@/lib/premium/haptics';
 
 const STEPS = [
@@ -164,9 +165,12 @@ export function Onboarding() {
           <p className="text-caption text-[var(--color-text-tertiary)]">ScentCap</p>
           <h1 className="text-display mt-3">Your scent counter</h1>
           <p className="text-subhead text-[var(--color-text-secondary)] mt-4 max-w-[18rem] mx-auto leading-relaxed">
-            Blotter picks from your wardrobe. Private. On your device.
+            Add your bottles. Get a daily wear pick. Private — on this device.
           </p>
-          <div className="flex flex-col gap-3 mt-12">
+          <div className="mt-8 rounded-2xl border border-[var(--color-border-subtle)] bg-[var(--color-surface)]/70 p-4 text-left">
+            <HowToGuide />
+          </div>
+          <div className="flex flex-col gap-3 mt-8">
             <Button size="lg" className="w-full btn-glow" onClick={tryDemo} disabled={loadingDemo} haptic="medium">
               {loadingDemo ? 'Loading…' : 'Try demo collection'}
             </Button>
@@ -185,7 +189,7 @@ export function Onboarding() {
             </button>
           </div>
           <p className="text-xs text-[var(--color-text-tertiary)] mt-6 leading-relaxed">
-            12 bottles · 30 days of wear history · No account
+            Free · No account · Offline wardrobe
           </p>
         </div>
       </motion.div>,

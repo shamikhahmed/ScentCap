@@ -118,6 +118,11 @@ export async function loadDemoData(): Promise<void> {
   for (const record of buildWearHistory(collection)) {
     await logWear(record);
   }
+
+  // Best-effort catalog bottle art when online — never block demo open.
+  void import('@/services/seed').then(({ enrichFragranceImages }) =>
+    enrichFragranceImages(DEMO_FRAGRANCES.map((f) => f.id)),
+  );
 }
 
 export async function exitDemo(): Promise<void> {

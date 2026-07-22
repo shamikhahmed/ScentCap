@@ -2,8 +2,8 @@
 
 > Updated 2026-07-22. Fleet order & standard: `capricorn-tooling/shared/CAP-STANDARD.md`.
 
-## Now — v2.0.1 (Free boutique wardrobe)
-Shipped: completely free (no Stripe/IAP/Pro). See `CHANGELOG.md`. v2.0.0 design/catalog/advisor still current.
+## Now — v2.0.2 (iPhone UX + bottles)
+Shipped: flacon placeholders, safe-area/overflow, how-to guidance, image fallbacks. See `CHANGELOG.md`.
 
 ## Cap Standard gaps
 | Cap Standard item | Status |

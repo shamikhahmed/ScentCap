@@ -99,6 +99,22 @@ body.light .gradient-hero {
 
 .safe-pb { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
 .safe-pt { padding-top: max(0.75rem, env(safe-area-inset-top)); }
+
+html, body, #root {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.sc-offline-banner {
+  padding: 0.5rem 1rem;
+  padding-top: max(0.5rem, env(safe-area-inset-top));
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--sc-text);
+  background: color-mix(in srgb, var(--sc-amber) 18%, var(--sc-bg));
+  border-bottom: 1px solid var(--glass-border);
+}
+
 .scrollbar-none { scrollbar-width: none; }
 .scrollbar-none::-webkit-scrollbar { display: none; }
 
@@ -433,10 +449,13 @@ body:not(.light) .photo-card-scrim-dark {
 /* ── Today blotter: mobile stack · desktop counter / flacon / ledger ── */
 .home-blotter {
   position: relative;
+  padding-top: max(0.25rem, env(safe-area-inset-top));
+  overflow-x: hidden;
+  max-width: 100%;
 }
 .home-blotter__strip {
-  height: 10px;
-  margin: 0 20px 8px;
+  height: 8px;
+  margin: 0 16px 6px;
   border-radius: 2px;
   background:
     linear-gradient(90deg, transparent, rgba(212, 168, 184, 0.35), rgba(201, 164, 123, 0.4), transparent),
@@ -449,6 +468,12 @@ body:not(.light) .photo-card-scrim-dark {
 }
 .home-blotter-layout {
   display: block;
+  min-width: 0;
+}
+.home-blotter-rail,
+.home-blotter-main {
+  min-width: 0;
+  max-width: 100%;
 }
 .home-blotter-rail__label,
 .home-blotter-main__label {
@@ -461,9 +486,20 @@ body:not(.light) .photo-card-scrim-dark {
   margin: 0 0 12px;
 }
 
+.home-blotter-coach {
+  margin: 0 16px 12px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid var(--color-border-subtle);
+  background: color-mix(in srgb, var(--sc-amber) 10%, var(--color-surface));
+}
+
 @media (min-width: 900px) {
   main:has(.home-blotter) > div {
     max-width: min(1180px, 100%) !important;
+  }
+  .home-blotter {
+    padding-top: 0;
   }
   .home-blotter__strip {
     margin: 0 0 14px;
@@ -519,5 +555,8 @@ body:not(.light) .photo-card-scrim-dark {
   .home-blotter-main.px-5 {
     padding-left: 0;
     padding-right: 0;
+  }
+  .home-blotter-coach {
+    margin: 0 0 12px;
   }
 }

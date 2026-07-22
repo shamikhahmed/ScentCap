@@ -24,10 +24,10 @@ async function runQueued<T>(fn: () => Promise<T>): Promise<T> {
   }
 }
 
-/** Fetch remote bottle art into IndexedDB; return object URL or null. */
-export async function ensureCatalogImageBlob(imageUrl: string, preferredId?: string): Promise<string | null> {
+/** Fetch remote bottle art into IndexedDB; return object URL or null. Keyed by URL hash (stable). */
+export async function ensureCatalogImageBlob(imageUrl: string, _preferredId?: string): Promise<string | null> {
   if (!imageUrl || !imageUrl.startsWith('http')) return null;
-  const id = preferredId || imageIdFromUrl(imageUrl);
+  const id = imageIdFromUrl(imageUrl);
 
   const existing = await getCachedImage(id);
   if (existing?.blob) {
@@ -40,9 +40,10 @@ export async function ensureCatalogImageBlob(imageUrl: string, preferredId?: str
 
   const job = runQueued(async () => {
     try {
-      const res = await fetch(imageUrl);
+      const res = await fetch(imageUrl, { mode: 'cors', referrerPolicy: 'no-referrer' });
       if (!res.ok) return null;
       const blob = await res.blob();
+      if (!blob.type.startsWith('image/') && blob.size < 64) return null;
       const now = Date.now();
       await putCachedImage({
         id,

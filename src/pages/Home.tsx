@@ -100,18 +100,36 @@ export function Home() {
   };
 
   useEffect(() => {
-    void enrichFragranceImages(collection.map((c) => c.fragranceId));
+    let cancelled = false;
+    void enrichFragranceImages(collection.map((c) => c.fragranceId)).then(() => {
+      if (cancelled) return;
+      setResult((prev) => {
+        if (!prev) return prev;
+        void hydrateAdvisorResult(prev).then((next) => {
+          if (!cancelled) setResult(next);
+        });
+        return prev;
+      });
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [collection]);
 
   useEffect(() => {
     if (!result || (result.primary.fragrance.image && !result.primary.fragrance.image.includes('perfume-nobg'))) return;
+    let cancelled = false;
     void enrichFragranceOnce(result.primary.fragrance).then((primary) => {
+      if (cancelled) return;
       if (primary.image && primary.image !== result.primary.fragrance.image) {
         setResult((prev) =>
           prev ? { ...prev, primary: { ...prev.primary, fragrance: primary } } : prev,
         );
       }
     });
+    return () => {
+      cancelled = true;
+    };
   }, [result?.primary.fragrance.id, result?.primary.fragrance.image]);
 
   useEffect(() => {
@@ -119,20 +137,23 @@ export function Home() {
       setHeroPhotoUrl(null);
       return;
     }
+    let cancelled = false;
     let objectUrl: string | undefined;
     (async () => {
       const colItem = collection.find((c) => c.id === result.primary.collectionId);
       if (colItem?.photoBlobId) {
         const blob = await getPhoto(colItem.photoBlobId);
+        if (cancelled) return;
         if (blob) {
           objectUrl = URL.createObjectURL(blob);
           setHeroPhotoUrl(objectUrl);
           return;
         }
       }
-      setHeroPhotoUrl(null);
+      if (!cancelled) setHeroPhotoUrl(null);
     })();
     return () => {
+      cancelled = true;
       if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
   }, [result, collection]);
@@ -257,10 +278,19 @@ export function Home() {
   return (
     <div className="home-blotter relative pb-10">
       <div className="home-blotter__strip" aria-hidden="true" />
+      {history.length === 0 && (
+        <div className="home-blotter-coach">
+          <p className="text-sm font-semibold tracking-tight">Start here</p>
+          <p className="text-xs text-[var(--color-text-secondary)] mt-1 leading-relaxed">
+            Tap <span className="text-[var(--color-accent)] font-semibold">Wear this today</span> on your pick,
+            or open Collection to browse bottles. Advisor retunes picks by mood and weather.
+          </p>
+        </div>
+      )}
       <div className="home-blotter-layout">
         <aside className="home-blotter-rail home-blotter-rail--tools" aria-label="Counter tools">
           <p className="home-blotter-rail__label">Counter</p>
-          <section className="safe-pt px-5 md:px-0 pt-5 pb-1 home-blotter-greeting">
+          <section className="px-5 md:px-0 pt-3 pb-1 home-blotter-greeting">
             <div className="flex items-start justify-between gap-4">
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
                 <p className="text-subhead text-[var(--color-text-secondary)]">{greeting.line}</p>
@@ -320,7 +350,7 @@ export function Home() {
                 </span>
               )}
             </div>
-            <div className="grid grid-cols-4 gap-2.5 home-blotter-mood-grid">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 home-blotter-mood-grid">
               {MOOD_PRESETS.map((p) => {
                 const Icon = p.Icon;
                 return (
@@ -382,6 +412,7 @@ export function Home() {
                         name={b.fragrance.name}
                         family={b.fragrance.family}
                         catalogImage={b.fragrance.image}
+                        fragrance={b.fragrance}
                         size="sm"
                         className="mb-2.5 w-full"
                       />
@@ -426,6 +457,7 @@ export function Home() {
                         name={n.f.name}
                         family={n.f.family}
                         catalogImage={n.f.image}
+                        fragrance={n.f}
                         size="sm"
                         className="mb-3 w-full"
                       />
@@ -539,6 +571,7 @@ function RecentWears({
               name={row.f?.name}
               family={row.f?.family}
               catalogImage={row.f?.image}
+              fragrance={row.f}
               size="sm"
               className="w-12 shrink-0"
             />

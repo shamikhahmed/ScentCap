@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
-import { BottleVisual } from '@/components/ui/BottleVisual';
-import { FAMILY_COLORS } from '@/lib/stats';
+import { FlaconPlaceholder } from '@/components/bottle/FlaconPlaceholder';
 import { ensureFragranceImage } from '@/services/catalogSearch';
 import { ensureCatalogImageBlob } from '@/catalog/images';
+import { FAMILY_COLORS } from '@/lib/stats';
 import type { Fragrance } from '@/types';
 
 export function FragranceThumb({
@@ -27,15 +27,19 @@ export function FragranceThumb({
   className?: string;
   selected?: boolean;
 }) {
-  const aura = FAMILY_COLORS[family ?? fragrance?.family ?? ''] ?? 'var(--sc-amber)';
+  const resolvedBrand = brand ?? fragrance?.brand;
+  const resolvedName = name ?? fragrance?.name;
+  const resolvedFamily = family ?? fragrance?.family;
+  const aura = FAMILY_COLORS[resolvedFamily ?? ''] ?? 'var(--sc-amber)';
+
   const [resolvedImage, setResolvedImage] = useState<string | null>(null);
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
   const [imageFailed, setImageFailed] = useState(false);
+
   const catalog = blobUrl ?? resolvedImage ?? catalogImage ?? fragrance?.image ?? null;
   const image = photoUrl ?? catalog;
   const showPhoto = Boolean(image) && !imageFailed;
   const heights = { sm: 72, md: 96, lg: 120, hero: 160 };
-  const isCatalogPhoto = showPhoto && !photoUrl && Boolean(catalog);
 
   useEffect(() => {
     setImageFailed(false);
@@ -44,7 +48,7 @@ export function FragranceThumb({
       if (prev) URL.revokeObjectURL(prev);
       return null;
     });
-  }, [catalogImage, fragrance?.id, photoUrl]);
+  }, [catalogImage, fragrance?.id, fragrance?.image, photoUrl]);
 
   useEffect(() => {
     if (photoUrl || catalogImage) return;
@@ -69,7 +73,7 @@ export function FragranceThumb({
     if (!url || !url.startsWith('http')) return;
     let cancelled = false;
     let created: string | null = null;
-    void ensureCatalogImageBlob(url, fragrance?.id).then((obj) => {
+    void ensureCatalogImageBlob(url).then((obj) => {
       if (cancelled || !obj) return;
       created = obj;
       setBlobUrl(obj);
@@ -78,39 +82,39 @@ export function FragranceThumb({
       cancelled = true;
       if (created) URL.revokeObjectURL(created);
     };
-  }, [catalogImage, resolvedImage, fragrance?.id, fragrance?.image, photoUrl]);
+  }, [catalogImage, resolvedImage, fragrance?.image, photoUrl]);
 
   return (
     <div
       className={cn(
         'relative overflow-hidden rounded-2xl flex items-center justify-center',
         selected && 'ring-2 ring-[var(--color-accent)] ring-offset-2 ring-offset-[var(--color-bg)]',
-        isCatalogPhoto && 'catalog-bottle-thumb',
+        showPhoto && !photoUrl && 'catalog-bottle-thumb',
         className,
       )}
       style={{
         height: heights[size],
         background: showPhoto
           ? undefined
-          : `linear-gradient(165deg, ${aura}18 0%, var(--color-bg-secondary) 70%)`,
+          : `linear-gradient(165deg, ${aura}22 0%, var(--color-bg-secondary) 72%)`,
       }}
     >
       {showPhoto ? (
         <img
           src={image!}
           alt=""
-          className="absolute inset-0 w-full h-full object-contain p-2 catalog-bottle-thumb"
+          className="absolute inset-0 w-full h-full object-contain p-2"
           loading="lazy"
+          decoding="async"
+          referrerPolicy="no-referrer"
           onError={() => setImageFailed(true)}
         />
       ) : (
-        <BottleVisual
-          brand={brand ?? fragrance?.brand}
-          name={name ?? fragrance?.name}
-          family={family ?? fragrance?.family}
-          catalogImage={catalog}
-          photoUrl={photoUrl}
-          size={size === 'hero' ? 'hero' : size === 'lg' ? 'lg' : size === 'sm' ? 'sm' : 'md'}
+        <FlaconPlaceholder
+          brand={resolvedBrand}
+          name={resolvedName}
+          family={resolvedFamily}
+          className="w-[70%] h-[88%] max-w-[7rem]"
         />
       )}
     </div>
