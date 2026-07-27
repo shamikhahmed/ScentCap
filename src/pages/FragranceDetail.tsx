@@ -25,6 +25,7 @@ import { downloadBlob, exportShareCardPng, fragranceToShareInput, shareWearCard 
 import { scrim, textMuted } from '@/lib/ui-classes';
 import { FragranceWearGuide } from '@/components/fragrance/FragranceWearGuide';
 import { format } from 'date-fns';
+import { fragranceDisplayName } from '@/services/onlineCatalog';
 
 const LEVELS = ['full', '75', '50', '25', '10', 'empty'] as const;
 const SIG_ROLES: { role: SignatureRole; label: string }[] = [
@@ -232,7 +233,7 @@ export function FragranceDetail() {
         <div className="absolute bottom-0 inset-x-0 p-6 z-10">
           <Link to="/collection" className="text-xs font-semibold text-[var(--sc-accent)]">← Collection</Link>
           <p className={`text-sm ${textMuted} mt-2 font-medium`}>{fragrance.brand}</p>
-          <h1 className="atelier-page__title !mt-0.5">{fragrance.name}</h1>
+          <h1 className="atelier-page__title !mt-0.5">{fragranceDisplayName(fragrance.name)}</h1>
           {(item.bottleType === 'decant' || item.bottleType === 'travel') && (
             <span className="inline-block mt-1 text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-[var(--color-accent)]/20 text-[var(--color-accent)]">
               {item.bottleType === 'decant' ? 'Decant' : 'Travel bottle'}

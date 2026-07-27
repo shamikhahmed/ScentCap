@@ -14,12 +14,12 @@ import { WearRatingModal } from '@/components/ui/WearRatingModal';
 import { HeroPick } from '@/components/premium/HeroPick';
 import { FragranceThumb } from '@/components/collection/FragranceThumb';
 import { StatPill } from '@/components/premium/StatPill';
-import { timeGreeting, scentMood } from '@/lib/greetings';
+import { timeGreeting } from '@/lib/greetings';
 import { FAMILY_COLORS, rotationHealth, wearStreak, wearsThisMonth, daysSinceWear } from '@/lib/stats';
 import { weatherUnavailableMessage } from '@/services/weather';
 import { uid } from '@/lib/utils';
+import { fragranceDisplayName } from '@/services/onlineCatalog';
 import { advisorToShareInput, downloadBlob, exportShareCardPng, shareWearCard } from '@/lib/shareCard';
-import { saveAdvisorLayering } from '@/lib/layeringSave';
 import { loadDemoData } from '@/services/demo';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { hapticSuccess, hapticLight } from '@/lib/premium/haptics';
@@ -48,7 +48,6 @@ export function Home() {
   const [pendingWear, setPendingWear] = useState<{ id: string; name: string; wornAt: string } | null>(null);
   const [neglectedDetails, setNeglectedDetails] = useState<{ id: string; f: Fragrance; days: number | null }[]>([]);
   const [shareMsg, setShareMsg] = useState<string | null>(null);
-  const [layerSaved, setLayerSaved] = useState(false);
   const [loadingDemo, setLoadingDemo] = useState(false);
   const [heroPhotoUrl, setHeroPhotoUrl] = useState<string | null>(null);
   const [wearRatingImage, setWearRatingImage] = useState<string | null>(null);
@@ -57,14 +56,12 @@ export function Home() {
   const streak = wearStreak(history);
   const monthWears = wearsThisMonth(history);
   const rotation = rotationHealth(collection, history);
-  const mood = scentMood(weather);
   const rotationLow = rotation < 50 && collection.length >= 3;
 
   const runPick = useCallback(async (input: AdvisorInput) => {
     if (!profile || !collection.length) return;
     setLoading(true);
     setLogged(false);
-    setLayerSaved(false);
     setShareMsg(null);
     const raw = await runAdvisor(collection, input, profile, prefs, weather, history);
     setLoading(false);
@@ -217,13 +214,6 @@ export function Home() {
     }
   };
 
-  const saveLayering = async () => {
-    if (!result?.layering) return;
-    await saveAdvisorLayering(result);
-    hapticSuccess();
-    setLayerSaved(true);
-    setTimeout(() => setLayerSaved(false), 2500);
-  };
 
   const saveRating = async (rating: number, compliment: boolean, notes?: string) => {
     if (!pendingWear || !result) return;
@@ -274,21 +264,23 @@ export function Home() {
 
   return (
     <div className="home-atelier">
-      <header className="flex items-start justify-between gap-3">
+      <header className="museum-topbar">
         <div className="min-w-0">
-          <p className="home-atelier__brand">ScentCap · Today</p>
-          <h1 className="home-atelier__title">{mood}</h1>
-          <p className="text-sm text-[var(--sc-text-soft)] mt-2">{greeting.line}</p>
+          <p className="home-atelier__brand">ScentCap</p>
+          <p className="museum-topbar__sub">
+            {greeting.line}
+            {weather ? ` · ${Math.round(weather.tempC)}°` : ''}
+          </p>
           {prefs.officeSafeMode && (
-            <span className="inline-flex items-center gap-1.5 mt-3 text-xs font-semibold text-[var(--sc-accent)] bg-[var(--sc-accent-soft)] px-2.5 py-1 rounded-lg">
+            <span className="inline-flex items-center gap-1.5 mt-2 text-xs font-semibold text-[var(--sc-accent)] bg-[var(--sc-accent-soft)] px-2.5 py-1 rounded-lg">
               <Briefcase size={12} /> Office Safe
             </span>
           )}
         </div>
         {weather && (
-          <div className="shrink-0 rounded-2xl border border-[var(--sc-border-soft)] bg-[var(--sc-panel)] px-3 py-2 flex items-center gap-2">
-            <WIcon size={16} className="text-[var(--sc-accent)]" strokeWidth={2} />
-            <span className="text-base font-semibold tabular-nums">{Math.round(weather.tempC)}°</span>
+          <div className="shrink-0 rounded-xl border border-[var(--sc-border-soft)] bg-[var(--sc-panel)] px-2.5 py-1.5 flex items-center gap-1.5">
+            <WIcon size={14} className="text-[var(--sc-accent)]" strokeWidth={2} />
+            <span className="text-sm font-semibold tabular-nums">{Math.round(weather.tempC)}°</span>
           </div>
         )}
       </header>
@@ -297,19 +289,18 @@ export function Home() {
         <div className="home-atelier__coach">
           <p className="text-sm font-semibold tracking-tight">Start here</p>
           <p className="text-xs text-[var(--sc-text-soft)] mt-1 leading-relaxed">
-            Tap <span className="font-semibold text-[var(--sc-accent)]">Wear this today</span> on your pick,
-            or open Bottles to browse. Advisor retunes by mood and weather.
+            Tap <span className="font-semibold text-[var(--sc-accent)]">Wear this today</span> — or open Bottles.
           </p>
         </div>
       )}
 
       {rotationLow && (
-        <div className="mt-4 rounded-2xl border border-orange-500/25 bg-orange-500/10 p-4 flex items-start gap-3">
+        <div className="mt-3 rounded-2xl border border-orange-500/25 bg-orange-500/10 p-3.5 flex items-start gap-3">
           <AlertCircle size={18} className="text-orange-500 shrink-0 mt-0.5" />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold">Rotation at {rotation}%</p>
             <p className="text-xs text-[var(--sc-text-soft)] mt-1 leading-relaxed">
-              Try a neglected bottle — some haven&apos;t been worn yet.
+              Try a neglected bottle.
             </p>
           </div>
           <PressableLink to="/collection" className="text-xs text-[var(--sc-accent)] font-semibold shrink-0">
@@ -318,8 +309,6 @@ export function Home() {
         </div>
       )}
 
-      {/* Track B: museum hero — bottle first, chrome below fold */}
-      <p className="home-atelier__section-label !mt-4">Today&apos;s bottle</p>
       {loading ? (
         <LoadingCard messages={HOME_LOADING_MESSAGES} />
       ) : result ? (
@@ -327,16 +316,14 @@ export function Home() {
           result={result}
           familyColor={familyColor}
           logged={logged}
-          layerSaved={layerSaved}
           shareMsg={shareMsg}
           photoUrl={heroPhotoUrl}
           moodLabel={moodLabel(advisorInput)}
           onWear={wearToday}
           onShare={shareToday}
-          onSaveLayer={saveLayering}
         />
       ) : (
-        <div className="rounded-2xl border border-[var(--sc-border-soft)] bg-[var(--sc-panel)] text-center py-10 px-5">
+        <div className="rounded-2xl border border-[var(--sc-border-soft)] bg-[var(--sc-panel)] text-center py-10 px-5 mt-4">
           <p className="font-semibold text-lg" style={{ fontFamily: 'var(--font-display)' }}>No match today</p>
           <p className="text-sm text-[var(--sc-text-soft)] mt-2 max-w-xs mx-auto">
             {prefs.officeSafeMode ? 'Office Safe may be limiting picks.' : 'Customize occasion in Advisor.'}
@@ -345,6 +332,12 @@ export function Home() {
             Open Advisor
           </PressableLink>
         </div>
+      )}
+
+      {result && result.reasoning[0] && (
+        <p className="museum-why mt-5 text-sm text-[var(--sc-text-soft)] leading-relaxed">
+          {result.reasoning[0]}
+        </p>
       )}
 
       <p className="home-atelier__section-label">Mood</p>
@@ -393,7 +386,7 @@ export function Home() {
                     className="mb-2.5 w-full"
                   />
                   <p className="text-[10px] text-[var(--sc-text-muted)] truncate">{b.fragrance.brand}</p>
-                  <p className="text-sm font-semibold truncate tracking-tight">{b.fragrance.name}</p>
+                  <p className="text-sm font-semibold truncate tracking-tight">{fragranceDisplayName(b.fragrance.name)}</p>
                   <p className="text-xs font-semibold text-[var(--sc-accent)] mt-1">{Math.round(b.score)}%</p>
                 </div>
               </PressableLink>
@@ -424,7 +417,7 @@ export function Home() {
                     className="mb-3 w-full"
                   />
                   <p className="text-[10px] text-[var(--sc-text-muted)] truncate">{n.f.brand}</p>
-                  <p className="text-sm font-semibold truncate">{n.f.name}</p>
+                  <p className="text-sm font-semibold truncate">{fragranceDisplayName(n.f.name)}</p>
                   <p className="text-[11px] font-semibold text-orange-500 mt-2">
                     {n.days === null ? 'Never worn' : `${n.days}d ago`}
                   </p>
@@ -492,7 +485,7 @@ function RecentWears({
       const c = collection.find((x) => x.fragranceId === h.fragranceId);
       return {
         id: h.id,
-        name: f ? `${f.brand} ${f.name}` : '…',
+        name: f ? `${f.brand} ${fragranceDisplayName(f.name)}` : '…',
         wornAt: h.wornAt,
         collectionId: c?.id,
         f,

@@ -1,3 +1,11 @@
+## [2.0.5] — 2026-07-27
+
+- Desire-tier remint: museum Home (bottle first, brand hero, Wear CTA)
+- Fix enrich clobber — preserve brand/name; kill "Demo … Eau de Parfum"
+- `fragranceDisplayName` + stronger `parseBaseName`; compact sample banner
+- E2E Fraganty mocks return real houses + bottle SVG art
+- SW `scentcap-v205`
+
 ## [2.0.4] — 2026-07-27
 
 - Tracks A–C: full Atelier remint — Collection/Detail/Add/Advisor/Settings + Analytics/Layering/Travel/Calendar

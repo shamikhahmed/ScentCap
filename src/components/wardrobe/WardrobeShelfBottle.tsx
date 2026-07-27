@@ -5,6 +5,7 @@ import { usePhotoUrl } from '@/hooks/usePhotoUrl';
 import type { CollectionItem, Fragrance } from '@/types';
 import { FAMILY_COLORS } from '@/lib/stats';
 import { cn } from '@/lib/utils';
+import { fragranceDisplayName } from '@/services/onlineCatalog';
 
 export function WardrobeShelfBottle({
   c,
@@ -56,7 +57,7 @@ export function WardrobeShelfBottle({
         </div>
         <div className="wardrobe-shelf-label">
           <p className="wardrobe-shelf-brand">{f?.brand ?? 'Unknown'}</p>
-          <p className="wardrobe-shelf-name">{f?.name ?? '…'}</p>
+          <p className="wardrobe-shelf-name">{f ? fragranceDisplayName(f.name) : '…'}</p>
           <div className="wardrobe-shelf-meta">
             {f?.concentration && <span>{f.concentration}</span>}
             <span className="wardrobe-shelf-level">{levelLabel}</span>

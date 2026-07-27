@@ -19,6 +19,7 @@ import type { Fragrance, LayeringProfile } from '@/types';
 import { uid } from '@/lib/utils';
 import { hapticLight, hapticSuccess } from '@/lib/premium/haptics';
 import { textSubtle } from '@/lib/ui-classes';
+import { fragranceDisplayName } from '@/services/onlineCatalog';
 
 export function LayeringLab() {
   const { collection, profile, prefs } = useApp();
@@ -241,7 +242,7 @@ export function LayeringLab() {
               <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--color-text-tertiary)] truncate">
                 {f.brand}
               </p>
-              <p className="text-sm font-medium leading-tight tracking-tight mt-0.5 line-clamp-2">{f.name}</p>
+              <p className="text-sm font-medium leading-tight tracking-tight mt-0.5 line-clamp-2">{fragranceDisplayName(f.name)}</p>
             </button>
           ))}
         </div>
@@ -274,7 +275,7 @@ export function LayeringLab() {
                 <div className="flex-1 text-center space-y-2">
                   <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--color-text-tertiary)]">Base</p>
                   <FragranceThumb brand={primary.brand} name={primary.name} family={primary.family} catalogImage={primary.image} fragrance={primary} size="sm" className="mx-auto w-20" />
-                  <p className="text-sm font-semibold leading-tight line-clamp-2">{primary.name}</p>
+                  <p className="text-sm font-semibold leading-tight line-clamp-2">{fragranceDisplayName(primary.name)}</p>
                 </div>
 
                 <ArrowRight className="text-[var(--color-accent)] shrink-0" size={20} />
@@ -282,7 +283,7 @@ export function LayeringLab() {
                 <div className="flex-1 text-center space-y-2">
                   <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--color-text-tertiary)]">Layer</p>
                   <FragranceThumb brand={result.secondary.brand} name={result.secondary.name} family={result.secondary.family} catalogImage={result.secondary.image} fragrance={result.secondary} size="sm" className="mx-auto w-20" />
-                  <p className="text-sm font-semibold leading-tight line-clamp-2">{result.secondary.name}</p>
+                  <p className="text-sm font-semibold leading-tight line-clamp-2">{fragranceDisplayName(result.secondary.name)}</p>
                 </div>
               </div>
 

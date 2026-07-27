@@ -53,10 +53,17 @@ export function parseConcentrationFromName(name: string): Concentration {
 
 export function parseBaseName(fullName: string): string {
   return fullName
+    .replace(/\s+Eau de (Parfum|Toilette|Cologne)(\s+Eau de (Parfum|Toilette|Cologne))*$/i, '')
     .replace(/\s+Eau de (Parfum|Toilette|Cologne)(\s|$).*$/i, '')
     .replace(/\s+(Parfum|Extrait|Eau Forte)(\s|$).*$/i, '')
+    .replace(/\s+(EDP|EDT|EDC)(\s+(EDP|EDT|EDC))*$/i, '')
     .replace(/\s+(EDP|EDT|EDC)$/i, '')
     .trim();
+}
+
+/** UI label: clean bottle name, never double concentration. */
+export function fragranceDisplayName(name: string): string {
+  return parseBaseName(name) || name.trim();
 }
 
 export function concentrationLabel(c: Concentration): string {
@@ -349,9 +356,30 @@ export async function resolveFragranceImage(
 export async function enrichFragranceFromOnline(f: Fragrance): Promise<Fragrance> {
   const key = import.meta.env.VITE_FRAGANTY_API_KEY as string | undefined;
 
+  const mergeImageOnly = (remote: Fragrance): Fragrance => ({
+    ...f,
+    image: remote.image ?? f.image,
+    catalogSlug: remote.catalogSlug ?? f.catalogSlug,
+    top_notes: f.top_notes.length ? f.top_notes : remote.top_notes,
+    heart_notes: f.heart_notes.length ? f.heart_notes : remote.heart_notes,
+    base_notes: f.base_notes.length ? f.base_notes : remote.base_notes,
+    // Keep curated identity — remote search stubs often garbage ("Demo", "slug Eau de Parfum").
+    brand: f.brand,
+    name: f.name,
+    concentration: f.concentration,
+    family: f.family || remote.family,
+    office_score: f.office_score,
+    heat_score: f.heat_score,
+    cold_score: f.cold_score,
+    date_score: f.date_score,
+    formal_score: f.formal_score,
+    casual_score: f.casual_score,
+    layering_tags: f.layering_tags?.length ? f.layering_tags : remote.layering_tags,
+  });
+
   if (f.catalogSlug) {
     const exact = await fetchFragranceBySlug(f.catalogSlug);
-    if (exact) return { ...exact, id: f.id };
+    if (exact) return mergeImageOnly(exact);
   }
 
   const needsImage = !f.image || f.image.includes('perfume-nobg');
@@ -368,7 +396,11 @@ export async function enrichFragranceFromOnline(f: Fragrance): Promise<Fragrance
 
   if (key && resolved.slug) {
     const full = await fetchFullPerfume(resolved.slug, key);
-    if (full) enriched = mergeFullDetails(enriched, full);
+    if (full) {
+      // Notes/image from full; never overwrite brand/name/concentration from stub.
+      const merged = mergeFullDetails(enriched, full);
+      enriched = mergeImageOnly(merged);
+    }
   } else {
     enriched = applyFragranceProfile(enriched);
   }

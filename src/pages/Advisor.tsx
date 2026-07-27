@@ -12,6 +12,7 @@ import { defaultAdvisorInput, runAdvisor } from '@/engines/advisor';
 import { logWear, updateWearRecord } from '@/db';
 import type { AdvisorInput, AdvisorResult } from '@/types';
 import { uid } from '@/lib/utils';
+import { fragranceDisplayName } from '@/services/onlineCatalog';
 import { WearRatingModal } from '@/components/ui/WearRatingModal';
 import { SprayBodyMap } from '@/components/advisor/SprayBodyMap';
 import { ScoreRing } from '@/components/home/ScoreRing';
@@ -120,7 +121,7 @@ export function AdvisorPage() {
       id: wearId,
       collectionId: result.primary.collectionId,
       fragranceId: result.primary.fragrance.id,
-      name: `${result.primary.fragrance.brand} ${result.primary.fragrance.name}`,
+      name: `${result.primary.fragrance.brand} ${fragranceDisplayName(result.primary.fragrance.name)}`,
       sprays,
       wornAt,
     });
@@ -272,7 +273,7 @@ export function AdvisorPage() {
             <div className="flex-1 min-w-0">
               <p className="text-xs text-[var(--color-accent)] uppercase tracking-wider font-semibold">Primary pick</p>
               <h2 className="text-xl font-semibold mt-1 tracking-tight">{result.primary.fragrance.brand}</h2>
-              <p className="text-base text-[var(--color-text-secondary)]">{result.primary.fragrance.name}</p>
+              <p className="text-base text-[var(--color-text-secondary)]">{fragranceDisplayName(result.primary.fragrance.name)}</p>
               <p className="text-xs text-[var(--color-text-tertiary)] mt-1">
                 {result.primary.fragrance.concentration} · {result.primary.fragrance.family}
               </p>
@@ -327,7 +328,7 @@ export function AdvisorPage() {
                   className="w-12 shrink-0"
                 />
                 <p className="text-sm text-[var(--color-text-secondary)]">
-                  + {result.layering.secondary.brand} {result.layering.secondary.name}
+                  + {result.layering.secondary.brand} {fragranceDisplayName(result.layering.secondary.name)}
                 </p>
               </div>
               <p className="text-xs text-[var(--color-text-tertiary)] mt-2">{result.layering.guidance}</p>
@@ -354,7 +355,7 @@ export function AdvisorPage() {
                       className="w-12 shrink-0"
                     />
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">{b.fragrance.brand} {b.fragrance.name}</p>
+                      <p className="font-medium truncate">{b.fragrance.brand} {fragranceDisplayName(b.fragrance.name)}</p>
                       <p className="text-xs text-[var(--color-text-tertiary)]">{b.fragrance.concentration} · {b.fragrance.family}</p>
                     </div>
                     <span className="text-[var(--color-accent)] text-xs font-semibold shrink-0">{Math.round(b.score)}%</span>

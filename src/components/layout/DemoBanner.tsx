@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom';
-import { Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useApp } from '@/context/AppContext';
 import { exitDemo } from '@/services/demo';
 
+/** Compact strip — never steal first viewport from the bottle. */
 export function DemoBanner() {
   const { prefs, refresh } = useApp();
   const navigate = useNavigate();
@@ -17,15 +17,13 @@ export function DemoBanner() {
   };
 
   return (
-    <div className="cap-demo-banner sticky top-0 z-40 mx-5 md:mx-0 mt-3 mb-2 flex items-center justify-between gap-3 glass-premium-subtle rounded-2xl px-4 py-3 text-sm" role="status">
-      <p className="flex items-center gap-2.5 font-medium flex-1">
-        <span className="w-8 h-8 rounded-xl bg-[var(--color-accent-muted)] flex items-center justify-center shrink-0">
-          <Sparkles size={15} className="text-[var(--color-accent)]" aria-hidden />
-        </span>
-        <span className="text-[var(--color-text-secondary)]"><strong className="text-[var(--color-text-primary)]">Demo mode</strong> — sample wardrobe on this device</span>
-      </p>
-      <Button size="sm" variant="glass" className="shrink-0 !rounded-xl" onClick={startFresh}>
-        Start my own
+    <div
+      className="cap-demo-banner sticky top-0 z-40 flex items-center justify-between gap-2 px-4 py-1.5 text-[11px] font-medium border-b border-[var(--sc-border-soft)] bg-[var(--sc-surface)] text-[var(--sc-text-muted)]"
+      role="status"
+    >
+      <span>Sample wardrobe</span>
+      <Button size="sm" variant="ghost" className="!h-7 !min-h-0 !px-2 !text-[11px] shrink-0" onClick={startFresh}>
+        Start mine
       </Button>
     </div>
   );
