@@ -39,7 +39,7 @@ export function FragranceThumb({
   const catalog = blobUrl ?? resolvedImage ?? catalogImage ?? fragrance?.image ?? null;
   const image = photoUrl ?? catalog;
   const showPhoto = Boolean(image) && !imageFailed;
-  const heights = { sm: 88, md: 112, lg: 140, hero: 260 };
+  const heights = { sm: 96, md: 120, lg: 152, hero: 280 };
 
   useEffect(() => {
     setImageFailed(false);

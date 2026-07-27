@@ -6,7 +6,7 @@ import { triggerHaptic } from '@/lib/premium/haptics';
 import { SPRING_PRESS } from '@/lib/premium/motion';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 rounded-2xl font-semibold transition-colors disabled:opacity-50 min-h-[44px] pressable tracking-tight',
+  'inline-flex items-center justify-center gap-2 rounded-[14px] font-semibold transition-colors disabled:opacity-50 min-h-[48px] pressable tracking-tight',
   {
     variants: {
       variant: {
@@ -18,8 +18,8 @@ const buttonVariants = cva(
       },
       size: {
         default: 'px-5 py-3 text-sm',
-        sm: 'px-3 py-2 text-xs rounded-xl min-h-[36px]',
-        lg: 'px-6 py-3.5 text-base min-h-[52px] rounded-2xl',
+        sm: 'px-3.5 py-2 text-xs rounded-xl min-h-[40px]',
+        lg: 'px-7 py-4 text-[0.95rem] min-h-[54px] rounded-[14px]',
       },
     },
     defaultVariants: { variant: 'default', size: 'default' },

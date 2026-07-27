@@ -1,15 +1,15 @@
 /** Semantic classes for theme-aware UI (light + dark). */
 
 export const inputField =
-  'rounded-xl bg-[var(--sc-surface)] border border-[var(--sc-border)] px-3 py-2 text-sm text-[var(--sc-text)] outline-none focus:border-[var(--sc-accent)] placeholder:text-[var(--sc-text-muted)]';
+  'rounded-[14px] bg-[var(--sc-panel)] border border-[var(--sc-border)] px-3.5 py-2.5 text-sm font-medium text-[var(--sc-text)] outline-none focus:border-[var(--sc-accent)] focus:shadow-[0_0_0_3px_var(--sc-accent-soft)] placeholder:text-[var(--sc-text-muted)]';
 
 export const inputFieldLg =
-  'w-full rounded-xl bg-[var(--sc-surface)] border border-[var(--sc-border)] px-4 py-3 text-[var(--sc-text)] outline-none focus:border-[var(--sc-accent)] placeholder:text-[var(--sc-text-muted)]';
+  'w-full rounded-[14px] bg-[var(--sc-panel)] border border-[var(--sc-border)] px-4 py-3.5 text-[var(--sc-text)] font-medium outline-none focus:border-[var(--sc-accent)] focus:shadow-[0_0_0_3px_var(--sc-accent-soft)] placeholder:text-[var(--sc-text-muted)]';
 
 export const segmentBar =
-  'flex gap-1 p-1 rounded-xl bg-[var(--sc-surface)] border border-[var(--sc-border-soft)]';
+  'flex gap-1 p-1 rounded-2xl bg-[var(--sc-surface)] border border-[var(--sc-border-soft)]';
 
-export const segmentActive = 'bg-[var(--sc-accent)] text-white';
+export const segmentActive = 'bg-[var(--sc-accent)] text-white shadow-sm';
 
 export const segmentInactive = 'text-[var(--sc-text-soft)] hover:text-[var(--sc-text)]';
 
@@ -22,6 +22,7 @@ export const textMuted = 'text-[var(--sc-text-soft)]';
 
 export const textSubtle = 'text-[var(--sc-text-muted)]';
 
-export const labelCaps = 'text-xs uppercase tracking-wider text-[var(--sc-text-muted)] font-semibold';
+export const labelCaps =
+  'text-[11px] uppercase tracking-[0.14em] text-[var(--sc-text-muted)] font-bold';
 
 export const scrim = 'bg-black/50';

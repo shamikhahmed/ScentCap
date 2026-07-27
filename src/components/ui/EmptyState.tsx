@@ -39,9 +39,9 @@ export function EmptyState({
           <FlaconPlaceholder brand="Scent" name="Cap" family="Fresh" />
         </div>
         <BrandMark className="mx-auto mb-6" />
-        {eyebrow && <p className="text-caption text-[var(--color-text-tertiary)]">{eyebrow}</p>}
-        <h2 className="text-display mt-3 px-1 break-words">{title}</h2>
-        <p className="text-subhead text-[var(--color-text-secondary)] mt-4 leading-relaxed max-w-[18rem] mx-auto px-1">
+        {eyebrow && <p className="onboarding-brand">{eyebrow}</p>}
+        <h2 className="onboarding-title mt-3 px-1 break-words text-[clamp(1.65rem,6vw,2.2rem)]">{title}</h2>
+        <p className="text-[0.95rem] text-[var(--sc-text-soft)] mt-4 leading-relaxed max-w-[18rem] mx-auto px-1 tracking-tight">
           {description}
         </p>
         <div className="flex flex-col gap-3 mt-8">

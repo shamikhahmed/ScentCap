@@ -1,0 +1,358 @@
+/**
+ * ScentCap 2.0.6 — Maison craft layer
+ * Global premium feel: type, atmosphere, panels, chrome, touch.
+ */
+
+/* ── Atmosphere ── */
+body {
+  background:
+    radial-gradient(ellipse 120% 60% at 50% -10%, color-mix(in srgb, var(--sc-accent) 7%, transparent), transparent 55%),
+    linear-gradient(180deg, var(--sc-surface) 0%, var(--sc-bg) 28%, var(--sc-bg) 100%);
+  letter-spacing: -0.011em;
+  font-feature-settings: "ss01" on, "kern" on;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply;
+}
+
+body:not(.light)::before {
+  opacity: 0.06;
+  mix-blend-mode: soft-light;
+}
+
+#root,
+.atelier-main,
+.home-atelier,
+.atelier-page {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Type scale ── */
+:root {
+  --type-display: clamp(1.85rem, 6.5vw, 2.55rem);
+  --type-title: clamp(1.25rem, 3.8vw, 1.55rem);
+  --type-body: 0.9375rem;
+  --type-caption: 0.6875rem;
+  --tracking-brand: 0.18em;
+  --tracking-label: 0.14em;
+}
+
+.text-display,
+.atelier-page__title,
+.home-atelier__title,
+.museum-hero__brand,
+.wardrobe-shelf-name,
+.catalog-editorial-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.028em;
+  line-height: 1.12;
+  font-optical-sizing: auto;
+  color: var(--sc-text);
+}
+
+.atelier-page__brand,
+.home-atelier__brand,
+.home-atelier__section-label,
+.museum-hero__eyebrow,
+.wardrobe-masthead .text-caption {
+  font-size: var(--type-caption);
+  font-weight: 700;
+  letter-spacing: var(--tracking-brand);
+  text-transform: uppercase;
+  color: var(--sc-text-muted);
+}
+
+.atelier-page__title {
+  font-size: var(--type-display);
+  margin-top: 0.35rem;
+}
+
+.atelier-page__sub,
+.museum-topbar__sub {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--sc-text-soft);
+  letter-spacing: -0.01em;
+}
+
+/* ── Panels / cards ── */
+.atelier-panel,
+.glass-card,
+.glass-premium,
+.glass-premium-subtle,
+.tile-premium,
+.surface-card,
+body.light .glass-card,
+body.light .glass-premium {
+  background: color-mix(in srgb, var(--sc-panel) 94%, white) !important;
+  border: 1px solid color-mix(in srgb, var(--sc-border-soft) 85%, transparent) !important;
+  border-radius: var(--sc-radius-card) !important;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.7) inset,
+    var(--sc-shadow-sm) !important;
+  backdrop-filter: none !important;
+}
+
+body:not(.light) .atelier-panel,
+body:not(.light) .glass-card,
+body:not(.light) .glass-premium {
+  background: var(--sc-panel) !important;
+  box-shadow: var(--sc-shadow-sm) !important;
+}
+
+/* ── Inputs ── */
+.atelier-input,
+input.atelier-input,
+textarea.atelier-input {
+  border-radius: 14px !important;
+  background: var(--sc-panel) !important;
+  border: 1px solid var(--sc-border) !important;
+  color: var(--sc-text) !important;
+  font-size: 0.9375rem !important;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  transition: border-color var(--sc-dur) var(--sc-ease), box-shadow var(--sc-dur) var(--sc-ease);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;
+}
+
+.atelier-input:focus,
+input.atelier-input:focus {
+  border-color: var(--sc-accent) !important;
+  box-shadow: 0 0 0 3px var(--sc-accent-soft) !important;
+  outline: none !important;
+}
+
+/* ── Buttons ── */
+.btn-glow {
+  background: var(--sc-accent) !important;
+  color: #fff !important;
+  border-radius: 14px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.015em;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.18) inset,
+    0 8px 20px color-mix(in srgb, var(--sc-accent) 28%, transparent) !important;
+}
+
+.btn-glow:active {
+  transform: scale(0.985);
+}
+
+/* ── Tab bar ── */
+.atelier-tabbar {
+  padding: 0.45rem 0.5rem calc(0.45rem + env(safe-area-inset-bottom, 0px)) !important;
+  background: color-mix(in srgb, var(--sc-panel) 88%, transparent) !important;
+  border-top: 1px solid var(--sc-border-soft) !important;
+  backdrop-filter: saturate(1.2) blur(16px) !important;
+  -webkit-backdrop-filter: saturate(1.2) blur(16px) !important;
+  box-shadow: 0 -8px 32px rgba(16, 20, 26, 0.04);
+}
+
+.atelier-tab {
+  gap: 0.28rem !important;
+  border-radius: 14px !important;
+  font-size: 0.625rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em;
+  transition: background var(--sc-dur) var(--sc-ease), color var(--sc-dur) var(--sc-ease);
+}
+
+.atelier-tab--on {
+  color: var(--sc-accent) !important;
+  background: var(--sc-accent-soft) !important;
+}
+
+/* Kill floating + — Collection / desktop Add own that job */
+.atelier-fab {
+  display: none !important;
+}
+
+/* ── Museum hero craft ── */
+.museum-hero__stage {
+  padding: 1.75rem 1.15rem 1rem !important;
+  border-radius: 28px !important;
+  background:
+    radial-gradient(ellipse 80% 70% at 50% 35%, color-mix(in srgb, var(--aura, var(--sc-accent)) 16%, transparent), transparent 68%),
+    linear-gradient(165deg, var(--sc-panel) 0%, color-mix(in srgb, var(--sc-surface) 70%, var(--sc-panel)) 100%) !important;
+  border: 1px solid var(--sc-border-soft) !important;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.85) inset,
+    var(--sc-shadow-md) !important;
+}
+
+.museum-hero__thumb {
+  height: 280px !important;
+}
+.museum-hero__bottle-link {
+  width: min(100%, 12.5rem) !important;
+}
+
+.museum-hero__brand {
+  font-size: clamp(1.9rem, 7.5vw, 2.6rem) !important;
+}
+
+.museum-hero__name {
+  font-size: 1.05rem !important;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+
+.museum-hero__meta {
+  letter-spacing: 0.08em !important;
+}
+
+.museum-hero__actions {
+  margin-top: 1.4rem !important;
+}
+
+/* ── Wardrobe shelf ── */
+.wardrobe-shelf-bottle-inner {
+  border-radius: 18px !important;
+  overflow: hidden;
+  transition: transform var(--sc-dur) var(--sc-ease), box-shadow var(--sc-dur) var(--sc-ease);
+}
+
+.wardrobe-shelf-bottle:active .wardrobe-shelf-bottle-inner {
+  transform: scale(0.985);
+}
+
+.wardrobe-shelf-brand {
+  font-size: 0.625rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase;
+  color: var(--sc-text-muted) !important;
+}
+
+.wardrobe-shelf-name {
+  font-size: 0.95rem !important;
+  margin-top: 0.15rem;
+}
+
+/* ── Chips ── */
+.atelier-chip {
+  border-radius: 999px !important;
+  padding: 0.45rem 0.85rem !important;
+  font-size: 0.72rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.01em;
+  transition: background var(--sc-dur) var(--sc-ease), border-color var(--sc-dur) var(--sc-ease), color var(--sc-dur) var(--sc-ease);
+}
+
+.atelier-chip--on {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--sc-accent) 35%, transparent);
+}
+
+/* ── Mood tiles ── */
+.home-atelier__moods button {
+  border-radius: 16px !important;
+  min-height: 4.25rem;
+  transition: transform var(--sc-dur-fast) var(--sc-ease), border-color var(--sc-dur) var(--sc-ease), background var(--sc-dur) var(--sc-ease);
+}
+
+.home-atelier__moods button:active {
+  transform: scale(0.97);
+}
+
+/* ── Demo strip quieter ── */
+.cap-demo-banner {
+  font-size: 0.65rem !important;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 600 !important;
+  background: color-mix(in srgb, var(--sc-surface) 92%, var(--sc-accent-soft)) !important;
+}
+
+/* ── Press feel ── */
+.pressable {
+  transition: transform var(--sc-dur-fast) var(--sc-ease), opacity var(--sc-dur-fast) var(--sc-ease);
+}
+
+.pressable:active {
+  transform: scale(0.975);
+}
+
+/* ── Selection / focus ring ── */
+:focus-visible {
+  outline: 2px solid var(--sc-accent);
+  outline-offset: 2px;
+}
+
+/* ── Onboarding craft ── */
+.onboarding-brand {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: var(--tracking-brand);
+  text-transform: uppercase;
+  color: var(--sc-text-muted);
+}
+
+.onboarding-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 8vw, 2.75rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--sc-text);
+}
+
+/* ── Detail hero ── */
+.atelier-detail-hero {
+  min-height: 20rem !important;
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 30%, color-mix(in srgb, var(--hero-aura, var(--sc-accent)) 18%, transparent), transparent 70%),
+    var(--sc-surface) !important;
+}
+
+/* ── Desktop sidebar craft ── */
+@media (min-width: 768px) {
+  aside[data-testid="desktop-sidebar"] {
+    background: color-mix(in srgb, var(--sc-panel) 96%, var(--sc-surface)) !important;
+    border-right-color: var(--sc-border-soft) !important;
+  }
+}
+
+/* ── Option pills / advisor ── */
+.home-atelier__stats > * {
+  border-radius: 16px;
+}
+
+/* Reduce harsh pure-white voids */
+.atelier-page,
+.home-atelier {
+  color: var(--sc-text);
+}
+
+/* Stat pills */
+.stat-pill {
+  background: var(--sc-panel) !important;
+  border: 1px solid var(--sc-border-soft) !important;
+  border-radius: 16px !important;
+  box-shadow: var(--sc-shadow-sm) !important;
+  min-height: 4.25rem;
+  padding: 0.85rem 1rem !important;
+}
+.stat-pill-label {
+  font-size: 0.625rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase;
+  color: var(--sc-text-muted) !important;
+}
+.stat-pill-value {
+  font-family: var(--font-display) !important;
+  font-size: 1.2rem !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.02em;
+  color: var(--sc-text) !important;
+}

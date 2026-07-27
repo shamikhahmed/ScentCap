@@ -1,3 +1,9 @@
+## [2.0.6] — 2026-07-27
+
+- Maison craft: global type scale, paper atmosphere, elevated panels, blur tab bar
+- Kill floating FAB; denser buttons / inputs / chips; sculpted flacon
+- Onboarding + empty states display craft; SW `scentcap-v206`
+
 ## [2.0.5] — 2026-07-27
 
 - Desire-tier remint: museum Home (bottle first, brand hero, Wear CTA)

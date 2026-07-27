@@ -84,8 +84,8 @@ export function AppShell() {
             draggable={false}
           />
           <div className="min-w-0">
-            <p className="text-[11px] font-semibold tracking-[0.16em] uppercase text-[var(--sc-text-muted)]">ScentCap</p>
-            <h1 className="text-lg leading-tight mt-0.5 font-[family-name:var(--font-display)] text-[var(--sc-text)]">
+            <p className="text-[11px] font-bold tracking-[0.18em] uppercase text-[var(--sc-text-muted)]">ScentCap</p>
+            <h1 className="text-[1.35rem] leading-tight mt-1 font-[family-name:var(--font-display)] font-semibold tracking-tight text-[var(--sc-text)]">
               Wardrobe
             </h1>
           </div>

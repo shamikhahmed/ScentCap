@@ -25,10 +25,10 @@ export function OptionPill({
         onSelect();
       }}
       className={cn(
-        'relative rounded-full px-4 py-2 text-sm font-medium min-h-[40px] transition-colors overflow-hidden',
+        'relative rounded-2xl px-4 py-2.5 text-sm font-semibold min-h-[44px] tracking-tight transition-colors overflow-hidden',
         selected
-          ? 'bg-[var(--color-accent)] text-white'
-          : 'bg-[var(--color-surface-elevated)] text-[var(--color-text-secondary)] border border-[var(--color-border-subtle)]',
+          ? 'bg-[var(--sc-accent)] text-white shadow-sm'
+          : 'bg-[var(--sc-panel)] text-[var(--sc-text-soft)] border border-[var(--sc-border-soft)]',
         className,
       )}
     >

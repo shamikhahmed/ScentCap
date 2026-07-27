@@ -1,85 +1,81 @@
 /**
- * ScentCap 2.0.5 — Atelier Wardrobe
- * Light-first editorial counter. Cool chalk + forest ink.
- * Avoids marble/blush boutique and purple/cream AI defaults.
+ * ScentCap 2.0.6 — Maison Wardrobe
+ * Cool paper chalk + forest ink. Craft over chrome.
  */
 
 :root {
-  /* Light atelier (default) */
-  --sc-bg: #e9edf0;
-  --sc-surface: #f5f7f8;
-  --sc-panel: #ffffff;
+  --sc-bg: #e6eaee;
+  --sc-surface: #f2f5f7;
+  --sc-panel: #fbfcfd;
   --sc-sheet: #ffffff;
-  --sc-border: #c9d0d6;
-  --sc-border-soft: #dde3e8;
-  --sc-text: #10141a;
-  --sc-text-soft: #3d4652;
-  --sc-text-muted: #6b7582;
-  --sc-accent: #0c6b5c;
-  --sc-accent-hover: #095548;
-  --sc-accent-soft: #d4ebe6;
-  --sc-ink: #10141a;
-  --sc-line: #2a333d;
-  --sc-success: #2f7a4a;
-  --sc-warning: #b7791f;
-  --sc-danger: #b42318;
-  --sc-focus: #0c6b5c;
-  --sc-shadow-color: rgba(16, 20, 26, 0.08);
-  --sc-glass: rgba(245, 247, 248, 0.92);
+  --sc-border: #c2c9d0;
+  --sc-border-soft: #d5dce5;
+  --sc-text: #0c1015;
+  --sc-text-soft: #3a434f;
+  --sc-text-muted: #66707c;
+  --sc-accent: #0a5f52;
+  --sc-accent-hover: #084c42;
+  --sc-accent-soft: #d0e8e3;
+  --sc-ink: #0c1015;
+  --sc-line: #24303a;
+  --sc-success: #2a6f45;
+  --sc-warning: #a86b16;
+  --sc-danger: #a61f18;
+  --sc-focus: #0a5f52;
+  --sc-shadow-color: rgba(12, 16, 21, 0.09);
+  --sc-glass: rgba(251, 252, 253, 0.9);
   --sc-marble-opacity: 0;
 
-  /* Legacy aliases still referenced by components */
   --sc-amber: var(--sc-accent);
   --sc-amber-hover: var(--sc-accent-hover);
-  --sc-blush: #7a8a96;
-  --sc-rose: #8a6a72;
-  --sc-olive: #5f7a5a;
+  --sc-blush: #74848f;
+  --sc-rose: #85656e;
+  --sc-olive: #5a7456;
 
-  --sc-radius-btn: 12px;
-  --sc-radius-card: 16px;
-  --sc-radius-sheet: 20px;
-  --sc-radius-hero: 20px;
+  --sc-radius-btn: 14px;
+  --sc-radius-card: 18px;
+  --sc-radius-sheet: 22px;
+  --sc-radius-hero: 28px;
 
-  --sc-shadow-sm: 0 1px 2px rgba(16, 20, 26, 0.04);
-  --sc-shadow-md: 0 8px 24px rgba(16, 20, 26, 0.07);
-  --sc-shadow-lg: 0 18px 48px rgba(16, 20, 26, 0.1);
+  --sc-shadow-sm: 0 1px 2px rgba(12, 16, 21, 0.04), 0 1px 0 rgba(255, 255, 255, 0.5) inset;
+  --sc-shadow-md: 0 10px 28px rgba(12, 16, 21, 0.08);
+  --sc-shadow-lg: 0 22px 56px rgba(12, 16, 21, 0.12);
 
   --sc-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
-  --sc-dur-fast: 100ms;
-  --sc-dur: 200ms;
-  --sc-dur-large: 320ms;
-  --sc-dur-hero: 480ms;
+  --sc-dur-fast: 90ms;
+  --sc-dur: 180ms;
+  --sc-dur-large: 300ms;
+  --sc-dur-hero: 460ms;
 
   --sc-mobile: 768px;
   --sc-tablet: 1024px;
   --sc-desktop: 1280px;
 }
 
-/* Explicit dark — cool graphite, not brown boutique */
 body:not(.light) {
-  --sc-bg: #0e1116;
-  --sc-surface: #161b22;
-  --sc-panel: #1c232c;
-  --sc-sheet: #222a34;
-  --sc-border: #333c48;
-  --sc-border-soft: #2a323c;
-  --sc-text: #eef1f4;
-  --sc-text-soft: #a8b2be;
-  --sc-text-muted: #7a8694;
-  --sc-accent: #3dbaa4;
-  --sc-accent-hover: #56c9b5;
-  --sc-accent-soft: rgba(61, 186, 164, 0.16);
-  --sc-ink: #eef1f4;
-  --sc-line: #9aa5b2;
-  --sc-focus: #3dbaa4;
-  --sc-shadow-color: rgba(0, 0, 0, 0.45);
-  --sc-glass: rgba(22, 27, 34, 0.92);
+  --sc-bg: #0b0e12;
+  --sc-surface: #13181f;
+  --sc-panel: #1a212a;
+  --sc-sheet: #202833;
+  --sc-border: #303946;
+  --sc-border-soft: #272f3a;
+  --sc-text: #f0f3f6;
+  --sc-text-soft: #a5afbb;
+  --sc-text-muted: #768291;
+  --sc-accent: #45c4ad;
+  --sc-accent-hover: #62d4bf;
+  --sc-accent-soft: rgba(69, 196, 173, 0.16);
+  --sc-ink: #f0f3f6;
+  --sc-line: #9aa6b4;
+  --sc-focus: #45c4ad;
+  --sc-shadow-color: rgba(0, 0, 0, 0.5);
+  --sc-glass: rgba(19, 24, 31, 0.92);
   --sc-amber: var(--sc-accent);
   --sc-amber-hover: var(--sc-accent-hover);
-  --sc-blush: #8a96a3;
-  --sc-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
-  --sc-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.28);
-  --sc-shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.35);
+  --sc-blush: #8793a0;
+  --sc-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.25);
+  --sc-shadow-md: 0 10px 28px rgba(0, 0, 0, 0.32);
+  --sc-shadow-lg: 0 22px 56px rgba(0, 0, 0, 0.4);
 }
 
 body.light,
@@ -108,9 +104,11 @@ body {
   --color-accent-muted: var(--sc-accent-soft);
   --color-separator: var(--sc-border-soft);
   --glass-bg: var(--sc-glass);
-  --glass-bg-subtle: color-mix(in srgb, var(--sc-panel) 80%, transparent);
+  --glass-bg-subtle: color-mix(in srgb, var(--sc-panel) 82%, transparent);
   --glass-border: var(--sc-border-soft);
   --glass-shadow: var(--sc-shadow-md);
   --glass-shadow-sm: var(--sc-shadow-sm);
-  --tab-bar-bg: color-mix(in srgb, var(--sc-panel) 94%, transparent);
+  --tab-bar-bg: color-mix(in srgb, var(--sc-panel) 90%, transparent);
+  --font-display: "Newsreader", Georgia, "Times New Roman", serif;
+  --font-sans: "Figtree", system-ui, sans-serif;
 }

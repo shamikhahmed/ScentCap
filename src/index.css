@@ -3,8 +3,9 @@
 @import "./design/themes.css";
 @import "./styles/cap-premium-base.css";
 @import "./scent-premium-overrides.css";
+@import "./design/premium-craft.css";
 
-/* ScentCap 2.0.5 — Atelier */
+/* ScentCap 2.0.6 — Maison */
 @theme {
   --font-sans: "Figtree", system-ui, sans-serif;
   --font-display: "Newsreader", Georgia, serif;
