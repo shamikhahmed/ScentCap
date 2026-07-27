@@ -4,7 +4,6 @@ import { Bookmark, Layers, ArrowRight, Trash2, Plus, Sparkles } from 'lucide-rea
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { PressableDiv } from '@/components/ui/PressableScale';
-import { PageHeader } from '@/components/premium/PageHeader';
 import { GlassCard } from '@/components/premium/GlassCard';
 import { FragranceThumb } from '@/components/collection/FragranceThumb';
 import { ScoreRing } from '@/components/home/ScoreRing';
@@ -152,13 +151,12 @@ export function LayeringLab() {
 
   if (!items.length) {
     return (
-      <div className="safe-pt px-5 py-8 max-w-lg mx-auto">
-        <PageHeader
-          eyebrow="ScentCap Lab"
-          title="Layering Lab"
-          subtitle="Stack two scents from your wardrobe and find pairings that actually work."
-          large
-        />
+      <div className="atelier-page">
+        <header>
+          <p className="atelier-page__brand">Lab</p>
+          <h1 className="atelier-page__title">Layering Lab</h1>
+          <p className="atelier-page__sub">Stack two scents — find pairings that work.</p>
+        </header>
         <GlassCard className="mt-10 text-center py-12" delay={0.1}>
           <div className="w-14 h-14 mx-auto mb-5 rounded-2xl glass-premium flex items-center justify-center">
             <Layers size={24} className="text-[var(--color-accent)]" />
@@ -177,20 +175,22 @@ export function LayeringLab() {
   }
 
   return (
-    <div className="safe-pt px-5 py-6 max-w-lg mx-auto space-y-8">
-      <PageHeader
-        eyebrow="ScentCap Lab"
-        title="Layering Lab"
-        subtitle="Pick a base from your wardrobe — we'll find the best partner."
-        trailing={<Sparkles size={22} className="text-[var(--color-accent)] opacity-80 mt-1" />}
-      />
+    <div className="atelier-page space-y-8">
+      <header className="flex items-start justify-between gap-3">
+        <div>
+          <p className="atelier-page__brand">Lab</p>
+          <h1 className="atelier-page__title">Layering Lab</h1>
+          <p className="atelier-page__sub">Pick a base — find the best partner.</p>
+        </div>
+        <Sparkles size={22} className="text-[var(--sc-accent)] opacity-80 mt-1 shrink-0" />
+      </header>
 
       {saved.length > 0 && (
         <GlassCard delay={0.05}>
           <p className="text-caption text-[var(--color-text-tertiary)] mb-3">Saved combos</p>
           <div className="space-y-2">
             {saved.map((p) => (
-              <div key={p.id} className="flex items-center gap-2 p-2.5 rounded-2xl bg-white/[0.04] border border-white/[0.06]">
+              <div key={p.id} className="flex items-center gap-2 p-2.5 rounded-2xl bg-[var(--sc-surface)] border border-[var(--sc-border-soft)]">
                 <PressableDiv className="flex-1 min-w-0" onClick={() => loadCombo(p)} asButton>
                   <p className="text-sm truncate">
                     <span className="text-[var(--color-accent)] font-semibold tabular-nums">{p.score}%</span>
@@ -225,7 +225,7 @@ export function LayeringLab() {
               className={`text-left rounded-2xl p-3 border transition-colors pressable touch-pan-y ${
                 primaryId === id
                   ? 'border-[var(--color-accent)]/50 bg-[var(--color-accent)]/8'
-                  : 'border-white/[0.06] bg-white/[0.03]'
+                  : 'border-[var(--sc-border-soft)] bg-[var(--sc-surface)]'
               }`}
             >
               <FragranceThumb

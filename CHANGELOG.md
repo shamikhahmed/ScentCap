@@ -1,3 +1,11 @@
+## [2.0.4] — 2026-07-27
+
+- Tracks A–C: full Atelier remint — Collection/Detail/Add/Advisor/Settings + Analytics/Layering/Travel/Calendar
+- Museum hero Today: bottle first, mood/stats below fold; larger flacon stage
+- Visual QA: kill stone/white-opacity leftovers; light-safe inputs; flat GlassCard
+- Regen App Store screenshots + screen gallery
+- SW `scentcap-v204`
+
 ## [2.0.3] — 2026-07-22
 
 - Full Atelier redesign: light chalk + forest accent, Newsreader/Figtree, kill marble/glass boutique

@@ -9,7 +9,7 @@ import type { Fragrance, WishlistItem } from '@/types';
 import { formatCurrency } from '@/lib/utils';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { FAMILY_COLORS } from '@/lib/stats';
-import { chipActive, chipInactive, inputFieldLg, textSubtle } from '@/lib/ui-classes';
+import { inputFieldLg, textSubtle } from '@/lib/ui-classes';
 import { SegmentedControl } from '@/components/premium/SegmentedControl';
 import { hapticLight } from '@/lib/premium/haptics';
 import { enrichFragranceImages } from '@/services/seed';
@@ -111,11 +111,11 @@ export function CollectionPage() {
 
   if (tab === 'owned' && !collection.length) {
     return (
-      <div className="safe-pt px-5 py-6 max-w-2xl mx-auto">
+      <div className="atelier-page">
         <EmptyState
-          eyebrow="Wardrobe"
+          eyebrow="Collection"
           title="Your cabinet is empty"
-          description="Search the live catalog and build a collection that feels like a fragrance magazine — on your device."
+          description="Search the catalog and add bottles you own. Everything stays on this device."
           action={{ label: 'Add first bottle', to: '/add' }}
         />
       </div>
@@ -123,41 +123,39 @@ export function CollectionPage() {
   }
 
   return (
-    <div className="safe-pt px-5 py-6 max-w-2xl mx-auto space-y-5">
-      <header className="wardrobe-masthead">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <p className="text-caption text-[var(--color-text-tertiary)]">Wardrobe</p>
-            <h1 className="text-display mt-0.5">
-              {tab === 'owned' ? 'My cabinet' : tab === 'want' ? 'Wishlist' : 'Tested'}
-            </h1>
-            {tab === 'owned' && collection.length > 0 && (
-              <p className="text-subhead text-[var(--color-text-secondary)] mt-1">
-                {collection.length} bottle{collection.length !== 1 ? 's' : ''}
-                {totalValue > 0 && ` · ${formatCurrency(totalValue)}`}
-              </p>
-            )}
-          </div>
-          <Button
-            to={tab === 'owned' ? '/add' : `/add?list=${tab}`}
-            size="sm"
-            className="btn-glow !min-h-[36px] !rounded-xl shrink-0"
-            haptic="medium"
-          >
-            <Plus size={16} />
-          </Button>
+    <div className="atelier-page space-y-5">
+      <header className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="atelier-page__brand">Collection</p>
+          <h1 className="atelier-page__title">
+            {tab === 'owned' ? 'My bottles' : tab === 'want' ? 'Wishlist' : 'Tested'}
+          </h1>
+          {tab === 'owned' && collection.length > 0 && (
+            <p className="atelier-page__sub">
+              {collection.length} bottle{collection.length !== 1 ? 's' : ''}
+              {totalValue > 0 && ` · ${formatCurrency(totalValue)}`}
+            </p>
+          )}
         </div>
+        <Button
+          to={tab === 'owned' ? '/add' : `/add?list=${tab}`}
+          size="sm"
+          className="btn-glow !min-h-[40px] !rounded-xl shrink-0"
+          haptic="medium"
+        >
+          <Plus size={16} />
+        </Button>
       </header>
 
       {tab === 'owned' && signatureItem?.f && !q && !family && (
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="wardrobe-featured-spread"
-          style={{ '--featured-aura': FAMILY_COLORS[signatureItem.f.family] ?? '#0a84ff' } as React.CSSProperties}
+          className="atelier-panel"
+          style={{ '--featured-aura': FAMILY_COLORS[signatureItem.f.family] ?? 'var(--sc-accent)' } as React.CSSProperties}
         >
-          <p className="text-caption text-[var(--color-text-tertiary)]">Featured</p>
-          <div className="wardrobe-featured-inner">
+          <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--sc-text-muted)]">Featured</p>
+          <div className="wardrobe-featured-inner !mt-3">
             <FragranceThumb
               brand={signatureItem.f.brand}
               name={signatureItem.f.name}
@@ -168,13 +166,11 @@ export function CollectionPage() {
               className="wardrobe-featured-bottle !h-[120px] !bg-transparent"
             />
             <div className="min-w-0 flex-1">
-              <p className="text-xs uppercase tracking-wider text-[var(--color-text-tertiary)]">
-                {signatureItem.f.brand}
-              </p>
-              <p className="text-title leading-tight mt-0.5">
+              <p className="text-xs uppercase tracking-wider text-[var(--sc-text-muted)]">{signatureItem.f.brand}</p>
+              <p className="text-xl font-semibold leading-tight mt-0.5" style={{ fontFamily: 'var(--font-display)' }}>
                 {parseBaseName(signatureItem.f.name)}
               </p>
-              <p className="text-xs text-[var(--color-accent)] mt-1">{signatureItem.f.concentration}</p>
+              <p className="text-xs font-semibold text-[var(--sc-accent)] mt-1">{signatureItem.f.concentration}</p>
             </div>
           </div>
         </motion.div>
@@ -202,14 +198,14 @@ export function CollectionPage() {
 
       {tab === 'owned' && (
         <div className="flex gap-2 overflow-x-auto scrollbar-none pb-1">
-          <button type="button" onClick={() => setFamily(null)} className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium ${!family ? chipActive : chipInactive}`}>All</button>
+          <button type="button" onClick={() => setFamily(null)} className={`atelier-chip ${!family ? 'atelier-chip--on' : ''}`}>All</button>
           {families.map((fam) => (
             <button
               key={fam}
               type="button"
               onClick={() => setFamily(fam)}
-              className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium ${family === fam ? chipActive : chipInactive}`}
-              style={family === fam ? {} : { borderLeft: `3px solid ${FAMILY_COLORS[fam] ?? '#c9a87c'}` }}
+              className={`atelier-chip ${family === fam ? 'atelier-chip--on' : ''}`}
+              style={family === fam ? undefined : { borderLeft: `3px solid ${FAMILY_COLORS[fam] ?? 'var(--sc-accent)'}` }}
             >
               {fam}
             </button>

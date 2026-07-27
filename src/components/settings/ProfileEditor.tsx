@@ -36,7 +36,7 @@ export function ProfileEditor() {
       <p className="font-medium">Your profile</p>
       {FIELDS.map((f) => (
         <div key={f.key}>
-          <p className="text-xs text-stone-500 mb-2">{f.label}</p>
+          <p className="text-xs text-[var(--sc-text-muted)] mb-2">{f.label}</p>
           <div className="flex flex-wrap gap-2">
             {f.options.map((o) => (
               <button
@@ -44,7 +44,7 @@ export function ProfileEditor() {
                 type="button"
                 onClick={() => update(f.key, o.v)}
                 className={`px-3 py-1.5 rounded-full text-xs font-medium ${
-                  String(profile[f.key]) === o.v ? 'bg-[var(--color-accent)] text-stone-950' : 'bg-white/5'
+                  String(profile[f.key]) === o.v ? 'bg-[var(--color-accent)] text-white' : 'bg-[var(--sc-surface)]'
                 }`}
               >
                 {o.l}
@@ -54,7 +54,7 @@ export function ProfileEditor() {
         </div>
       ))}
       <div>
-        <p className="text-xs text-stone-500 mb-2">Sensitivity</p>
+        <p className="text-xs text-[var(--sc-text-muted)] mb-2">Sensitivity</p>
         <div className="flex gap-2">
           <Button size="sm" variant={!profile.sensitivity ? 'default' : 'ghost'} onClick={() => update('sensitivity', 'false')}>No</Button>
           <Button size="sm" variant={profile.sensitivity ? 'default' : 'ghost'} onClick={() => update('sensitivity', 'true')}>Yes</Button>

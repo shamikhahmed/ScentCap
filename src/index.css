@@ -4,7 +4,7 @@
 @import "./styles/cap-premium-base.css";
 @import "./scent-premium-overrides.css";
 
-/* ScentCap 2.0.3 — Atelier */
+/* ScentCap 2.0.4 — Atelier */
 @theme {
   --font-sans: "Figtree", system-ui, sans-serif;
   --font-display: "Newsreader", Georgia, serif;

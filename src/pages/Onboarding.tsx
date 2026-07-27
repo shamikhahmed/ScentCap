@@ -249,7 +249,7 @@ export function Onboarding() {
         <div className="relative">
           <MapPin size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-text-tertiary)]" />
           <input
-            className="w-full rounded-2xl bg-white/5 border border-white/10 pl-11 pr-4 py-3.5 text-sm outline-none focus:border-[var(--color-accent)]/50 input-premium"
+            className="atelier-input rounded-2xl !pl-11 pr-4 py-3.5"
             placeholder="e.g. London, Tokyo, Austin TX"
             value={cityQuery}
             onChange={(e) => {

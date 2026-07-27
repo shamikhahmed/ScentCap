@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Luggage, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useApp } from '@/context/AppContext';
@@ -98,50 +98,45 @@ export function TravelKit() {
     : null;
 
   return (
-    <div className="safe-pt py-6 space-y-6">
-      <div className="flex items-center gap-3">
-        <Luggage className="text-[var(--color-accent)]" />
-        <div>
-          <h1 className="text-2xl font-semibold">Travel kit</h1>
-          <p className="text-sm text-stone-400">Pack light — max projection, TSA-friendly picks</p>
-          <p className="text-xs text-[var(--sc-text-muted)] mt-2">
-            General travel guidance only. Check airline and destination rules.
-          </p>
-        </div>
-      </div>
+    <div className="atelier-page space-y-6">
+      <header>
+        <p className="atelier-page__brand">Pack</p>
+        <h1 className="atelier-page__title">Travel kit</h1>
+        <p className="atelier-page__sub">Pack light — max projection, TSA-friendly picks. General guidance only — check airline rules.</p>
+      </header>
 
       <Card className="space-y-4">
         <div>
-          <label htmlFor="trip-name" className="text-xs uppercase text-stone-500">Trip name</label>
+          <label htmlFor="trip-name" className="text-xs uppercase text-[var(--sc-text-muted)]">Trip name</label>
           <input
             id="trip-name"
             type="text"
             value={tripName}
             onChange={(e) => setTripName(e.target.value)}
             placeholder="e.g. Dubai work trip"
-            className="mt-1 w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[var(--color-accent)]/50"
+            className="atelier-input mt-1"
           />
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label htmlFor="trip-start" className="text-xs uppercase text-stone-500">Start</label>
+            <label htmlFor="trip-start" className="text-xs uppercase text-[var(--sc-text-muted)]">Start</label>
             <input
               id="trip-start"
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="mt-1 w-full rounded-xl bg-white/5 border border-white/10 px-3 py-3 text-sm outline-none focus:border-[var(--color-accent)]/50"
+              className="atelier-input mt-1"
             />
           </div>
           <div>
-            <label htmlFor="trip-end" className="text-xs uppercase text-stone-500">End</label>
+            <label htmlFor="trip-end" className="text-xs uppercase text-[var(--sc-text-muted)]">End</label>
             <input
               id="trip-end"
               type="date"
               value={endDate}
               min={startDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="mt-1 w-full rounded-xl bg-white/5 border border-white/10 px-3 py-3 text-sm outline-none focus:border-[var(--color-accent)]/50"
+              className="atelier-input mt-1"
             />
           </div>
         </div>
@@ -153,11 +148,11 @@ export function TravelKit() {
             Pick manually
           </Button>
         </div>
-        <p className="text-sm text-stone-400">
-          {tripName ? <strong className="text-stone-200">{tripName}</strong> : 'Your trip'}
+        <p className="text-sm text-[var(--sc-text-soft)]">
+          {tripName ? <strong className="text-[var(--sc-text)]">{tripName}</strong> : 'Your trip'}
           {dateLabel ? ` · ${dateLabel}` : ''}
           {' · '}
-          <strong className="text-stone-200">{days} days</strong>
+          <strong className="text-[var(--sc-text)]">{days} days</strong>
           {' · '}
           {picked.length} bottle{picked.length !== 1 ? 's' : ''} {manualMode ? 'picked' : 'recommended'}
         </p>
@@ -165,7 +160,7 @@ export function TravelKit() {
 
       {manualMode && (
         <Card className="space-y-2">
-          <p className="text-xs uppercase text-stone-500 mb-2">Your collection</p>
+          <p className="text-xs uppercase text-[var(--sc-text-muted)] mb-2">Your collection</p>
           {allBottles.map(({ f, itemId }) => {
             const selected = pickedIds.includes(itemId);
             return (
@@ -174,21 +169,21 @@ export function TravelKit() {
                 type="button"
                 onClick={() => togglePick(itemId)}
                 className={`w-full flex items-center gap-3 py-2 px-2 rounded-xl text-left transition-colors ${
-                  selected ? 'bg-[var(--color-accent)]/15 border border-[var(--color-accent)]/40' : 'hover:bg-white/5'
+                  selected ? 'bg-[var(--color-accent)]/15 border border-[var(--color-accent)]/40' : 'hover:bg-[var(--sc-surface)]'
                 }`}
               >
                 <span className={`w-6 h-6 rounded-full flex items-center justify-center border ${selected ? 'bg-[var(--color-accent)] border-[var(--color-accent)]' : 'border-white/20'}`}>
-                  {selected && <Check size={14} className="text-stone-950" />}
+                  {selected && <Check size={14} className="text-white" />}
                 </span>
                 <FamilyIcon family={f.family} size={16} />
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs text-stone-500">{f.brand}</p>
+                  <p className="text-xs text-[var(--sc-text-muted)]">{f.brand}</p>
                   <p className="font-medium truncate text-sm">{f.name}</p>
                 </div>
               </button>
             );
           })}
-          {!allBottles.length && <p className="text-sm text-stone-500">Add bottles to your wardrobe first.</p>}
+          {!allBottles.length && <p className="text-sm text-[var(--sc-text-muted)]">Add bottles to your wardrobe first.</p>}
         </Card>
       )}
 
@@ -196,10 +191,10 @@ export function TravelKit() {
         {picked.map(({ f, itemId }, i) => (
           <Link key={itemId} to={`/fragrance/${itemId}`}>
             <Card className="flex items-center gap-4 py-4">
-              <span className="text-2xl font-bold text-stone-600">{i + 1}</span>
+              <span className="text-2xl font-bold text-[var(--sc-text-muted)]">{i + 1}</span>
               <FamilyIcon family={f.family} size={18} />
               <div className="flex-1 min-w-0">
-                <p className="text-xs text-stone-500">{f.brand}</p>
+                <p className="text-xs text-[var(--sc-text-muted)]">{f.brand}</p>
                 <p className="font-medium truncate">{f.name}</p>
                 <p className="text-xs text-[var(--color-accent)]">{f.concentration}</p>
               </div>
@@ -208,7 +203,7 @@ export function TravelKit() {
         ))}
       </div>
 
-      {!picked.length && <Card className="text-center py-8 text-stone-400">Add bottles to plan a travel kit.</Card>}
+      {!picked.length && <Card className="text-center py-8 text-[var(--sc-text-soft)]">Add bottles to plan a travel kit.</Card>}
       <Button to="/" variant="ghost" className="w-full">Back to Today</Button>
     </div>
   );

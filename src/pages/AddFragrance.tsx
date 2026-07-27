@@ -31,7 +31,7 @@ import type { BottleType, Concentration, Fragrance, GenderLean, Longevity, Proje
 import { CONCENTRATIONS } from '@/types';
 import { estimateWearsRemaining, uid } from '@/lib/utils';
 import { MIDDLE_EAST_BRANDS, POPULAR_BRANDS } from '@/catalog/brands';
-import { segmentBar, textSubtle } from '@/lib/ui-classes';
+import { inputFieldLg, segmentBar, textSubtle } from '@/lib/ui-classes';
 
 const BOTTLE_TYPES: { id: BottleType; label: string }[] = [
   { id: 'full', label: 'Full bottle' },
@@ -65,7 +65,7 @@ export function AddFragrance() {
   const [searchedAs, setSearchedAs] = useState<string | null>(null);
   const keyboardInset = useKeyboardInset();
 
-  const inputClass = 'w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm input-premium outline-none';
+  const inputClass = `${inputFieldLg} text-sm`;
 
   useEffect(() => {
     (async () => {
@@ -229,12 +229,12 @@ export function AddFragrance() {
 
   return (
     <div
-      className="safe-pt px-5 py-6 max-w-lg mx-auto space-y-6"
+      className="atelier-page space-y-6"
       style={{ paddingBottom: keyboardInset > 0 ? keyboardInset + 24 : undefined }}
     >
       <div>
-        <p className="text-caption text-[var(--color-text-tertiary)] mb-1">The Catalog</p>
-        <h1 className="text-display">Add fragrance</h1>
+        <p className="atelier-page__brand">Catalog</p>
+        <h1 className="atelier-page__title">Add fragrance</h1>
         {listTarget && (
           <p className="text-sm text-[var(--color-accent)] mt-1">
             Adding to {listTarget === 'want' ? 'Want list' : 'Tested list'}
@@ -263,7 +263,7 @@ export function AddFragrance() {
 
       {!listTarget && (
         <Card className="space-y-3">
-          <p className="text-xs uppercase text-stone-500">Bottle type</p>
+          <p className="text-xs uppercase text-[var(--sc-text-muted)]">Bottle type</p>
           <div className="flex gap-2 flex-wrap">
             {BOTTLE_TYPES.map((t) => (
               <OptionPill
@@ -279,7 +279,7 @@ export function AddFragrance() {
           </div>
           {needsParent && (
             <div className="space-y-1">
-              <label className="text-xs text-stone-500">Link to parent bottle</label>
+              <label className="text-xs text-[var(--sc-text-muted)]">Link to parent bottle</label>
               <select
                 className={`${inputClass} py-2`}
                 value={parentCollectionId}
@@ -300,14 +300,14 @@ export function AddFragrance() {
 
       {!listTarget && (
         <Card className="space-y-3">
-          <p className="text-xs uppercase text-stone-500">Bottle details (optional)</p>
+          <p className="text-xs uppercase text-[var(--sc-text-muted)]">Bottle details (optional)</p>
           <div className="grid grid-cols-2 gap-2">
             <input className={inputClass} placeholder="Size (ml)" value={meta.sizeMl} onChange={(e) => setMeta({ ...meta, sizeMl: e.target.value })} onFocus={(e) => scrollInputIntoView(e.currentTarget)} />
             <input className={inputClass} placeholder="Price $" value={meta.price} onChange={(e) => setMeta({ ...meta, price: e.target.value })} onFocus={(e) => scrollInputIntoView(e.currentTarget)} />
             <input type="date" className={inputClass} title="Purchased" value={meta.purchase} onChange={(e) => setMeta({ ...meta, purchase: e.target.value })} onFocus={(e) => scrollInputIntoView(e.currentTarget)} />
             <input type="date" className={inputClass} title="Opened" value={meta.opened} onChange={(e) => setMeta({ ...meta, opened: e.target.value })} onFocus={(e) => scrollInputIntoView(e.currentTarget)} />
           </div>
-          <label className="flex items-center gap-2 text-sm text-stone-400 cursor-pointer">
+          <label className="flex items-center gap-2 text-sm text-[var(--sc-text-soft)] cursor-pointer">
             <Camera size={16} />
             <span>Photo (optional)</span>
             <input type="file" accept="image/*" className="hidden" onChange={(e) => setPhotoFile(e.target.files?.[0] ?? null)} />
@@ -370,14 +370,14 @@ export function AddFragrance() {
                 />
               </div>
               <div className="text-center">
-                <p className="text-xs text-stone-500">{picked.brand}</p>
+                <p className="text-xs text-[var(--sc-text-muted)]">{picked.brand}</p>
                 <p className="text-title mt-0.5">{parseBaseName(picked.name)}</p>
                 <p className="text-sm text-[var(--color-accent)] font-medium mt-1">
                   {concentrationLabel(picked.concentration)}
                 </p>
               </div>
               {picked.top_notes.length > 0 && (
-                <div className="rounded-xl bg-white/[0.03] border border-white/10 px-3 py-2.5">
+                <div className="rounded-xl bg-[var(--sc-surface)] border border-[var(--sc-border-soft)] px-3 py-2.5">
                   <p className="text-[10px] uppercase tracking-wider text-[var(--color-text-tertiary)] mb-1">Notes</p>
                   <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
                     {[...picked.top_notes.slice(0, 2), ...picked.heart_notes.slice(0, 2), ...picked.base_notes.slice(0, 2)].join(' · ')}
@@ -446,7 +446,7 @@ export function AddFragrance() {
                 <p className={`text-sm ${textSubtle} text-center py-6`}>Searching catalog…</p>
               )}
               {q && !groups.length && !searchingOnline && !didYouMean && (
-                <p className="text-sm text-stone-500 text-center py-6">
+                <p className="text-sm text-[var(--sc-text-muted)] text-center py-6">
                   No matches — check spelling or add manually
                 </p>
               )}
@@ -467,7 +467,7 @@ export function AddFragrance() {
         </>
       ) : (
         <Card className="space-y-4">
-          <p className="text-sm text-stone-400">Can&apos;t find it? Enter brand and name — we&apos;ll save it locally.</p>
+          <p className="text-sm text-[var(--sc-text-soft)]">Can&apos;t find it? Enter brand and name — we&apos;ll save it locally.</p>
           {(['name', 'brand'] as const).map((k) => (
             <input
               key={k}

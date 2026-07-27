@@ -948,3 +948,148 @@ body[data-cap-app="1"] #view > .screen {
 
 .onboarding-mist,
 .onboarding-flacon { display: none !important; }
+
+/* ─── Track A: Atelier page remint ─── */
+.atelier-page {
+  padding: max(0.75rem, env(safe-area-inset-top)) 1.1rem 1.75rem;
+  max-width: 40rem;
+  margin-left: auto;
+  margin-right: auto;
+  overflow-x: hidden;
+}
+.atelier-page__brand {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--sc-text-muted);
+}
+.atelier-page__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.65rem, 5.5vw, 2.2rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--sc-text);
+  margin-top: 0.3rem;
+}
+.atelier-page__sub {
+  margin-top: 0.4rem;
+  font-size: 0.9rem;
+  color: var(--sc-text-soft);
+  line-height: 1.45;
+}
+.atelier-panel {
+  background: var(--sc-panel);
+  border: 1px solid var(--sc-border-soft);
+  border-radius: 16px;
+  box-shadow: var(--sc-shadow-sm);
+  padding: 1rem 1.1rem;
+}
+.atelier-chip {
+  shrink: 0;
+  padding: 0.4rem 0.75rem;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid var(--sc-border-soft);
+  background: var(--sc-panel);
+  color: var(--sc-text-soft);
+}
+.atelier-chip--on {
+  border-color: var(--sc-accent);
+  background: var(--sc-accent-soft);
+  color: var(--sc-accent);
+}
+.atelier-input {
+  width: 100%;
+  border-radius: 12px;
+  background: var(--sc-surface);
+  border: 1px solid var(--sc-border);
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  color: var(--sc-text);
+  outline: none;
+}
+.atelier-input:focus {
+  border-color: var(--sc-accent);
+}
+.atelier-detail-hero {
+  position: relative;
+  min-height: 18rem;
+  margin: 0 -1.1rem;
+  border-radius: 0 0 20px 20px;
+  overflow: hidden;
+  background: var(--sc-surface);
+  border-bottom: 1px solid var(--sc-border-soft);
+}
+.atelier-detail-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 70% 55% at 50% 35%, color-mix(in srgb, var(--hero-aura, var(--sc-accent)) 22%, transparent), transparent 70%);
+  pointer-events: none;
+}
+.atelier-detail-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, var(--sc-bg) 0%, transparent 55%);
+  pointer-events: none;
+}
+
+/* Wardrobe cabinet → flat atelier (kill wood/cream theater) */
+body.light .wardrobe-cabinet-frame,
+.wardrobe-cabinet-frame {
+  background: var(--sc-panel) !important;
+  border: 1px solid var(--sc-border-soft) !important;
+  border-radius: 18px !important;
+  box-shadow: var(--sc-shadow-sm) !important;
+  padding: 0.65rem !important;
+}
+body.light .wardrobe-cabinet-rail,
+.wardrobe-cabinet-rail {
+  background: var(--sc-border-soft) !important;
+  height: 3px !important;
+  box-shadow: none !important;
+}
+body.light .wardrobe-cabinet-base,
+.wardrobe-cabinet-base {
+  background: var(--sc-border-soft) !important;
+  height: 4px !important;
+}
+.wardrobe-featured-spread {
+  background: var(--sc-panel) !important;
+  border: 1px solid var(--sc-border-soft) !important;
+  border-radius: 16px !important;
+}
+.wardrobe-shelf-bottle-inner {
+  background: var(--sc-surface) !important;
+  border: 1px solid var(--sc-border-soft) !important;
+  border-radius: 14px !important;
+}
+.detail-hero-scrim {
+  background: linear-gradient(to top, var(--sc-bg) 0%, transparent 55%) !important;
+}
+
+/* Flat atelier panels for GlassCard / Card */
+body.light .glass-card,
+body.light .glass-premium,
+.glass-card.atelier-flat {
+  background: var(--sc-panel) !important;
+  border: 1px solid var(--sc-border-soft) !important;
+  box-shadow: var(--sc-shadow-sm) !important;
+  border-radius: 16px !important;
+}
+body.light .glass-premium-glow {
+  display: none !important;
+}
+
+/* Track B — museum hero bottle stage */
+.hero-bottle-stage {
+  width: min(100%, 12.5rem);
+  margin-inline: auto;
+}
+.hero-bottle-stage .catalog-bottle-thumb {
+  min-height: 13.5rem;
+}
+.home-atelier__stats { margin-top: 0.35rem; }

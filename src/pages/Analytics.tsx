@@ -21,7 +21,7 @@ import {
   wearsThisMonth,
 } from '@/lib/stats';
 
-const COLORS = ['#c9a87c', '#8b7355', '#6b5b45', '#a89070', '#d4bc96'];
+const COLORS = ['#0c6b5c', '#3dbaa4', '#1a8f7a', '#5a9e92', '#94c9be'];
 
 export function AnalyticsPage() {
   const { collection, history } = useApp();
@@ -92,32 +92,38 @@ export function AnalyticsPage() {
 
   if (!collection.length) {
     return (
-      <EmptyState
-        eyebrow="Analytics"
-        title="Nothing to analyze yet"
-        description="Add bottles to your wardrobe and log a few wears. Rotation health, family breakdown, and value insights appear here."
-        action={{ label: 'Add a bottle', to: '/add' }}
-      />
+      <div className="atelier-page">
+        <EmptyState
+          eyebrow="Analytics"
+          title="Nothing to analyze yet"
+          description="Add bottles to your wardrobe and log a few wears. Rotation health, family breakdown, and value insights appear here."
+          action={{ label: 'Add a bottle', to: '/add' }}
+        />
+      </div>
     );
   }
 
   return (
-    <div className="safe-pt px-5 py-6 max-w-2xl mx-auto space-y-6">
-      <h1 className="text-3xl font-semibold">Analytics</h1>
+    <div className="atelier-page space-y-6">
+      <header>
+        <p className="atelier-page__brand">Insights</p>
+        <h1 className="atelier-page__title">Analytics</h1>
+        <p className="atelier-page__sub">Wardrobe health, value, and wear patterns.</p>
+      </header>
 
       <div className="grid grid-cols-2 gap-4">
-        <Card><p className="text-xs text-stone-500">Value</p><p className="text-2xl font-semibold">{formatCurrency(stats.totalValue)}</p></Card>
-        <Card><p className="text-xs text-stone-500">Volume</p><p className="text-2xl font-semibold">{stats.totalMl} ml</p></Card>
-        <Card><p className="text-xs text-stone-500">Rotation health</p><p className="text-2xl font-semibold">{stats.rotation}%</p>
+        <Card><p className="text-xs text-[var(--sc-text-muted)]">Value</p><p className="text-2xl font-semibold">{formatCurrency(stats.totalValue)}</p></Card>
+        <Card><p className="text-xs text-[var(--sc-text-muted)]">Volume</p><p className="text-2xl font-semibold">{stats.totalMl} ml</p></Card>
+        <Card><p className="text-xs text-[var(--sc-text-muted)]">Rotation health</p><p className="text-2xl font-semibold">{stats.rotation}%</p>
           <p className="text-[11px] text-[var(--sc-text-muted)] mt-1">Share of wardrobe worn at least once — a fragrance journal, not a streak score.</p>
         </Card>
-        <Card><p className="text-xs text-stone-500">Designer / Niche / ME</p><p className="text-lg font-semibold">{stats.designer} / {stats.niche} / {stats.me}</p></Card>
-        <Card><p className="text-xs text-stone-500">Wear streak</p><p className="text-2xl font-semibold">{stats.streak}d</p></Card>
-        <Card><p className="text-xs text-stone-500">This month</p><p className="text-2xl font-semibold">{stats.monthWears}</p></Card>
-        <Card><p className="text-xs text-stone-500">Compliments</p><p className="text-2xl font-semibold">{stats.compliments}</p></Card>
-        <Card><p className="text-xs text-stone-500">Versatile scents</p><p className="text-2xl font-semibold">{stats.versatile}</p></Card>
-        <Card><p className="text-xs text-stone-500">Avg projection</p><p className="text-lg font-semibold">{stats.avgProjection}</p></Card>
-        <Card><p className="text-xs text-stone-500">Avg longevity</p><p className="text-lg font-semibold">{stats.avgLongevity}</p></Card>
+        <Card><p className="text-xs text-[var(--sc-text-muted)]">Designer / Niche / ME</p><p className="text-lg font-semibold">{stats.designer} / {stats.niche} / {stats.me}</p></Card>
+        <Card><p className="text-xs text-[var(--sc-text-muted)]">Wear streak</p><p className="text-2xl font-semibold">{stats.streak}d</p></Card>
+        <Card><p className="text-xs text-[var(--sc-text-muted)]">This month</p><p className="text-2xl font-semibold">{stats.monthWears}</p></Card>
+        <Card><p className="text-xs text-[var(--sc-text-muted)]">Compliments</p><p className="text-2xl font-semibold">{stats.compliments}</p></Card>
+        <Card><p className="text-xs text-[var(--sc-text-muted)]">Versatile scents</p><p className="text-2xl font-semibold">{stats.versatile}</p></Card>
+        <Card><p className="text-xs text-[var(--sc-text-muted)]">Avg projection</p><p className="text-lg font-semibold">{stats.avgProjection}</p></Card>
+        <Card><p className="text-xs text-[var(--sc-text-muted)]">Avg longevity</p><p className="text-lg font-semibold">{stats.avgLongevity}</p></Card>
       </div>
 
       {stats.costRows.length > 0 && (

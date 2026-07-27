@@ -3,7 +3,6 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { MapPin, Briefcase, Share2, Bookmark, UserRound, Layers } from 'lucide-react';
 import { GlassCard } from '@/components/premium/GlassCard';
-import { PageHeader } from '@/components/premium/PageHeader';
 import { Button } from '@/components/ui/button';
 import { OptionPill } from '@/components/ui/OptionPill';
 import { LoadingCard } from '@/components/ui/LoadingCard';
@@ -86,7 +85,7 @@ export function AdvisorPage() {
 
   if (!collection.length) {
     return (
-      <div className="safe-pt px-5 py-6 max-w-2xl mx-auto">
+      <div className="atelier-page">
         <EmptyState
           eyebrow="Advisor"
           title="Add bottles first"
@@ -177,8 +176,12 @@ export function AdvisorPage() {
   };
 
   return (
-    <div className="safe-pt px-5 md:px-0 py-6 max-w-2xl mx-auto pb-12">
-      <PageHeader eyebrow="Smart Assistant" title="Scent Advisor" subtitle="Match your wardrobe to the moment — with a personal spray map." large />
+    <div className="atelier-page pb-4">
+      <header className="mb-6">
+        <p className="atelier-page__brand">Smart Assistant</p>
+        <h1 className="atelier-page__title">Scent Advisor</h1>
+        <p className="atelier-page__sub">Match wardrobe to moment — personal spray map.</p>
+      </header>
 
       {profile?.gender === 'prefer_not' && (
         <GlassCard className="flex items-start gap-3 !p-4 mb-5" delay={0.02}>
@@ -209,7 +212,7 @@ export function AdvisorPage() {
       )}
 
       {prefs.officeSafeMode && (
-        <GlassCard className="flex items-start gap-3 !p-4 mb-5 border-[var(--color-accent)]/25" glow="rgba(10,132,255,0.08)" delay={0.04}>
+        <GlassCard className="flex items-start gap-3 !p-4 mb-5 border-[var(--color-accent)]/25" delay={0.04}>
           <Briefcase className="text-[var(--color-accent)] shrink-0 mt-0.5" size={18} />
           <div>
             <p className="text-sm font-medium">Office Safe is on</p>
@@ -255,7 +258,6 @@ export function AdvisorPage() {
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
           <GlassCard
             className="flex gap-4 items-center !p-5 border-[var(--color-accent)]/30"
-            glow={`${familyColor}22`}
             delay={0.05}
           >
             <FragranceThumb
@@ -263,6 +265,7 @@ export function AdvisorPage() {
               name={result.primary.fragrance.name}
               family={result.primary.fragrance.family}
               catalogImage={result.primary.fragrance.image}
+              fragrance={result.primary.fragrance}
               size="md"
               className="w-20 shrink-0"
             />
@@ -319,6 +322,7 @@ export function AdvisorPage() {
                   name={result.layering.secondary.name}
                   family={result.layering.secondary.family}
                   catalogImage={result.layering.secondary.image}
+                  fragrance={result.layering.secondary}
                   size="sm"
                   className="w-12 shrink-0"
                 />
@@ -345,6 +349,7 @@ export function AdvisorPage() {
                       name={b.fragrance.name}
                       family={b.fragrance.family}
                       catalogImage={b.fragrance.image}
+                      fragrance={b.fragrance}
                       size="sm"
                       className="w-12 shrink-0"
                     />

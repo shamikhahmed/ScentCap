@@ -2,7 +2,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { PageHeader } from '@/components/premium/PageHeader';
 import { ProfileEditor } from '@/components/settings/ProfileEditor';
 import { CityWeatherInput } from '@/components/settings/CityWeatherInput';
 import { useApp } from '@/context/AppContext';
@@ -45,8 +44,11 @@ export function SettingsPage() {
   };
 
   return (
-    <div className="safe-pt px-5 py-6 max-w-lg mx-auto space-y-6">
-      <PageHeader eyebrow="Preferences" title="Settings" large />
+    <div className="atelier-page space-y-6">
+      <header>
+        <p className="atelier-page__brand">Preferences</p>
+        <h1 className="atelier-page__title">Settings</h1>
+      </header>
 
       <Card className="privacy-badge border-[var(--color-accent)]/30 bg-[var(--color-accent-muted)] space-y-3">
         <div className="flex items-start gap-3">
@@ -124,9 +126,9 @@ export function SettingsPage() {
         >
           {prefs.officeSafeMode ? 'Office-safe ON' : 'Office-safe OFF'}
         </Button>
-        <p className="text-xs text-stone-500">When on, advisor only picks low-projection, office-friendly scents for work.</p>
+        <p className="text-xs text-[var(--sc-text-muted)]">When on, advisor only picks low-projection, office-friendly scents for work.</p>
         <input type="range" min={1} max={6} value={prefs.officeMaxSprays} onChange={(e) => setPrefs({ ...prefs, officeMaxSprays: Number(e.target.value) })} className="w-full" />
-        <p className="text-sm text-stone-400">Max {prefs.officeMaxSprays} sprays at work</p>
+        <p className="text-sm text-[var(--sc-text-soft)]">Max {prefs.officeMaxSprays} sprays at work</p>
       </Card>
 
       <Card className="space-y-3">
@@ -138,7 +140,7 @@ export function SettingsPage() {
         <p className="font-medium">Demo wardrobe</p>
         {prefs.demoMode ? (
           <>
-            <p className="text-xs text-stone-500">You&apos;re using sample data. Start fresh to build your own wardrobe.</p>
+            <p className="text-xs text-[var(--sc-text-muted)]">You&apos;re using sample data. Start fresh to build your own wardrobe.</p>
             <Button
               variant="outline"
               className="w-full"
@@ -162,7 +164,7 @@ export function SettingsPage() {
             </Button>
           </>
         ) : collection.length > 0 ? (
-          <p className="text-xs text-stone-500">Your wardrobe is saved on this device. Export a backup below before clearing site data. To explore sample data, use onboarding on a fresh install or add <code className="text-stone-400">?demo=1</code> on first visit.</p>
+          <p className="text-xs text-[var(--sc-text-muted)]">Your wardrobe is saved on this device. Export a backup below before clearing site data. To explore sample data, use onboarding on a fresh install or add <code className="text-[var(--sc-text-soft)]">?demo=1</code> on first visit.</p>
         ) : (
           <Button
             variant="outline"

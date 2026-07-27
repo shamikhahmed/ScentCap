@@ -87,7 +87,7 @@ function WearRatingForm({
         onFocus={(e) => scrollInputIntoView(e.currentTarget)}
         placeholder="Notes (optional)"
         rows={3}
-        className="w-full rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm outline-none focus:border-[var(--color-accent)]/50 resize-none input-premium"
+        className="atelier-input rounded-2xl resize-none"
       />
       <div className="flex gap-3">
         <Button variant="ghost" className="flex-1" onClick={onSkip}>{editMode ? 'Cancel' : 'Skip'}</Button>

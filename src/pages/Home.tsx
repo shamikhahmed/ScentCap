@@ -318,36 +318,8 @@ export function Home() {
         </div>
       )}
 
-      <div className="home-atelier__stats">
-        <StatPill icon={<Droplets size={15} strokeWidth={2} />} label="Bottles" value={String(collection.length)} to="/collection" delay={0.05} />
-        <StatPill icon={<Flame size={15} strokeWidth={2} />} label="Streak" value={`${streak}d`} tone={streak > 0 ? 'hot' : 'default'} to="/calendar" delay={0.1} />
-        <StatPill icon={<Sparkles size={15} strokeWidth={2} />} label="Month" value={String(monthWears)} to="/calendar" delay={0.15} />
-        <StatPill icon={<Layers size={15} strokeWidth={2} />} label="Rotation" value={`${rotation}%`} tone={rotationLow ? 'warn' : rotation >= 70 ? 'good' : 'default'} to="/analytics" delay={0.2} />
-      </div>
-
-      <p className="home-atelier__section-label">Mood</p>
-      <div className="home-atelier__moods">
-        {MOOD_PRESETS.map((p) => {
-          const Icon = p.Icon;
-          return (
-            <button
-              key={p.id}
-              type="button"
-              onClick={() => applyPreset(p)}
-              className={`rounded-2xl border px-2 py-3 flex flex-col items-center gap-1.5 text-center transition-colors ${
-                activePresetId === p.id
-                  ? 'border-[var(--sc-accent)] bg-[var(--sc-accent-soft)]'
-                  : 'border-[var(--sc-border-soft)] bg-[var(--sc-panel)]'
-              }`}
-            >
-              <Icon size={18} strokeWidth={1.85} className="text-[var(--sc-accent)]" aria-hidden />
-              <span className="text-[11px] font-semibold text-[var(--sc-text-soft)]">{p.label}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      <p className="home-atelier__section-label">Today&apos;s bottle</p>
+      {/* Track B: museum hero — bottle first, chrome below fold */}
+      <p className="home-atelier__section-label !mt-4">Today&apos;s bottle</p>
       {loading ? (
         <LoadingCard messages={HOME_LOADING_MESSAGES} />
       ) : result ? (
@@ -374,6 +346,35 @@ export function Home() {
           </PressableLink>
         </div>
       )}
+
+      <p className="home-atelier__section-label">Mood</p>
+      <div className="home-atelier__moods">
+        {MOOD_PRESETS.map((p) => {
+          const Icon = p.Icon;
+          return (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => applyPreset(p)}
+              className={`rounded-2xl border px-2 py-3 flex flex-col items-center gap-1.5 text-center transition-colors ${
+                activePresetId === p.id
+                  ? 'border-[var(--sc-accent)] bg-[var(--sc-accent-soft)]'
+                  : 'border-[var(--sc-border-soft)] bg-[var(--sc-panel)]'
+              }`}
+            >
+              <Icon size={18} strokeWidth={1.85} className="text-[var(--sc-accent)]" aria-hidden />
+              <span className="text-[11px] font-semibold text-[var(--sc-text-soft)]">{p.label}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="home-atelier__stats">
+        <StatPill icon={<Droplets size={15} strokeWidth={2} />} label="Bottles" value={String(collection.length)} to="/collection" delay={0.05} />
+        <StatPill icon={<Flame size={15} strokeWidth={2} />} label="Streak" value={`${streak}d`} tone={streak > 0 ? 'hot' : 'default'} to="/calendar" delay={0.1} />
+        <StatPill icon={<Sparkles size={15} strokeWidth={2} />} label="Month" value={String(monthWears)} to="/calendar" delay={0.15} />
+        <StatPill icon={<Layers size={15} strokeWidth={2} />} label="Rotation" value={`${rotation}%`} tone={rotationLow ? 'warn' : rotation >= 70 ? 'good' : 'default'} to="/analytics" delay={0.2} />
+      </div>
 
       {result && result.backups.length > 0 && (
         <div className="mt-5">

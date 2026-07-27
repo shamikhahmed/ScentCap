@@ -85,11 +85,12 @@ export function CalendarPage() {
   const padStart = startOfMonth(month).getDay();
 
   return (
-    <div className="safe-pt px-5 py-6 max-w-2xl mx-auto space-y-6">
+    <div className="atelier-page space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight">Wear calendar</h1>
-          <p className="text-sm text-[var(--color-text-secondary)] mt-1">
+          <p className="atelier-page__brand">Journal</p>
+          <h1 className="atelier-page__title">Wear calendar</h1>
+          <p className="atelier-page__sub">
             {wearStreak(history)}d streak · {wearsThisMonth(history)} this month
           </p>
         </div>

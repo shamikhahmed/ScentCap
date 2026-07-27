@@ -2,6 +2,8 @@
 
 Six iPhone 15 Pro screenshots for App Store Connect, captured at **393×852** viewport with **3× device scale** (1290×2556 effective pixels).
 
+**Visual system:** Atelier (v2.0.4+) — chalk light + forest accent. Regen after any UI remint.
+
 ## Output location
 
 ```

@@ -55,7 +55,7 @@ export function HeroPick({
           >
             <PressableLink
               to={`/fragrance/${primary.collectionId}`}
-              className="block w-full max-w-[140px] mx-auto"
+              className="block w-full max-w-[180px] mx-auto"
               aria-label={`View ${primary.fragrance.brand} ${primary.fragrance.name}`}
             >
               <FragranceThumb
@@ -65,8 +65,8 @@ export function HeroPick({
                 catalogImage={primary.fragrance.image}
                 photoUrl={photoUrl}
                 fragrance={primary.fragrance}
-                size="lg"
-                className="mx-auto catalog-bottle-thumb"
+                size="hero"
+                className="mx-auto catalog-bottle-thumb !h-[220px]"
               />
             </PressableLink>
           </motion.div>

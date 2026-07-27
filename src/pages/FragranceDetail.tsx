@@ -179,7 +179,7 @@ export function FragranceDetail() {
     setEditWear(null);
   };
 
-  if (!item || !fragrance) return <p className="p-8 text-stone-400">Loading…</p>;
+  if (!item || !fragrance) return <p className="atelier-page text-[var(--sc-text-muted)]">Loading…</p>;
 
   const aura = FAMILY_COLORS[fragrance.family] ?? '#c9a87c';
 
@@ -197,9 +197,9 @@ export function FragranceDetail() {
   };
 
   return (
-    <div className="safe-pt pb-8 max-w-lg mx-auto overflow-x-hidden">
+    <div className="atelier-page overflow-x-hidden">
       <div
-        className="detail-hero-premium mx-0"
+        className="atelier-detail-hero"
         style={{ '--hero-aura': aura } as React.CSSProperties}
       >
         {photoUrl ? (
@@ -217,10 +217,10 @@ export function FragranceDetail() {
             />
           </div>
         )}
-        <div className="detail-hero-scrim" />
+        <div className="atelier-detail-scrim" />
         <button
           type="button"
-          className="absolute top-4 right-4 w-10 h-10 rounded-full glass-premium-subtle flex items-center justify-center pressable z-10"
+          className="absolute top-4 right-4 w-10 h-10 rounded-xl border border-[var(--sc-border-soft)] bg-[var(--sc-panel)] flex items-center justify-center pressable z-10"
           onClick={() => fileRef.current?.click()}
         >
           <Camera size={18} />
@@ -230,9 +230,9 @@ export function FragranceDetail() {
           if (f) onPhoto(f);
         }} />
         <div className="absolute bottom-0 inset-x-0 p-6 z-10">
-          <Link to="/collection" className="text-xs font-semibold text-[var(--color-accent)]">← Wardrobe</Link>
+          <Link to="/collection" className="text-xs font-semibold text-[var(--sc-accent)]">← Collection</Link>
           <p className={`text-sm ${textMuted} mt-2 font-medium`}>{fragrance.brand}</p>
-          <h1 className="text-display mt-0.5">{fragrance.name}</h1>
+          <h1 className="atelier-page__title !mt-0.5">{fragrance.name}</h1>
           {(item.bottleType === 'decant' || item.bottleType === 'travel') && (
             <span className="inline-block mt-1 text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-[var(--color-accent)]/20 text-[var(--color-accent)]">
               {item.bottleType === 'decant' ? 'Decant' : 'Travel bottle'}
@@ -241,10 +241,10 @@ export function FragranceDetail() {
         </div>
       </div>
 
-      <div className="px-5 space-y-5 -mt-2">
+      <div className="space-y-5 mt-4">
         {parentItem && parentFragrance && (
           <Card className="text-sm">
-            <p className="text-xs uppercase text-stone-500 mb-1">Linked to parent bottle</p>
+            <p className="text-xs uppercase text-[var(--sc-text-muted)] mb-1">Linked to parent bottle</p>
             <Link to={`/fragrance/${parentItem.id}`} className="text-[var(--color-accent)] font-medium">
               {parentFragrance.brand} — {parentFragrance.name}
             </Link>
@@ -252,12 +252,12 @@ export function FragranceDetail() {
         )}
         {childDecants.length > 0 && (
           <Card>
-            <p className="text-xs uppercase text-stone-500 mb-2">Decants & travel sizes</p>
+            <p className="text-xs uppercase text-[var(--sc-text-muted)] mb-2">Decants & travel sizes</p>
             <div className="space-y-2">
               {childDecants.map(({ item: child, f }) => (
                 <Link key={child.id} to={`/fragrance/${child.id}`} className="flex justify-between items-center text-sm hover:text-[var(--color-accent)]">
                   <span>{f?.name ?? '…'} · {child.bottleType === 'travel' ? 'Travel' : 'Decant'}</span>
-                  <span className="text-stone-500 text-xs">{child.bottleSizeMl ?? '—'}ml</span>
+                  <span className="text-[var(--sc-text-muted)] text-xs">{child.bottleSizeMl ?? '—'}ml</span>
                 </Link>
               ))}
             </div>
@@ -278,25 +278,25 @@ export function FragranceDetail() {
           </Button>
           {shareMsg && <span className="text-xs text-[var(--color-accent)] self-center">{shareMsg}</span>}
           {item.purchasePrice != null && !editing && (
-            <span className="text-sm text-stone-500 self-center ml-auto">{formatCurrency(item.purchasePrice)}</span>
+            <span className="text-sm text-[var(--sc-text-muted)] self-center ml-auto">{formatCurrency(item.purchasePrice)}</span>
           )}
         </div>
 
         {editing && (
           <Card className="space-y-3">
-            <p className="text-xs uppercase text-stone-500">Bottle details</p>
+            <p className="text-xs uppercase text-[var(--sc-text-muted)]">Bottle details</p>
             <div className="grid grid-cols-2 gap-2">
-              <input className="rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm" placeholder="Size (ml)" value={editMeta.sizeMl} onChange={(e) => setEditMeta({ ...editMeta, sizeMl: e.target.value })} />
-              <input className="rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm" placeholder="Price $" value={editMeta.price} onChange={(e) => setEditMeta({ ...editMeta, price: e.target.value })} />
-              <input type="date" className="rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm" title="Purchased" value={editMeta.purchase} onChange={(e) => setEditMeta({ ...editMeta, purchase: e.target.value })} />
-              <input type="date" className="rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm" title="Opened" value={editMeta.opened} onChange={(e) => setEditMeta({ ...editMeta, opened: e.target.value })} />
+              <input className="atelier-input !py-2" placeholder="Size (ml)" value={editMeta.sizeMl} onChange={(e) => setEditMeta({ ...editMeta, sizeMl: e.target.value })} />
+              <input className="atelier-input !py-2" placeholder="Price $" value={editMeta.price} onChange={(e) => setEditMeta({ ...editMeta, price: e.target.value })} />
+              <input type="date" className="atelier-input !py-2" title="Purchased" value={editMeta.purchase} onChange={(e) => setEditMeta({ ...editMeta, purchase: e.target.value })} />
+              <input type="date" className="atelier-input !py-2" title="Opened" value={editMeta.opened} onChange={(e) => setEditMeta({ ...editMeta, opened: e.target.value })} />
             </div>
             <Button className="w-full" onClick={saveEdits}>Save details</Button>
           </Card>
         )}
 
         <Card>
-          <p className="text-xs uppercase text-stone-500 mb-2">Pyramid</p>
+          <p className="text-xs uppercase text-[var(--sc-text-muted)] mb-2">Pyramid</p>
           <div className="space-y-2 text-sm">
             <p><span className="text-[var(--color-accent)]">Top</span> · {fragrance.top_notes.join(', ') || '—'}</p>
             <p><span className="text-[var(--color-accent)]">Heart</span> · {fragrance.heart_notes.join(', ') || '—'}</p>
@@ -315,7 +315,7 @@ export function FragranceDetail() {
 
         <Card>
           <p className="font-medium mb-1">Bottle level</p>
-          <p className="text-xs text-stone-500 mb-3">Tap to update</p>
+          <p className="text-xs text-[var(--sc-text-muted)] mb-3">Tap to update</p>
           <div className="flex gap-1.5 overflow-x-auto scrollbar-none">
             {LEVELS.map((l) => (
               <button
@@ -323,7 +323,7 @@ export function FragranceDetail() {
                 type="button"
                 onClick={() => updateLevel(l)}
                 className={`shrink-0 px-3 py-2 rounded-xl text-xs font-semibold ${
-                  item.bottleLevel === l ? 'bg-[var(--color-accent)] text-stone-950' : 'bg-white/5 text-stone-400'
+                  item.bottleLevel === l ? 'bg-[var(--sc-accent)] text-white' : 'bg-[var(--sc-surface)] text-[var(--sc-text-soft)]'
                 }`}
               >
                 {l === 'full' ? 'Full' : `${l}%`}
@@ -331,7 +331,7 @@ export function FragranceDetail() {
             ))}
           </div>
           {item.estimatedWearsRemaining != null && (
-            <p className="text-xs text-stone-500 mt-3">~{item.estimatedWearsRemaining} wears remaining</p>
+            <p className="text-xs text-[var(--sc-text-muted)] mt-3">~{item.estimatedWearsRemaining} wears remaining</p>
           )}
         </Card>
 
@@ -344,7 +344,7 @@ export function FragranceDetail() {
                 type="button"
                 onClick={() => setSignature(role)}
                 className={`text-xs px-3 py-2 rounded-full border ${
-                  sigRole === role ? 'border-[var(--color-accent)] bg-[var(--color-accent)]/15' : 'border-white/10'
+                  sigRole === role ? 'border-[var(--sc-accent)] bg-[var(--sc-accent-soft)] text-[var(--sc-accent)]' : 'border-[var(--sc-border-soft)]'
                 }`}
               >
                 {label}
@@ -367,10 +367,10 @@ export function FragranceDetail() {
                     <div>
                       <span className="block">{format(new Date(w.wornAt), 'MMM d, yyyy')}</span>
                       {w.compliment && <span className="text-xs text-[var(--color-accent)]">★ compliment</span>}
-                      {w.rating && <span className="text-xs text-stone-500">Rated {w.rating}/5</span>}
-                      {w.notes && <span className="text-xs text-stone-400 block mt-0.5 line-clamp-2">{w.notes}</span>}
+                      {w.rating && <span className="text-xs text-[var(--sc-text-muted)]">Rated {w.rating}/5</span>}
+                      {w.notes && <span className="text-xs text-[var(--sc-text-soft)] block mt-0.5 line-clamp-2">{w.notes}</span>}
                     </div>
-                    <Pencil size={14} className="shrink-0 text-stone-500 mt-0.5" />
+                    <Pencil size={14} className="shrink-0 text-[var(--sc-text-muted)] mt-0.5" />
                   </button>
                 </li>
               ))}
@@ -379,9 +379,9 @@ export function FragranceDetail() {
         )}
 
         <Card className="grid grid-cols-3 gap-2 text-center text-sm">
-          <div><p className="text-stone-500 text-xs">Office</p><p className="font-semibold">{fragrance.office_score}</p></div>
-          <div><p className="text-stone-500 text-xs">Date</p><p className="font-semibold">{fragrance.date_score}</p></div>
-          <div><p className="text-stone-500 text-xs">Casual</p><p className="font-semibold">{fragrance.casual_score}</p></div>
+          <div><p className="text-[var(--sc-text-muted)] text-xs">Office</p><p className="font-semibold">{fragrance.office_score}</p></div>
+          <div><p className="text-[var(--sc-text-muted)] text-xs">Date</p><p className="font-semibold">{fragrance.date_score}</p></div>
+          <div><p className="text-[var(--sc-text-muted)] text-xs">Casual</p><p className="font-semibold">{fragrance.casual_score}</p></div>
         </Card>
 
         <Button to="/advisor" className="w-full"><Sparkles size={16} /> Wear today</Button>
@@ -397,12 +397,12 @@ export function FragranceDetail() {
             exit={{ opacity: 0 }}
           >
             <motion.div
-              className="glass-card rounded-3xl p-6 w-full max-w-md space-y-4"
+              className="atelier-panel !rounded-2xl p-6 w-full max-w-md space-y-4"
               initial={{ y: 40 }}
               animate={{ y: 0 }}
             >
               <p className="font-semibold">Remove from wardrobe?</p>
-              <p className="text-sm text-stone-400">
+              <p className="text-sm text-[var(--sc-text-soft)]">
                 {deleteCascade && childDecants.length > 0
                   ? `This will also delete ${childDecants.length} linked decant${childDecants.length !== 1 ? 's' : ''}/travel bottle${childDecants.length !== 1 ? 's' : ''}.`
                   : childDecants.length > 0
