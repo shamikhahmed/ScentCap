@@ -21,7 +21,7 @@ const TYPE_LABEL = {
 
 const ROLE_COLOR = {
   base: '#c9a87c',
-  accent: '#0a84ff',
+  accent: 'var(--sc-accent)',
 };
 
 export function SprayBodyMap({

@@ -134,7 +134,7 @@ export function CalendarPage() {
                 className={`min-h-[56px] rounded-xl flex flex-col items-center justify-start pt-1.5 text-[11px] border ${
                   today ? 'ring-1 ring-[var(--color-accent)]/50' : 'border-transparent'
                 }`}
-                style={color ? { background: `${color}22`, borderColor: `${color}44` } : { background: 'rgba(255,255,255,0.04)' }}
+                style={color ? { background: `${color}22`, borderColor: `${color}44` } : { background: 'var(--sc-surface)', borderColor: 'var(--sc-border-soft)' }}
                 title={primary ? labels[primary]?.name : undefined}
               >
                 <span className={`${worn.length || today ? 'font-semibold' : 'text-[var(--color-text-tertiary)]'}`}>

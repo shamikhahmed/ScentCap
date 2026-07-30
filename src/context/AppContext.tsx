@@ -101,7 +101,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const light = prefs.theme !== 'dark';
     document.body.classList.toggle('light', light);
     const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute('content', light ? '#e9edf0' : '#0e1116');
+    if (meta) meta.setAttribute('content', light ? '#e6eaee' : '#0b0e12');
   }, [prefs.theme]);
 
   const setProfile = useCallback(async (p: UserProfile) => {

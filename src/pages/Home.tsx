@@ -233,8 +233,8 @@ export function Home() {
   };
 
   const familyColor = result
-    ? FAMILY_COLORS[result.primary.fragrance.family] ?? '#0a84ff'
-    : '#0a84ff';
+    ? FAMILY_COLORS[result.primary.fragrance.family] ?? 'var(--sc-accent)'
+    : 'var(--sc-accent)';
 
   const WIcon = weather ? (WEATHER_ICON[weather.condition] ?? Cloud) : Cloud;
   const weatherNotice = !weather ? weatherUnavailableMessage(weatherUnavailable) : null;

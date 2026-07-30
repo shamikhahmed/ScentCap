@@ -1,6 +1,6 @@
 # ScentCap AUDIT — Phase 1
 
-**Date:** 2026-07-30 · **Version:** 2.0.6 · **Live:** https://shamikhahmed.github.io/ScentCap/
+**Date:** 2026-07-30 · **Version:** 2.0.7 · **Live:** https://shamikhahmed.github.io/ScentCap/
 
 ## Map
 
@@ -12,7 +12,7 @@
 | Catalog | Fraganty API + local seed/demo · Open-Meteo weather |
 | Engines | Rules advisor / layering / scoring / spray (not LLM) |
 | Design | `--sc-*` tokens · Figtree + Newsreader · 5 CSS layers (~2.7k lines) |
-| Deploy | GitHub Pages · CI `verify` then build · SW `scentcap-v206` |
+| Deploy | GitHub Pages · CI `verify` then build · SW `scentcap-v207` |
 | Tests | Playwright e2e · gallery · screenshots · no unit tests |
 
 ### Routes

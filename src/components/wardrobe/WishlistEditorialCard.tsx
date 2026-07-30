@@ -19,7 +19,7 @@ export function WishlistEditorialCard({
   onRemove: () => void;
   index?: number;
 }) {
-  const aura = FAMILY_COLORS[f?.family ?? ''] ?? '#0a84ff';
+  const aura = FAMILY_COLORS[f?.family ?? ''] ?? 'var(--sc-accent)';
   const issueNum = String((index % 12) + 1).padStart(2, '0');
 
   return (
@@ -69,7 +69,7 @@ export function WishlistEditorialCard({
         onClick={onRemove}
         className={cn(
           'wishlist-editorial-remove p-2 rounded-xl text-[var(--color-text-tertiary)]',
-          'hover:text-red-400 hover:bg-red-500/10 transition-colors',
+          'hover:text-[var(--sc-danger)] hover:bg-[color-mix(in_srgb,var(--sc-danger)_10%,transparent)] transition-colors',
         )}
         aria-label="Remove"
       >

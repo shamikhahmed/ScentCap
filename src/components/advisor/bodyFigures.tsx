@@ -1,20 +1,20 @@
 /** Anatomical front-view male figure for spray placement (viewBox 0 0 240 520). */
 export function BodyFigureMale() {
-  const skin = 'rgba(255,255,255,0.1)';
-  const skinDeep = 'rgba(255,255,255,0.06)';
-  const outline = 'rgba(255,255,255,0.22)';
-  const detail = 'rgba(255,255,255,0.12)';
+  const skin = 'color-mix(in srgb, var(--sc-text) 12%, transparent)';
+  const skinDeep = 'color-mix(in srgb, var(--sc-text) 8%, transparent)';
+  const outline = 'color-mix(in srgb, var(--sc-text) 28%, transparent)';
+  const detail = 'color-mix(in srgb, var(--sc-text) 14%, transparent)';
 
   return (
     <g aria-hidden>
       <defs>
         <linearGradient id="male-body-grad" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="rgba(255,255,255,0.14)" />
-          <stop offset="100%" stopColor="rgba(255,255,255,0.05)" />
+          <stop offset="0%" stopColor="color-mix(in srgb, var(--sc-text) 16%, transparent)" />
+          <stop offset="100%" stopColor="color-mix(in srgb, var(--sc-text) 6%, transparent)" />
         </linearGradient>
         <radialGradient id="male-head-grad" cx="50%" cy="40%" r="55%">
-          <stop offset="0%" stopColor="rgba(255,255,255,0.16)" />
-          <stop offset="100%" stopColor="rgba(255,255,255,0.07)" />
+          <stop offset="0%" stopColor="color-mix(in srgb, var(--sc-text) 18%, transparent)" />
+          <stop offset="100%" stopColor="color-mix(in srgb, var(--sc-text) 9%, transparent)" />
         </radialGradient>
       </defs>
 
@@ -68,28 +68,28 @@ export function BodyFigureMale() {
 
 /** Anatomical front-view female figure for spray placement (viewBox 0 0 240 520). */
 export function BodyFigureFemale() {
-  const skin = 'rgba(255,255,255,0.1)';
-  const skinDeep = 'rgba(255,255,255,0.06)';
-  const outline = 'rgba(255,255,255,0.22)';
-  const detail = 'rgba(255,255,255,0.12)';
+  const skin = 'color-mix(in srgb, var(--sc-text) 12%, transparent)';
+  const skinDeep = 'color-mix(in srgb, var(--sc-text) 8%, transparent)';
+  const outline = 'color-mix(in srgb, var(--sc-text) 28%, transparent)';
+  const detail = 'color-mix(in srgb, var(--sc-text) 14%, transparent)';
 
   return (
     <g aria-hidden>
       <defs>
         <linearGradient id="female-body-grad" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="rgba(255,255,255,0.14)" />
-          <stop offset="100%" stopColor="rgba(255,255,255,0.05)" />
+          <stop offset="0%" stopColor="color-mix(in srgb, var(--sc-text) 16%, transparent)" />
+          <stop offset="100%" stopColor="color-mix(in srgb, var(--sc-text) 6%, transparent)" />
         </linearGradient>
         <radialGradient id="female-head-grad" cx="50%" cy="40%" r="55%">
-          <stop offset="0%" stopColor="rgba(255,255,255,0.16)" />
-          <stop offset="100%" stopColor="rgba(255,255,255,0.07)" />
+          <stop offset="0%" stopColor="color-mix(in srgb, var(--sc-text) 18%, transparent)" />
+          <stop offset="100%" stopColor="color-mix(in srgb, var(--sc-text) 9%, transparent)" />
         </radialGradient>
       </defs>
 
       {/* Hair volume */}
       <path
         d="M88 48 Q120 18 152 48 Q162 72 158 92 Q148 78 120 74 Q92 78 82 92 Q78 72 88 48"
-        fill="rgba(255,255,255,0.05)"
+        fill="color-mix(in srgb, var(--sc-text) 6%, transparent)"
         stroke={outline}
         strokeWidth="0.8"
       />

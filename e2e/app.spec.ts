@@ -118,4 +118,66 @@ test.describe('ScentCap PWA features', () => {
     await page.getByRole('link', { name: /Collection analytics|Analytics/i }).click();
     await expect(page.getByRole('heading', { name: 'Analytics' })).toBeVisible({ timeout: 10_000 });
   });
+
+  test('Settings IA groups and theme toggle', async ({ page }) => {
+    await loadDemoWardrobe(page);
+    await page.getByRole('link', { name: 'You' }).click();
+    await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
+
+    for (const section of ['Account', 'Appearance', 'Advisor', 'Weather', 'Tools', 'Privacy & Data', 'About & Legal']) {
+      await expect(page.getByRole('heading', { name: section, exact: true })).toBeVisible();
+    }
+
+    await expect(page.getByRole('link', { name: 'Layering Lab' })).toBeVisible();
+    await page.getByRole('button', { name: 'Dark', exact: true }).click();
+    await expect(page.getByRole('button', { name: 'Dark', exact: true })).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('body')).not.toHaveClass(/\blight\b/);
+  });
+
+  test('import rejects invalid JSON backup', async ({ page }) => {
+    await loadDemoWardrobe(page);
+    await page.getByRole('link', { name: 'You' }).click();
+
+    page.once('dialog', async (dialog) => {
+      expect(dialog.message()).toMatch(/not valid JSON|invalid/i);
+      await dialog.accept();
+    });
+
+    await page.getByTestId('import-backup').setInputFiles({
+      name: 'bad.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from('{not-json', 'utf-8'),
+    });
+    await page.waitForTimeout(400);
+  });
+
+  test('import rejects future backup version', async ({ page }) => {
+    await loadDemoWardrobe(page);
+    await page.getByRole('link', { name: 'You' }).click();
+
+    page.once('dialog', async (dialog) => {
+      expect(dialog.message()).toMatch(/newer than this app supports/i);
+      await dialog.accept();
+    });
+
+    await page.getByTestId('import-backup').setInputFiles({
+      name: 'future.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from(JSON.stringify({ version: 99, fragrances: [] }), 'utf-8'),
+    });
+    await page.waitForTimeout(400);
+  });
+
+  test('home still works offline after load', async ({ page, context }) => {
+    await loadDemoWardrobe(page);
+    await expect(page.getByRole('button', { name: /Wear this today/i })).toBeVisible({ timeout: 20_000 });
+    await page.waitForFunction(() => !!navigator.serviceWorker?.controller, null, { timeout: 20_000 }).catch(() => null);
+    await context.setOffline(true);
+    // SPA nav — no full reload (SW may not own first document yet)
+    await page.getByRole('link', { name: 'Collection', exact: true }).click();
+    await expect(page.getByRole('heading', { name: /My bottles|Wishlist|Tested/i })).toBeVisible({ timeout: 15_000 });
+    await page.getByRole('link', { name: 'Today', exact: true }).click();
+    await expect(page.getByRole('button', { name: /Wear this today/i })).toBeVisible({ timeout: 20_000 });
+    await context.setOffline(false);
+  });
 });

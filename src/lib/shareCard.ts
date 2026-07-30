@@ -88,7 +88,7 @@ async function loadShareImage(url: string): Promise<HTMLImageElement | null> {
 /** Cap Neutral share card — solid bg, minimal typography */
 export async function exportShareCardPng(
   input: ShareCardInput,
-  accentColor = '#0a84ff',
+  accentColor = 'var(--sc-accent)',
   options: ShareCardOptions = {},
 ): Promise<Blob> {
   const format = options.format ?? 'square';

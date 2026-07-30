@@ -154,7 +154,7 @@ export async function loadDemoWardrobe(page: Page) {
 export async function completeOnboarding(page: Page) {
   await page.goto('./onboarding');
   await expect(page.getByRole('heading', { name: /Your scent (counter|wardrobe)/i })).toBeVisible();
-  await page.getByRole('button', { name: /Quick setup/i }).click();
+  await page.getByRole('button', { name: /Quick setup/i }).click({ force: true });
   await expect(page.getByRole('heading', { name: ONBOARDING_STEPS[0].heading })).toBeVisible();
 
   for (const step of ONBOARDING_STEPS) {
@@ -187,8 +187,8 @@ export async function addFragranceFromSearch(page: Page, query: string) {
   const brand = /bleu/i.test(query) ? 'Chanel' : 'Dior';
   const name = /bleu/i.test(query) ? 'Bleu de Chanel' : 'Sauvage';
 
-  await page.getByPlaceholder('Fragrance name').fill(name);
-  await page.getByPlaceholder('Brand').fill(brand);
+  await page.getByLabel(/Fragrance name/i).fill(name);
+  await page.getByLabel(/^Brand$/i).fill(brand);
   await page.getByRole('button', { name: /Save to wardrobe/i }).click();
   await expect(page).toHaveURL(/\/collection/, { timeout: 20_000 });
   await expect(page.getByText(/\d+ bottle/i)).toBeVisible({ timeout: 15_000 });

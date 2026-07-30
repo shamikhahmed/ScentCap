@@ -266,7 +266,7 @@ export function Onboarding() {
         {pendingLocation && (
           <p className="text-xs text-[var(--color-accent)] mt-2">Found: {pendingLocation.label}</p>
         )}
-        {locationError && <p className="text-xs text-amber-400 mt-2">{locationError}</p>}
+        {locationError && <p className="text-xs text-[var(--sc-warning)] mt-2" role="alert">{locationError}</p>}
         <Button variant="ghost" className="w-full mt-4 gap-2" onClick={useGpsOnboarding}>
           <Navigation size={16} />
           Use device location instead

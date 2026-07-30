@@ -17,7 +17,7 @@ export function WardrobeShelfBottle({
   className?: string;
 }) {
   const photoUrl = usePhotoUrl(c.photoBlobId);
-  const aura = FAMILY_COLORS[f?.family ?? ''] ?? '#0a84ff';
+  const aura = FAMILY_COLORS[f?.family ?? ''] ?? 'var(--sc-accent)';
   const levelLabel = c.bottleLevel === 'full' ? 'Full' : `${c.bottleLevel}%`;
 
   return (

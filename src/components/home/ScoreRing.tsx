@@ -1,18 +1,36 @@
 import { motion } from 'framer-motion';
 
-export function ScoreRing({ score, color = '#0a84ff', size = 88 }: { score: number; color?: string; size?: number }) {
+const DEFAULT_ACCENT = 'var(--sc-accent)';
+
+export function ScoreRing({
+  score,
+  color = DEFAULT_ACCENT,
+  size = 88,
+}: {
+  score: number;
+  color?: string;
+  size?: number;
+}) {
   const r = (size - 12) / 2;
   const c = 2 * Math.PI * r;
   const offset = c - (score / 100) * c;
-  const gradId = `ring-grad-${color.replace('#', '')}`;
+  const safeId = color.replace(/[^a-zA-Z0-9]/g, '') || 'accent';
+  const gradId = `ring-grad-${safeId}`;
 
   return (
     <div
       className="relative score-ring-glow shrink-0"
       style={{ width: size, height: size, '--ring-color': color } as React.CSSProperties}
     >
-      <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={5} />
+      <svg width={size} height={size} className="-rotate-90" aria-hidden>
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="none"
+          stroke="var(--sc-border-soft)"
+          strokeWidth={5}
+        />
         <defs>
           <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor={color} stopOpacity="1" />

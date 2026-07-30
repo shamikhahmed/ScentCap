@@ -142,8 +142,9 @@ export function CollectionPage() {
           size="sm"
           className="btn-glow !min-h-[40px] !rounded-xl shrink-0"
           haptic="medium"
+          aria-label={tab === 'owned' ? 'Add fragrance' : tab === 'want' ? 'Add to Want list' : 'Add to Tested list'}
         >
-          <Plus size={16} />
+          <Plus size={16} aria-hidden />
         </Button>
       </header>
 
@@ -187,10 +188,16 @@ export function CollectionPage() {
       />
 
       <div className="relative">
-        <Search size={16} className={`absolute left-4 top-1/2 -translate-y-1/2 ${textSubtle}`} />
+        <Search size={16} className={`absolute left-4 top-1/2 -translate-y-1/2 ${textSubtle}`} aria-hidden />
+        <label htmlFor="collection-search" className="sr-only">
+          {tab === 'owned' ? 'Search your wardrobe' : `Search ${tab} list`}
+        </label>
         <input
+          id="collection-search"
+          role="searchbox"
           className={`${inputFieldLg} pl-11`}
           placeholder={tab === 'owned' ? 'Search your wardrobe…' : `Search ${tab} list…`}
+          autoComplete="off"
           value={q}
           onChange={(e) => setQ(e.target.value)}
         />

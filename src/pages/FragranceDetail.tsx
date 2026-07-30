@@ -274,7 +274,7 @@ export function FragranceDetail() {
           <Button size="sm" variant={editing ? 'default' : 'ghost'} onClick={() => setEditing(!editing)}>
             <Pencil size={14} /> Edit
           </Button>
-          <Button size="sm" variant="ghost" className="text-red-400" onClick={() => { setDeleteCascade(false); setDeleteOpen(true); }}>
+          <Button size="sm" variant="ghost" className="text-[var(--sc-danger)]" onClick={() => { setDeleteCascade(false); setDeleteOpen(true); }}>
             <Trash2 size={14} /> Delete
           </Button>
           {shareMsg && <span className="text-xs text-[var(--color-accent)] self-center">{shareMsg}</span>}

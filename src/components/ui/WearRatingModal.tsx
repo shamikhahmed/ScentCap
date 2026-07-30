@@ -54,14 +54,15 @@ function WearRatingForm({
       </div>
       <motion.button
         type="button"
+        aria-pressed={compliment}
         whileTap={{ scale: 0.98 }}
         transition={SPRING_PRESS}
         onClick={() => {
           hapticSelection();
           setCompliment(!compliment);
         }}
-        className={`w-full rounded-2xl py-3 text-sm font-medium border transition-colors ${
-          compliment ? 'border-[var(--color-accent)] bg-[var(--color-accent)]/15' : 'border-white/10'
+        className={`w-full rounded-2xl py-3 text-sm font-medium border transition-colors min-h-[44px] ${
+          compliment ? 'border-[var(--color-accent)] bg-[var(--color-accent)]/15' : 'border-[var(--sc-border-soft)]'
         }`}
       >
         <span className="inline-flex items-center justify-center gap-2">
@@ -81,7 +82,9 @@ function WearRatingForm({
           {compliment ? 'Got a compliment' : 'Got a compliment?'}
         </span>
       </motion.button>
+      <label htmlFor="wear-notes" className="sr-only">Notes (optional)</label>
       <textarea
+        id="wear-notes"
         value={notes}
         onChange={(e) => setNotes(e.target.value)}
         onFocus={(e) => scrollInputIntoView(e.currentTarget)}

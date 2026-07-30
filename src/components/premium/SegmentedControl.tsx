@@ -14,20 +14,22 @@ export function SegmentedControl<T extends string>({
   className?: string;
 }) {
   return (
-    <div className={cn('segment-premium', className)}>
+    <div className={cn('segment-premium', className)} role="tablist" aria-label="View options">
       {options.map((opt) => {
         const active = opt.value === value;
         return (
           <button
             key={opt.value}
             type="button"
+            role="tab"
+            aria-selected={active}
             onClick={() => {
               if (!active) {
                 hapticSelection();
                 onChange(opt.value);
               }
             }}
-            className={cn('segment-premium-item', active && 'segment-premium-item--active')}
+            className={cn('segment-premium-item min-h-[44px]', active && 'segment-premium-item--active')}
           >
             {active && (
               <motion.span

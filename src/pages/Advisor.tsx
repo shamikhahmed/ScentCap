@@ -149,8 +149,8 @@ export function AdvisorPage() {
   };
 
   const familyColor = result
-    ? FAMILY_COLORS[result.primary.fragrance.family] ?? '#0a84ff'
-    : '#0a84ff';
+    ? FAMILY_COLORS[result.primary.fragrance.family] ?? 'var(--sc-accent)'
+    : 'var(--sc-accent)';
 
   const shareResult = async () => {
     if (!result) return;
@@ -294,7 +294,7 @@ export function AdvisorPage() {
               {result.spray.concentrationNote}
             </p>
             {result.spray.warnings.map((w) => (
-              <p key={w} className="text-amber-400/90 text-sm mt-2 text-center">⚠ {w}</p>
+              <p key={w} className="text-[var(--sc-warning)] text-sm mt-2 text-center">⚠ {w}</p>
             ))}
           </GlassCard>
 

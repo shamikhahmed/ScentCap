@@ -26,7 +26,7 @@ export function CatalogEditorialCard({
   index = 0,
 }: Props) {
   const preview = group.variants.find((v) => v.image) ?? group.variants[0];
-  const aura = FAMILY_COLORS[preview?.family ?? ''] ?? '#0a84ff';
+  const aura = FAMILY_COLORS[preview?.family ?? ''] ?? 'var(--sc-accent)';
   const issueNum = String((index % 12) + 1).padStart(2, '0');
 
   return (

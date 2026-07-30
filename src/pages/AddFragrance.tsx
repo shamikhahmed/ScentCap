@@ -242,18 +242,20 @@ export function AddFragrance() {
         )}
       </div>
 
-      <div className={segmentBar}>
+      <div className={segmentBar} role="group" aria-label="Add method">
         <Button
+          aria-pressed={tab === 'search'}
           variant={tab === 'search' ? 'default' : 'ghost'}
-          className="flex-1 gap-2"
+          className="flex-1 gap-2 min-h-[44px]"
           onClick={() => setTab('search')}
         >
           <Search size={16} />
           Search catalog
         </Button>
         <Button
+          aria-pressed={tab === 'manual'}
           variant={tab === 'manual' ? 'default' : 'ghost'}
-          className="flex-1 gap-2"
+          className="flex-1 gap-2 min-h-[44px]"
           onClick={() => setTab('manual')}
         >
           <PenLine size={16} />
@@ -279,11 +281,14 @@ export function AddFragrance() {
           </div>
           {needsParent && (
             <div className="space-y-1">
-              <label className="text-xs text-[var(--sc-text-muted)]">Link to parent bottle</label>
+              <label htmlFor="parent-bottle" className="text-xs text-[var(--sc-text-muted)]">Link to parent bottle</label>
               <select
+                id="parent-bottle"
                 className={`${inputClass} py-2`}
                 value={parentCollectionId}
                 onChange={(e) => setParentCollectionId(e.target.value)}
+                aria-invalid={needsParent && !parentCollectionId}
+                aria-describedby={!parentOptions.length ? 'parent-hint' : undefined}
               >
                 <option value="">Select parent bottle…</option>
                 {parentOptions.map((p) => (
@@ -291,7 +296,10 @@ export function AddFragrance() {
                 ))}
               </select>
               {!parentOptions.length && (
-                <p className="text-xs text-amber-400">Add a full bottle first to link decants or travel sizes.</p>
+                <p id="parent-hint" className="text-xs text-[var(--sc-warning)]">Add a full bottle first to link decants or travel sizes.</p>
+              )}
+              {needsParent && parentOptions.length > 0 && !parentCollectionId && (
+                <p className="text-xs text-[var(--sc-danger)]" role="alert">Choose a parent bottle to continue.</p>
               )}
             </div>
           )}
@@ -301,17 +309,29 @@ export function AddFragrance() {
       {!listTarget && (
         <Card className="space-y-3">
           <p className="text-xs uppercase text-[var(--sc-text-muted)]">Bottle details (optional)</p>
-          <div className="grid grid-cols-2 gap-2">
-            <input className={inputClass} placeholder="Size (ml)" value={meta.sizeMl} onChange={(e) => setMeta({ ...meta, sizeMl: e.target.value })} onFocus={(e) => scrollInputIntoView(e.currentTarget)} />
-            <input className={inputClass} placeholder="Price $" value={meta.price} onChange={(e) => setMeta({ ...meta, price: e.target.value })} onFocus={(e) => scrollInputIntoView(e.currentTarget)} />
-            <input type="date" className={inputClass} title="Purchased" value={meta.purchase} onChange={(e) => setMeta({ ...meta, purchase: e.target.value })} onFocus={(e) => scrollInputIntoView(e.currentTarget)} />
-            <input type="date" className={inputClass} title="Opened" value={meta.opened} onChange={(e) => setMeta({ ...meta, opened: e.target.value })} onFocus={(e) => scrollInputIntoView(e.currentTarget)} />
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <label htmlFor="meta-size" className="text-xs text-[var(--sc-text-muted)]">Size (ml)</label>
+              <input id="meta-size" className={inputClass} type="number" inputMode="decimal" autoComplete="off" placeholder="50" value={meta.sizeMl} onChange={(e) => setMeta({ ...meta, sizeMl: e.target.value })} onFocus={(e) => scrollInputIntoView(e.currentTarget)} />
+            </div>
+            <div className="space-y-1">
+              <label htmlFor="meta-price" className="text-xs text-[var(--sc-text-muted)]">Price</label>
+              <input id="meta-price" className={inputClass} type="number" inputMode="decimal" autoComplete="off" placeholder="0" value={meta.price} onChange={(e) => setMeta({ ...meta, price: e.target.value })} onFocus={(e) => scrollInputIntoView(e.currentTarget)} />
+            </div>
+            <div className="space-y-1">
+              <label htmlFor="meta-purchase" className="text-xs text-[var(--sc-text-muted)]">Purchased</label>
+              <input id="meta-purchase" type="date" className={inputClass} autoComplete="off" value={meta.purchase} onChange={(e) => setMeta({ ...meta, purchase: e.target.value })} onFocus={(e) => scrollInputIntoView(e.currentTarget)} />
+            </div>
+            <div className="space-y-1">
+              <label htmlFor="meta-opened" className="text-xs text-[var(--sc-text-muted)]">Opened</label>
+              <input id="meta-opened" type="date" className={inputClass} autoComplete="off" value={meta.opened} onChange={(e) => setMeta({ ...meta, opened: e.target.value })} onFocus={(e) => scrollInputIntoView(e.currentTarget)} />
+            </div>
           </div>
-          <label className="flex items-center gap-2 text-sm text-[var(--sc-text-soft)] cursor-pointer">
-            <Camera size={16} />
+          <label className="flex items-center gap-2 text-sm text-[var(--sc-text-soft)] cursor-pointer min-h-[44px]">
+            <Camera size={16} aria-hidden />
             <span>Photo (optional)</span>
-            <input type="file" accept="image/*" className="hidden" onChange={(e) => setPhotoFile(e.target.files?.[0] ?? null)} />
-            {photoFile ? photoFile.name : 'Choose file'}
+            <input type="file" accept="image/*" className="hidden" aria-label="Choose bottle photo" onChange={(e) => setPhotoFile(e.target.files?.[0] ?? null)} />
+            <span className="text-[var(--sc-accent)] font-semibold">{photoFile ? photoFile.name : 'Choose file'}</span>
           </label>
         </Card>
       )}
@@ -319,10 +339,14 @@ export function AddFragrance() {
       {tab === 'search' ? (
         <>
           <div className="relative">
-            <Search size={16} className={`absolute left-4 top-1/2 -translate-y-1/2 ${textSubtle}`} />
+            <Search size={16} className={`absolute left-4 top-1/2 -translate-y-1/2 ${textSubtle}`} aria-hidden />
+            <label htmlFor="catalog-search" className="sr-only">Search catalog by brand or name</label>
             <input
-              className={`${inputClass} rounded-2xl py-3 pl-11`}
+              id="catalog-search"
+              role="searchbox"
+              className={`${inputClass} rounded-2xl py-3 pl-11 min-h-[48px]`}
               placeholder="Search by brand or name…"
+              autoComplete="off"
               value={q}
               onChange={(e) => search(e.target.value)}
               onFocus={(e) => scrollInputIntoView(e.currentTarget)}
@@ -468,19 +492,48 @@ export function AddFragrance() {
       ) : (
         <Card className="space-y-4">
           <p className="text-sm text-[var(--sc-text-soft)]">Can&apos;t find it? Enter brand and name — we&apos;ll save it locally.</p>
-          {(['name', 'brand'] as const).map((k) => (
+          <div className="space-y-1">
+            <label htmlFor="manual-name" className="text-xs text-[var(--sc-text-muted)]">Fragrance name</label>
             <input
-              key={k}
+              id="manual-name"
               className={`${inputClass} capitalize`}
-              placeholder={k === 'name' ? 'Fragrance name' : 'Brand'}
-              value={manual[k]}
-              onChange={(e) => setManual({ ...manual, [k]: e.target.value })}
+              placeholder="e.g. Aventus"
+              autoComplete="off"
+              required
+              aria-invalid={!manual.name}
+              value={manual.name}
+              onChange={(e) => setManual({ ...manual, name: e.target.value })}
               onFocus={(e) => scrollInputIntoView(e.currentTarget)}
             />
-          ))}
-          <select className={inputClass} value={manual.concentration} onChange={(e) => setManual({ ...manual, concentration: e.target.value as Concentration })}>
-            {CONCENTRATIONS.map((c) => <option key={c} value={c}>{c}</option>)}
-          </select>
+          </div>
+          <div className="space-y-1">
+            <label htmlFor="manual-brand" className="text-xs text-[var(--sc-text-muted)]">Brand</label>
+            <input
+              id="manual-brand"
+              className={`${inputClass} capitalize`}
+              placeholder="e.g. Creed"
+              autoComplete="organization"
+              required
+              aria-invalid={!manual.brand}
+              value={manual.brand}
+              onChange={(e) => setManual({ ...manual, brand: e.target.value })}
+              onFocus={(e) => scrollInputIntoView(e.currentTarget)}
+            />
+          </div>
+          <div className="space-y-1">
+            <label htmlFor="manual-concentration" className="text-xs text-[var(--sc-text-muted)]">Concentration</label>
+            <select
+              id="manual-concentration"
+              className={inputClass}
+              value={manual.concentration}
+              onChange={(e) => setManual({ ...manual, concentration: e.target.value as Concentration })}
+            >
+              {CONCENTRATIONS.map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </div>
+          {(!manual.name || !manual.brand) && (
+            <p className="text-xs text-[var(--sc-danger)]" role="alert">Enter both name and brand to save.</p>
+          )}
           <Button
             className="w-full"
             onClick={addManual}

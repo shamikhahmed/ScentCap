@@ -1,3 +1,12 @@
+## [2.0.7] — 2026-07-30
+
+- Full quality pass (Phases 1–13): AUDIT.md + IA-RATIONALE.md
+- Drop Three.js CapScene / boutique chrome; CSS-only ambient background
+- Settings IA: Account → Appearance → Advisor → Weather → Tools → Privacy & Data → About
+- Form labels, radiogroup profile pills, import backup schema validation
+- Theme-color / accent tokens synced; light-safe warning/danger colors
+- Axe a11y smoke + Settings/import/offline e2e; SW `scentcap-v207`
+
 ## [2.0.6] — 2026-07-27
 
 - Maison craft: global type scale, paper atmosphere, elevated panels, blur tab bar

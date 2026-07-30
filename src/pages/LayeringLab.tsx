@@ -203,7 +203,7 @@ export function LayeringLab() {
                 </PressableDiv>
                 <button
                   type="button"
-                  className="p-2 rounded-xl text-[var(--color-text-tertiary)] hover:text-red-400 pressable"
+                  className="p-2 rounded-xl text-[var(--color-text-tertiary)] hover:text-[var(--sc-danger)] pressable"
                   onClick={() => removeCombo(p.id)}
                   aria-label="Delete combo"
                 >
@@ -266,7 +266,7 @@ export function LayeringLab() {
           >
             <GlassCard glow="var(--color-accent)" className="space-y-5">
               {result.warn && (
-                <p className="text-amber-400/90 text-sm rounded-xl bg-amber-500/10 border border-amber-500/20 px-3 py-2">
+                <p className="text-[var(--sc-warning)] text-sm rounded-xl bg-[color-mix(in_srgb,var(--sc-warning)_12%,transparent)] border border-[color-mix(in_srgb,var(--sc-warning)_25%,transparent)] px-3 py-2">
                   {result.warn}
                 </p>
               )}

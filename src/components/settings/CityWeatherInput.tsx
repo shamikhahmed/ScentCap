@@ -155,7 +155,7 @@ export function CityWeatherInput({ compact }: { compact?: boolean }) {
       )}
 
       {status && <p className="text-xs text-[var(--color-accent)]">{status}</p>}
-      {error && <p className="text-xs text-amber-400">{error}</p>}
+      {error && <p className="text-xs text-[var(--sc-warning)]" role="alert" aria-live="polite">{error}</p>}
       {!weather && weatherUnavailable && !error && (
         <p className="text-xs text-[var(--color-text-tertiary)]">{weatherUnavailableMessage(weatherUnavailable)}</p>
       )}

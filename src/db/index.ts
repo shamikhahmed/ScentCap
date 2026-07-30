@@ -428,11 +428,16 @@ export async function importAllData(json: string) {
 
   const db = await getDb();
   for (const f of fragrances) {
-    if (!f || typeof f !== 'object' || !('id' in f)) continue;
+    if (!f || typeof f !== 'object') continue;
+    const frag = f as Partial<Fragrance>;
+    if (typeof frag.id !== 'string' || !frag.id) continue;
+    if (typeof frag.brand !== 'string' || typeof frag.name !== 'string') continue;
     await db.put('fragrances', f as Fragrance);
   }
   for (const c of collection) {
-    if (!c || typeof c !== 'object' || !('id' in c)) continue;
+    if (!c || typeof c !== 'object') continue;
+    const item = c as Partial<CollectionItem>;
+    if (typeof item.id !== 'string' || typeof item.fragranceId !== 'string') continue;
     await db.put('collection', c as CollectionItem);
   }
   for (const lp of layering_profiles) {

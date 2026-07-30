@@ -35,29 +35,52 @@ export function ProfileEditor() {
     <Card className="space-y-4">
       <p className="font-medium">Your profile</p>
       {FIELDS.map((f) => (
-        <div key={f.key}>
-          <p className="text-xs text-[var(--sc-text-muted)] mb-2">{f.label}</p>
-          <div className="flex flex-wrap gap-2">
-            {f.options.map((o) => (
-              <button
-                key={o.v}
-                type="button"
-                onClick={() => update(f.key, o.v)}
-                className={`px-3 py-1.5 rounded-full text-xs font-medium ${
-                  String(profile[f.key]) === o.v ? 'bg-[var(--color-accent)] text-white' : 'bg-[var(--sc-surface)]'
-                }`}
-              >
-                {o.l}
-              </button>
-            ))}
+        <div key={f.key} role="radiogroup" aria-label={f.label}>
+          <p className="text-xs text-[var(--sc-text-muted)] mb-2" id={`profile-${f.key}-label`}>{f.label}</p>
+          <div className="flex flex-wrap gap-2" aria-labelledby={`profile-${f.key}-label`}>
+            {f.options.map((o) => {
+              const selected = String(profile[f.key]) === o.v;
+              return (
+                <button
+                  key={o.v}
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  onClick={() => update(f.key, o.v)}
+                  className={`min-h-[44px] px-4 py-2 rounded-full text-sm font-medium ${
+                    selected ? 'bg-[var(--color-accent)] text-white' : 'bg-[var(--sc-surface)] border border-[var(--sc-border-soft)]'
+                  }`}
+                >
+                  {o.l}
+                </button>
+              );
+            })}
           </div>
         </div>
       ))}
-      <div>
-        <p className="text-xs text-[var(--sc-text-muted)] mb-2">Sensitivity</p>
-        <div className="flex gap-2">
-          <Button size="sm" variant={!profile.sensitivity ? 'default' : 'ghost'} onClick={() => update('sensitivity', 'false')}>No</Button>
-          <Button size="sm" variant={profile.sensitivity ? 'default' : 'ghost'} onClick={() => update('sensitivity', 'true')}>Yes</Button>
+      <div role="radiogroup" aria-label="Sensitivity">
+        <p className="text-xs text-[var(--sc-text-muted)] mb-2" id="profile-sensitivity-label">Sensitivity</p>
+        <div className="flex gap-2" aria-labelledby="profile-sensitivity-label">
+          <Button
+            size="sm"
+            className="min-h-[44px]"
+            role="radio"
+            aria-checked={!profile.sensitivity}
+            variant={!profile.sensitivity ? 'default' : 'ghost'}
+            onClick={() => update('sensitivity', 'false')}
+          >
+            No
+          </Button>
+          <Button
+            size="sm"
+            className="min-h-[44px]"
+            role="radio"
+            aria-checked={!!profile.sensitivity}
+            variant={profile.sensitivity ? 'default' : 'ghost'}
+            onClick={() => update('sensitivity', 'true')}
+          >
+            Yes
+          </Button>
         </div>
       </div>
     </Card>

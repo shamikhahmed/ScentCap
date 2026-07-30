@@ -140,11 +140,11 @@ export function TravelKit() {
             />
           </div>
         </div>
-        <div className="flex gap-2">
-          <Button size="sm" variant={!manualMode ? 'default' : 'ghost'} onClick={() => setManualMode(false)}>
+        <div className="flex gap-2" role="group" aria-label="Kit mode">
+          <Button size="sm" className="min-h-[44px]" aria-pressed={!manualMode} variant={!manualMode ? 'default' : 'ghost'} onClick={() => setManualMode(false)}>
             Auto suggest
           </Button>
-          <Button size="sm" variant={manualMode ? 'default' : 'ghost'} onClick={() => setManualMode(true)}>
+          <Button size="sm" className="min-h-[44px]" aria-pressed={manualMode} variant={manualMode ? 'default' : 'ghost'} onClick={() => setManualMode(true)}>
             Pick manually
           </Button>
         </div>
@@ -172,7 +172,7 @@ export function TravelKit() {
                   selected ? 'bg-[var(--color-accent)]/15 border border-[var(--color-accent)]/40' : 'hover:bg-[var(--sc-surface)]'
                 }`}
               >
-                <span className={`w-6 h-6 rounded-full flex items-center justify-center border ${selected ? 'bg-[var(--color-accent)] border-[var(--color-accent)]' : 'border-white/20'}`}>
+                <span className={`w-6 h-6 rounded-full flex items-center justify-center border ${selected ? 'bg-[var(--color-accent)] border-[var(--color-accent)]' : 'border-[var(--sc-border)]'}`}>
                   {selected && <Check size={14} className="text-white" />}
                 </span>
                 <FamilyIcon family={f.family} size={16} />

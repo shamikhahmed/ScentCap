@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Shield } from 'lucide-react';
-import type { ReactNode } from 'react';
+import { useRef, type ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ProfileEditor } from '@/components/settings/ProfileEditor';
@@ -40,6 +40,7 @@ function SettingsSection({
 export function SettingsPage() {
   const { prefs, setPrefs, refresh, collection } = useApp();
   const navigate = useNavigate();
+  const importRef = useRef<HTMLInputElement>(null);
 
   const exportData = async () => {
     const json = await exportAllData();
@@ -59,21 +60,16 @@ export function SettingsPage() {
     a.click();
   };
 
-  const importData = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'application/json';
-    input.onchange = async () => {
-      const file = input.files?.[0];
-      if (!file) return;
-      try {
-        await importAllData(await file.text());
-        await refresh();
-      } catch (err) {
-        window.alert(err instanceof Error ? err.message : 'Import failed.');
-      }
-    };
-    input.click();
+  const onImportFile = async (file: File | undefined) => {
+    if (!file) return;
+    try {
+      await importAllData(await file.text());
+      await refresh();
+    } catch (err) {
+      window.alert(err instanceof Error ? err.message : 'Import failed.');
+    } finally {
+      if (importRef.current) importRef.current.value = '';
+    }
   };
 
   return (
@@ -212,9 +208,18 @@ export function SettingsPage() {
 
         <Card className="space-y-3">
           <p className="text-sm font-medium">Backup</p>
+          <input
+            ref={importRef}
+            type="file"
+            accept="application/json"
+            className="sr-only"
+            data-testid="import-backup"
+            aria-label="Import wardrobe backup JSON"
+            onChange={(e) => void onImportFile(e.target.files?.[0])}
+          />
           <Button variant="outline" className="w-full" onClick={exportData}>Export wardrobe (JSON)</Button>
           <Button variant="outline" className="w-full" onClick={exportWearCsv}>Export wear history (CSV)</Button>
-          <Button variant="ghost" className="w-full" onClick={importData}>Import wardrobe</Button>
+          <Button variant="ghost" className="w-full" onClick={() => importRef.current?.click()}>Import wardrobe</Button>
         </Card>
 
         <Card className="space-y-3">

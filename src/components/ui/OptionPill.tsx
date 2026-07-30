@@ -18,6 +18,7 @@ export function OptionPill({
   return (
     <motion.button
       type="button"
+      aria-pressed={selected}
       whileTap={{ scale: 0.96 }}
       transition={SPRING_PRESS}
       onClick={() => {

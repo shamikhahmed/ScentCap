@@ -5,7 +5,7 @@
 @import "./scent-premium-overrides.css";
 @import "./design/premium-craft.css";
 
-/* ScentCap 2.0.6 — Maison */
+/* ScentCap 2.0.7 — Maison */
 @theme {
   --font-sans: "Figtree", system-ui, sans-serif;
   --font-display: "Newsreader", Georgia, serif;

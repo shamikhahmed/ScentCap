@@ -14,7 +14,7 @@ const buttonVariants = cva(
         ghost: 'bg-transparent text-[var(--color-text-primary)] hover:bg-[var(--color-surface-elevated)]',
         outline: 'border border-[var(--color-accent)] text-[var(--color-accent)] bg-transparent',
         glass: 'glass-premium-subtle text-[var(--color-text-primary)] border border-[var(--glass-border)]',
-        destructive: 'bg-red-600 text-white',
+        destructive: 'bg-[var(--sc-danger)] text-white',
       },
       size: {
         default: 'px-5 py-3 text-sm',
@@ -46,6 +46,11 @@ export function Button({
   linkState,
   children,
   disabled,
+  'aria-label': ariaLabel,
+  'aria-pressed': ariaPressed,
+  'aria-selected': ariaSelected,
+  'aria-checked': ariaChecked,
+  role,
   ...props
 }: ButtonProps) {
   const classes = cn(buttonVariants({ variant, size }), className);
@@ -57,6 +62,14 @@ export function Button({
     onClick?.(e as React.MouseEvent<HTMLButtonElement>);
   };
 
+  const a11y = {
+    'aria-label': ariaLabel,
+    'aria-pressed': ariaPressed,
+    'aria-selected': ariaSelected,
+    'aria-checked': ariaChecked,
+    role,
+  };
+
   if (to) {
     return (
       <Link
@@ -65,6 +78,7 @@ export function Button({
         className={cn(classes, disabled && 'pointer-events-none opacity-50')}
         onClick={handleClick}
         aria-disabled={disabled || undefined}
+        {...a11y}
       >
         {children}
       </Link>
@@ -78,6 +92,7 @@ export function Button({
       className={classes}
       onClick={handleClick}
       disabled={disabled}
+      {...a11y}
       {...props}
     >
       {children}
