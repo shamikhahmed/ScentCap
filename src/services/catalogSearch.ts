@@ -86,15 +86,8 @@ export async function getRecentAdditionsWithImages(): Promise<Fragrance[]> {
   return Promise.all(recents.map((f) => enrichFragranceOnce(f)));
 }
 
-/** Load and persist exact catalog entry (used when picking a variant). */
+/** Load and persist catalog art onto the local fragrance id (never swap demo ids). */
 export async function ensureFragranceCatalogEntry(f: Fragrance): Promise<Fragrance> {
-  if (f.catalogSlug) {
-    const exact = await fetchFragranceBySlug(f.catalogSlug);
-    if (exact) {
-      await putFragrance(exact);
-      return exact;
-    }
-  }
   const enriched = await enrichFragranceFromOnline(f);
   await putFragrance(enriched);
   return enriched;

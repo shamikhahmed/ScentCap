@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils';
 import { FlaconPlaceholder } from '@/components/bottle/FlaconPlaceholder';
 import { ensureFragranceImage } from '@/services/catalogSearch';
 import { ensureCatalogImageBlob } from '@/catalog/images';
+import { isPlaceholderCatalogImage } from '@/lib/catalogImage';
 import { FAMILY_COLORS } from '@/lib/stats';
 import type { Fragrance } from '@/types';
 
@@ -36,7 +37,12 @@ export function FragranceThumb({
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
   const [imageFailed, setImageFailed] = useState(false);
 
-  const catalog = blobUrl ?? resolvedImage ?? catalogImage ?? fragrance?.image ?? null;
+  const rawCatalog = resolvedImage ?? catalogImage ?? fragrance?.image ?? null;
+  // Prefer live http product photo over baked demo SVG.
+  const catalog =
+    blobUrl ??
+    (rawCatalog && !isPlaceholderCatalogImage(rawCatalog) ? rawCatalog : null) ??
+    (rawCatalog?.startsWith('data:') ? rawCatalog : null);
   const image = photoUrl ?? catalog;
   const showPhoto = Boolean(image) && !imageFailed;
   const heights = { sm: 96, md: 120, lg: 152, hero: 280 };
@@ -51,14 +57,15 @@ export function FragranceThumb({
   }, [catalogImage, fragrance?.id, fragrance?.image, photoUrl]);
 
   useEffect(() => {
-    if (photoUrl || catalogImage) return;
+    if (photoUrl) return;
     if (!fragrance) return;
-    const needsFetch = !fragrance.image || fragrance.image.includes('perfume-nobg');
-    if (!needsFetch) return;
+    const candidate = catalogImage ?? fragrance.image;
+    if (!isPlaceholderCatalogImage(candidate)) return;
 
     let cancelled = false;
     void ensureFragranceImage(fragrance).then((f) => {
-      if (!cancelled && f.image && !f.image.includes('perfume-nobg')) {
+      if (cancelled) return;
+      if (f.image && !isPlaceholderCatalogImage(f.image)) {
         setResolvedImage(f.image);
       }
     });
@@ -69,7 +76,7 @@ export function FragranceThumb({
 
   useEffect(() => {
     if (photoUrl) return;
-    const url = catalogImage ?? resolvedImage ?? fragrance?.image;
+    const url = resolvedImage ?? catalogImage ?? fragrance?.image;
     if (!url || !url.startsWith('http')) return;
     let cancelled = false;
     let created: string | null = null;

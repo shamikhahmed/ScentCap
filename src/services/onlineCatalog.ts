@@ -5,6 +5,7 @@
  */
 import type { Concentration, Fragrance, GenderLean, Longevity, Projection, Season } from '@/types';
 import { applyFragranceProfile } from '@/services/fragranceProfile';
+import { isPlaceholderCatalogImage } from '@/lib/catalogImage';
 
 const API_BASE = 'https://fraganty.ai/api';
 
@@ -38,6 +39,7 @@ export function slugId(brand: string, name: string): string {
 }
 
 function pickImage(hit: { image?: string; imageTransparent?: string }): string | undefined {
+  // Prefer opaque product JPG — transparent nobg often blanks on light atelier.
   return hit.image || hit.imageTransparent;
 }
 
@@ -382,7 +384,7 @@ export async function enrichFragranceFromOnline(f: Fragrance): Promise<Fragrance
     if (exact) return mergeImageOnly(exact);
   }
 
-  const needsImage = !f.image || f.image.includes('perfume-nobg');
+  const needsImage = !f.image || isPlaceholderCatalogImage(f.image);
   if (!needsImage && f.top_notes.length > 0) return f;
 
   const resolved = await resolveFragranceImage(f.brand, f.name, f.concentration, f.catalogSlug);

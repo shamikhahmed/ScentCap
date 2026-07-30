@@ -24,6 +24,7 @@ import { loadDemoData } from '@/services/demo';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { hapticSuccess, hapticLight } from '@/lib/premium/haptics';
 import { enrichFragranceImages, hydrateAdvisorResult, enrichFragranceOnce } from '@/services/seed';
+import { needsCatalogImageRefresh } from '@/lib/catalogImage';
 import {
   MOOD_PRESETS,
   initialAdvisorInput,
@@ -111,7 +112,7 @@ export function Home() {
   }, [collection]);
 
   useEffect(() => {
-    if (!result || (result.primary.fragrance.image && !result.primary.fragrance.image.includes('perfume-nobg'))) return;
+    if (!result || !needsCatalogImageRefresh(result.primary.fragrance.image, result.primary.fragrance.catalogSlug)) return;
     let cancelled = false;
     void enrichFragranceOnce(result.primary.fragrance).then((primary) => {
       if (cancelled) return;
@@ -163,7 +164,7 @@ export function Home() {
     Promise.all(
       neglected.map(async ({ c, days }) => {
         let f = await getFragrance(c.fragranceId);
-        if (f && !f.image) f = await enrichFragranceOnce(f);
+        if (f && needsCatalogImageRefresh(f.image, f.catalogSlug)) f = await enrichFragranceOnce(f);
         return f ? { id: c.id, f, days } : null;
       }),
     ).then((rows) => setNeglectedDetails(rows.filter(Boolean) as { id: string; f: Fragrance; days: number | null }[]));

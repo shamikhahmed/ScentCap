@@ -72,6 +72,14 @@ export async function installTestMocks(page: Page) {
       return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
     };
 
+    const productImageUrl = (slug: string) => `https://img.fraganty.ai/perfume/mock-${slug}.jpg`;
+    const tinyJpeg = Uint8Array.from(
+      atob(
+        '/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAn/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBEQCEAwEPwAB//9k=',
+      ),
+      (c) => c.charCodeAt(0),
+    );
+
     const resolveEntry = (slug: string, q?: string) => {
       if (CATALOG[slug]) return { slug, ...CATALOG[slug] };
       const hit = Object.entries(CATALOG).find(([k]) => slug.includes(k) || k.includes(slug));
@@ -104,18 +112,26 @@ export async function installTestMocks(page: Page) {
           { headers: { 'Content-Type': 'application/json' } },
         );
       }
+      if (url.includes('img.fraganty.ai')) {
+        return new Response(tinyJpeg, { headers: { 'Content-Type': 'image/jpeg' } });
+      }
       if (url.includes('fraganty.ai')) {
         if (url.includes('/search')) {
           const q = new URL(url, 'https://fraganty.ai').searchParams.get('q') ?? 'fragrance';
           const slug = slugify(q);
-          const entry = resolveEntry(slug, q);
+          const demoSlug = Object.keys(CATALOG).find((k) => {
+            const spaced = k.replace(/-/g, ' ');
+            const qLower = q.toLowerCase();
+            return qLower === spaced || qLower.includes(spaced.split(' ').slice(0, 3).join(' ')) || k === slug;
+          });
+          const entry = demoSlug ? { slug: demoSlug, ...CATALOG[demoSlug] } : resolveEntry(slug, q);
           return new Response(
             JSON.stringify({
               perfumes: [{
                 brand: entry.brand,
                 name: entry.name,
-                slug: entry.slug,
-                image: bottleSvg(entry.brand, entry.name, entry.color),
+                slug: entry.slug ?? demoSlug ?? slug,
+                image: productImageUrl(entry.slug ?? demoSlug ?? slug),
               }],
             }),
             { headers: { 'Content-Type': 'application/json' } },
@@ -129,7 +145,7 @@ export async function installTestMocks(page: Page) {
               brand: entry.brand,
               name: entry.name,
               slug: entry.slug,
-              image: bottleSvg(entry.brand, entry.name, entry.color),
+              image: productImageUrl(entry.slug),
               accords: [{ name: 'Fresh' }],
               notes: { top: ['Bergamot'], middle: ['Lavender'], base: ['Musk'] },
             }),
@@ -139,6 +155,8 @@ export async function installTestMocks(page: Page) {
       }
       return originalFetch(input, init);
     };
+
+    void bottleSvg;
   });
 }
 

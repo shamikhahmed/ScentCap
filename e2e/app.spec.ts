@@ -173,11 +173,36 @@ test.describe('ScentCap PWA features', () => {
     await expect(page.getByRole('button', { name: /Wear this today/i })).toBeVisible({ timeout: 20_000 });
     await page.waitForFunction(() => !!navigator.serviceWorker?.controller, null, { timeout: 20_000 }).catch(() => null);
     await context.setOffline(true);
-    // SPA nav — no full reload (SW may not own first document yet)
     await page.getByRole('link', { name: 'Collection', exact: true }).click();
     await expect(page.getByRole('heading', { name: /My bottles|Wishlist|Tested/i })).toBeVisible({ timeout: 15_000 });
     await page.getByRole('link', { name: 'Today', exact: true }).click();
     await expect(page.getByRole('button', { name: /Wear this today/i })).toBeVisible({ timeout: 20_000 });
     await context.setOffline(false);
+  });
+
+  test('demo wardrobe hydrates real catalog bottle photos', async ({ page }) => {
+    test.setTimeout(90_000);
+    await loadDemoWardrobe(page);
+    await expect(page.getByRole('button', { name: /Wear this today/i })).toBeVisible({ timeout: 20_000 });
+
+    await expect
+      .poll(async () => {
+        return page.evaluate(async () => {
+          const dbReq = indexedDB.open('scentcap-v1');
+          const db = await new Promise<IDBDatabase>((resolve, reject) => {
+            dbReq.onsuccess = () => resolve(dbReq.result);
+            dbReq.onerror = () => reject(dbReq.error);
+          });
+          const tx = db.transaction('fragrances', 'readonly');
+          const all = await new Promise<Array<{ image?: string }>>((resolve, reject) => {
+            const req = tx.objectStore('fragrances').getAll();
+            req.onsuccess = () => resolve(req.result as Array<{ image?: string }>);
+            req.onerror = () => reject(req.error);
+          });
+          db.close();
+          return all.filter((f) => typeof f.image === 'string' && /^https?:\/\//.test(f.image)).length;
+        });
+      }, { timeout: 45_000 })
+      .toBeGreaterThanOrEqual(6);
   });
 });

@@ -12,7 +12,7 @@
 | Catalog | Fraganty API + local seed/demo · Open-Meteo weather |
 | Engines | Rules advisor / layering / scoring / spray (not LLM) |
 | Design | `--sc-*` tokens · Figtree + Newsreader · 5 CSS layers (~2.7k lines) |
-| Deploy | GitHub Pages · CI `verify` then build · SW `scentcap-v207` |
+| Deploy | GitHub Pages · CI `verify` then build · SW `scentcap-v208` |
 | Tests | Playwright e2e · gallery · screenshots · no unit tests |
 
 ### Routes

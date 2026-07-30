@@ -1,5 +1,6 @@
 import { getDb, getAllCollection, getPreferences, getWishlist, putFragrance, savePreferences } from '@/db';
 import { enrichFragranceFromOnline } from '@/services/onlineCatalog';
+import { needsCatalogImageRefresh } from '@/lib/catalogImage';
 import type { Fragrance } from '@/types';
 
 /** v3: no bundled seed — catalog is built from live Fraganty API + user cache. */
@@ -54,12 +55,8 @@ export async function ensureSeedLoaded(): Promise<number> {
   return db.count('fragrances');
 }
 
-function needsImageRefresh(image?: string, slug?: string): boolean {
-  return !slug || !image || image.includes('perfume-nobg');
-}
-
 export async function enrichFragranceOnce(f: Fragrance): Promise<Fragrance> {
-  const enriched = needsImageRefresh(f.image, f.catalogSlug)
+  const enriched = needsCatalogImageRefresh(f.image, f.catalogSlug)
     ? await enrichFragranceFromOnline(f)
     : f;
   if (enriched !== f || enriched.image !== f.image || enriched.catalogSlug !== f.catalogSlug) {
@@ -68,14 +65,16 @@ export async function enrichFragranceOnce(f: Fragrance): Promise<Fragrance> {
   return enriched;
 }
 
-/** Backfill bottle images for wardrobe fragrances missing catalog art. */
+/** Backfill bottle images for wardrobe fragrances missing real catalog art. */
 export async function enrichFragranceImages(ids: string[]): Promise<void> {
   const unique = [...new Set(ids)];
+  // Cover full demo wardrobe (12) + a few extras.
+  const batch = unique.slice(0, 16);
   await Promise.all(
-    unique.slice(0, 12).map(async (id) => {
+    batch.map(async (id) => {
       const db = await getDb();
       const f = await db.get('fragrances', id);
-      if (!f || !needsImageRefresh(f.image, f.catalogSlug)) return;
+      if (!f || !needsCatalogImageRefresh(f.image, f.catalogSlug)) return;
       const enriched = await enrichFragranceFromOnline(f);
       await putFragrance(enriched);
     }),

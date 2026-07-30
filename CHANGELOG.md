@@ -1,3 +1,11 @@
+## [2.0.8] — 2026-07-30
+
+- Demo/wardrobe hydrate real Fraganty product photos (SVG placeholders no longer block refresh)
+- `needsCatalogImageRefresh` treats `data:image/svg` + perfume-nobg as stale art
+- `ensureFragranceCatalogEntry` preserves local fragrance ids (no demo→frag id swap)
+- E2E proves ≥6 bottles get `https://` catalog images after demo load
+- SW `scentcap-v208`
+
 ## [2.0.7] — 2026-07-30
 
 - Full quality pass (Phases 1–13): AUDIT.md + IA-RATIONALE.md
