@@ -1,6 +1,6 @@
 # ScentCap AUDIT — living map
 
-**Date:** 2026-07-30 · **Version:** 2.0.9 · **Live:** https://shamikhahmed.github.io/ScentCap/
+**Date:** 2026-07-30 · **Version:** 2.0.10 · **Live:** https://shamikhahmed.github.io/ScentCap/
 
 ## Map
 
@@ -12,7 +12,7 @@
 | Catalog | Fraganty API + local seed/demo · Open-Meteo weather |
 | Engines | Rules advisor / layering / scoring / spray (not LLM) |
 | Design | `--sc-*` tokens · Figtree + Newsreader · CSS craft layers |
-| Deploy | GitHub Pages · CI `verify` then build · SW `scentcap-v209` |
+| Deploy | GitHub Pages · CI `verify` then build · SW `scentcap-v210` |
 | Tests | Playwright e2e · gallery · screenshots · axe smoke |
 
 ### Routes

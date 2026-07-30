@@ -7,11 +7,11 @@
 Fragrance wardrobe OS — Atelier chalk/forest UI, weather-aware picks, layering lab, analytics. CAP STANDARD REFERENCE APP.
 
 ## Facts
-**Version:** 2.0.9
+**Version:** 2.0.10
 **Live:** https://shamikhahmed.github.io/ScentCap/
 **Repo:** https://github.com/shamikhahmed/ScentCap
 **Stack:** React 19 + TypeScript + Vite 8 + Tailwind v4. IndexedDB (idb). vite-plugin-pwa. Capacitor iOS shell. Playwright.
-**Data:** IndexedDB via idb (v5: fragrances, catalog, images blob cache). Optional Open-Meteo + Fraganty. No accounts. SW `scentcap-v209`.
+**Data:** IndexedDB via idb (v5: fragrances, catalog, images blob cache). Optional Open-Meteo + Fraganty. No accounts. SW `scentcap-v210`.
 
 ## Run & verify
 ```bash

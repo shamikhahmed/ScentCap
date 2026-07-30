@@ -18,7 +18,7 @@ export function DemoBanner() {
 
   return (
     <div
-      className="cap-demo-banner sticky top-0 z-40 flex items-center justify-between gap-2 px-4 py-1.5 text-[11px] font-medium border-b border-[var(--sc-border-soft)] bg-[var(--sc-surface)] text-[var(--sc-text-muted)]"
+      className="cap-demo-banner sticky top-0 z-40 flex items-center justify-between gap-2 px-4 pb-1.5 pt-[max(0.375rem,env(safe-area-inset-top))] text-[11px] font-medium border-b border-[var(--sc-border-soft)] bg-[var(--sc-surface)] text-[var(--sc-text-muted)]"
       role="status"
     >
       <span>Sample wardrobe</span>

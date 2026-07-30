@@ -6,6 +6,7 @@ import { OfflineStatusBar } from '@/components/layout/OfflineStatusBar';
 import { CapRouteTransition } from '@/components/premium/CapRouteTransition';
 import { Button } from '@/components/ui/button';
 import { hapticLight } from '@/lib/premium/haptics';
+import { APP_VERSION } from '@/lib/version';
 
 const desktopNav = [
   { to: '/', icon: Home, label: 'Today' },
@@ -98,6 +99,9 @@ export function AppShell() {
             <Plus size={18} strokeWidth={2.5} /> Add bottle
           </Button>
         </div>
+        <p className="mt-auto px-3 pt-8 pb-[max(0.75rem,env(safe-area-inset-bottom))] text-xs text-[var(--sc-text-muted)]">
+          v{APP_VERSION}
+        </p>
       </aside>
 
       <main

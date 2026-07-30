@@ -7,6 +7,9 @@
 
 /* ScentCap 2.0.8 — Maison */
 @theme {
+  /* Cap fleet shell: tabs <700 · sidebar ≥700 (iPad mini 744 → sidebar) */
+  --breakpoint-md: 700px;
+
   --font-sans: "Figtree", system-ui, sans-serif;
   --font-display: "Newsreader", Georgia, serif;
 

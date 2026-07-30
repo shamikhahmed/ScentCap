@@ -1,3 +1,10 @@
+## [2.0.10] — 2026-07-30
+
+- Cap fleet shell BP **700px** (iPad mini 744 → sidebar); Tailwind `--breakpoint-md`
+- Device matrix harness (`npm run matrix`) + REPORT; Wear CTA clearance on short phones
+- Demo banner safe-top; sidebar About version foot; viewport contract @ 699/700/744
+- SW `scentcap-v210`
+
 ## [2.0.9] — 2026-07-30
 
 - Stricter backup import validation (notes/scores/bottleLevel)

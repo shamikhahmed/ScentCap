@@ -782,9 +782,10 @@ body[data-cap-app="1"] #view > .screen {
 
 /* ─── 2.0.3 Atelier remint ─── */
 .atelier-main {
-  padding-bottom: calc(5.75rem + env(safe-area-inset-bottom, 0px));
+  /* Tab bar (~3.5rem content + pad) + FAB clearance + home indicator */
+  padding-bottom: calc(7.5rem + env(safe-area-inset-bottom, 0px));
 }
-@media (min-width: 768px) {
+@media (min-width: 700px) {
   .atelier-main { padding-bottom: 2rem; }
 }
 
@@ -798,7 +799,7 @@ body[data-cap-app="1"] #view > .screen {
   background: var(--sc-panel);
   border-top: 1px solid var(--sc-border);
 }
-@media (min-width: 768px) {
+@media (min-width: 700px) {
   .atelier-tabbar { display: none !important; }
 }
 .atelier-tab {
@@ -834,7 +835,7 @@ body[data-cap-app="1"] #view > .screen {
   color: #fff;
   box-shadow: var(--sc-shadow-md);
 }
-@media (min-width: 768px) {
+@media (min-width: 700px) {
   .atelier-fab { display: none !important; }
 }
 
@@ -858,6 +859,11 @@ body[data-cap-app="1"] #view > .screen {
   padding: max(0.75rem, env(safe-area-inset-top)) 1.1rem 1.5rem;
   max-width: 100%;
   overflow-x: hidden;
+}
+/* Demo strip already pads safe-top — don't double-pad page */
+.cap-demo-banner ~ * .home-atelier,
+.cap-demo-banner ~ * .atelier-page {
+  padding-top: 0.75rem;
 }
 .home-atelier__brand {
   font-size: 0.7rem;

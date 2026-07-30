@@ -197,6 +197,29 @@ input.atelier-input:focus {
   width: min(100%, 12.5rem) !important;
 }
 
+/* SE / short phones — must follow 280px rule (later cascade wins) */
+@media (max-height: 720px) {
+  .museum-hero__stage {
+    padding: 0.75rem 0.75rem 0.35rem !important;
+  }
+  .museum-hero__bottle-link {
+    width: min(100%, 8.5rem) !important;
+  }
+  .museum-hero__thumb {
+    height: 150px !important;
+  }
+  .museum-hero__brand {
+    font-size: clamp(1.35rem, 5.5vw, 1.75rem) !important;
+  }
+  .museum-hero__actions {
+    margin-top: 0.75rem !important;
+  }
+  .home-atelier {
+    padding-top: 0.5rem;
+    padding-bottom: 1.75rem;
+  }
+}
+
 .museum-hero__brand {
   font-size: clamp(1.9rem, 7.5vw, 2.6rem) !important;
 }
@@ -315,7 +338,7 @@ input.atelier-input:focus {
 }
 
 /* ── Desktop sidebar craft ── */
-@media (min-width: 768px) {
+@media (min-width: 700px) {
   aside[data-testid="desktop-sidebar"] {
     background: color-mix(in srgb, var(--sc-panel) 96%, var(--sc-surface)) !important;
     border-right-color: var(--sc-border-soft) !important;
