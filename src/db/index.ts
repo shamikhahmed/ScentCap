@@ -390,20 +390,88 @@ export async function exportAllData(): Promise<string> {
 }
 
 export async function importAllData(json: string) {
-  const data = JSON.parse(json);
-  const db = await getDb();
-  for (const f of data.fragrances ?? []) await db.put('fragrances', f);
-  for (const c of data.collection ?? []) await db.put('collection', c);
-  for (const lp of data.layering_profiles ?? []) await db.put('layering_profiles', lp);
-  for (const w of data.wear_history ?? []) await db.put('wear_history', w);
-  for (const p of data.user_profile ?? []) await db.put('user_profile', p);
-  for (const p of data.preferences ?? []) await db.put('preferences', { officeSafeMode: false, ...p });
-  for (const w of data.wishlist ?? []) await db.put('wishlist', w);
-  for (const [id, b64] of Object.entries(data.photos ?? {})) {
-    await savePhoto(id, base64ToBlob(b64 as string));
+  let data: Record<string, unknown>;
+  try {
+    data = JSON.parse(json) as Record<string, unknown>;
+  } catch {
+    throw new Error('Backup file is not valid JSON.');
   }
-  for (const c of data.catalog ?? []) await db.put('catalog', c);
-  for (const s of data.statistics ?? []) await db.put('statistics', s);
+  if (!data || typeof data !== 'object' || Array.isArray(data)) {
+    throw new Error('Backup file has invalid shape.');
+  }
+  const version = data.version;
+  if (version != null && typeof version !== 'number') {
+    throw new Error('Backup version is invalid.');
+  }
+  if (version != null && (version as number) > 5) {
+    throw new Error(`Backup version ${version} is newer than this app supports.`);
+  }
+  const ensureArray = (key: string): unknown[] => {
+    const v = data[key];
+    if (v == null) return [];
+    if (!Array.isArray(v)) throw new Error(`Backup field "${key}" must be an array.`);
+    return v;
+  };
+  const fragrances = ensureArray('fragrances');
+  const collection = ensureArray('collection');
+  const layering_profiles = ensureArray('layering_profiles');
+  const wear_history = ensureArray('wear_history');
+  const user_profile = ensureArray('user_profile');
+  const preferences = ensureArray('preferences');
+  const wishlist = ensureArray('wishlist');
+  const catalog = ensureArray('catalog');
+  const statistics = ensureArray('statistics');
+  const photos = data.photos;
+  if (photos != null && (typeof photos !== 'object' || Array.isArray(photos))) {
+    throw new Error('Backup photos map is invalid.');
+  }
+
+  const db = await getDb();
+  for (const f of fragrances) {
+    if (!f || typeof f !== 'object' || !('id' in f)) continue;
+    await db.put('fragrances', f as Fragrance);
+  }
+  for (const c of collection) {
+    if (!c || typeof c !== 'object' || !('id' in c)) continue;
+    await db.put('collection', c as CollectionItem);
+  }
+  for (const lp of layering_profiles) {
+    if (!lp || typeof lp !== 'object' || !('id' in lp)) continue;
+    await db.put('layering_profiles', lp as LayeringProfile);
+  }
+  for (const w of wear_history) {
+    if (!w || typeof w !== 'object' || !('id' in w)) continue;
+    await db.put('wear_history', w as WearRecord);
+  }
+  for (const p of user_profile) {
+    if (!p || typeof p !== 'object') continue;
+    await db.put('user_profile', p as UserProfile);
+  }
+  for (const p of preferences) {
+    if (!p || typeof p !== 'object') continue;
+    const pref = p as Preferences;
+    await db.put('preferences', { ...pref, officeSafeMode: pref.officeSafeMode ?? false });
+  }
+  for (const w of wishlist) {
+    if (!w || typeof w !== 'object' || !('id' in w)) continue;
+    await db.put('wishlist', w as WishlistItem);
+  }
+  for (const [id, b64] of Object.entries((photos as Record<string, string>) ?? {})) {
+    if (typeof b64 !== 'string' || !b64) continue;
+    try {
+      await savePhoto(id, base64ToBlob(b64));
+    } catch {
+      /* skip corrupt photo entries */
+    }
+  }
+  for (const c of catalog) {
+    if (!c || typeof c !== 'object' || !('id' in c)) continue;
+    await db.put('catalog', c as CatalogSnapshot);
+  }
+  for (const s of statistics) {
+    if (!s || typeof s !== 'object' || !('key' in s)) continue;
+    await db.put('statistics', s as { key: string; data: Record<string, unknown> });
+  }
 }
 
 export async function updateWearRecord(record: WearRecord) {

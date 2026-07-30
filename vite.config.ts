@@ -31,15 +31,15 @@ export default defineConfig({
         name: 'ScentCap',
         short_name: 'ScentCap',
         description: 'Your personal fragrance operating system',
-        theme_color: '#12100f',
-        background_color: '#12100f',
+        theme_color: '#e6eaee',
+        background_color: '#e6eaee',
         display: 'standalone',
         orientation: 'portrait',
         start_url: startUrl,
         categories: ['lifestyle', 'personalization'],
         shortcuts: [
           { name: 'My Collection', short_name: 'Collection', url: `${startUrl}collection`, icons: [{ src: 'icon-192.png', sizes: '192x192' }] },
-          { name: 'Daily Pick', short_name: 'Daily', url: `${startUrl}daily`, icons: [{ src: 'icon-192.png', sizes: '192x192' }] },
+          { name: 'Today', short_name: 'Home', url: startUrl, icons: [{ src: 'icon-192.png', sizes: '192x192' }] },
         ],
         icons: [
           { src: 'icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
