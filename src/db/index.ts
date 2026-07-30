@@ -432,12 +432,19 @@ export async function importAllData(json: string) {
     const frag = f as Partial<Fragrance>;
     if (typeof frag.id !== 'string' || !frag.id) continue;
     if (typeof frag.brand !== 'string' || typeof frag.name !== 'string') continue;
+    if (typeof frag.concentration !== 'string' || typeof frag.family !== 'string') continue;
+    if (typeof frag.projection !== 'string' || typeof frag.longevity !== 'string') continue;
+    if (!Array.isArray(frag.layering_tags)) continue;
+    if (!Array.isArray(frag.top_notes) || !Array.isArray(frag.heart_notes) || !Array.isArray(frag.base_notes)) continue;
+    const scores = [frag.office_score, frag.heat_score, frag.cold_score, frag.date_score, frag.formal_score, frag.casual_score];
+    if (scores.some((n) => typeof n !== 'number' || Number.isNaN(n))) continue;
     await db.put('fragrances', f as Fragrance);
   }
   for (const c of collection) {
     if (!c || typeof c !== 'object') continue;
     const item = c as Partial<CollectionItem>;
     if (typeof item.id !== 'string' || typeof item.fragranceId !== 'string') continue;
+    if (typeof item.bottleLevel !== 'string') continue;
     await db.put('collection', c as CollectionItem);
   }
   for (const lp of layering_profiles) {

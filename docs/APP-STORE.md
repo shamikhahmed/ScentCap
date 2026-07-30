@@ -106,6 +106,10 @@ Built for collectors who want clarity, not clutter.
 
 **Tagline for marketing:** _The fragrance OS that respects your nose — and your privacy._
 
+## What's New (2.0.9)
+
+- Real Fraganty bottle photos on demo wardrobe; stricter backup import; advisor race guards
+
 ## What's New (2.0.1)
 
 - Completely free: removed Stripe/IAP/Pro paywall, bottle limits, and payment docs theater

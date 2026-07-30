@@ -63,18 +63,24 @@ export function AdvisorPage() {
   const [layerSaved, setLayerSaved] = useState(false);
   const [wearRatingImage, setWearRatingImage] = useState<string | null>(null);
   const presetRan = useRef(false);
+  const pickSeq = useRef(0);
 
   const run = async () => {
     if (!profile) return;
+    const seq = ++pickSeq.current;
     setLoading(true);
     const r = await runAdvisor(collection, input, profile, prefs, weather, history);
+    if (seq !== pickSeq.current) return;
     setLoading(false);
     if (!r) {
       setResult(null);
       return;
     }
     setResult(r);
-    void hydrateAdvisorResult(r).then(setResult);
+    void hydrateAdvisorResult(r).then((next) => {
+      if (seq !== pickSeq.current) return;
+      setResult(next);
+    });
   };
 
   useEffect(() => {

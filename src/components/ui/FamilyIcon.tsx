@@ -11,7 +11,8 @@ const MAP: Record<string, typeof Droplets> = {
 
 export function FamilyIcon({ family, size = 20 }: { family?: string; size?: number }) {
   const Icon = MAP[family ?? ''] ?? Droplets;
-  const color = FAMILY_COLORS[family ?? ''] ?? '#c9a87c';
+  // Hex only — callers append alpha suffixes (`${color}22`).
+  const color = FAMILY_COLORS[family ?? ''] ?? '#0a5f52';
   return (
     <div
       className="rounded-xl flex items-center justify-center"

@@ -1,3 +1,12 @@
+## [2.0.9] — 2026-07-30
+
+- Stricter backup import validation (notes/scores/bottleLevel)
+- Catalog `pickImage` skips perfume-nobg; enrich gate uses placeholder helper only
+- Home/Advisor pick race guards; FragranceDetail load cancel + photo URL revoke
+- Kill unused `BottleVisual`; hex fallbacks where alpha-suffix colors need real hex
+- Version / SW / public docs sync; AUDIT living map
+- SW `scentcap-v209`
+
 ## [2.0.8] — 2026-07-30
 
 - Demo/wardrobe hydrate real Fraganty product photos (SVG placeholders no longer block refresh)

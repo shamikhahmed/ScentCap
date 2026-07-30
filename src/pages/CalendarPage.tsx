@@ -126,7 +126,8 @@ export function CalendarPage() {
             const key = format(day, 'yyyy-MM-dd');
             const worn = byDay[key] ?? [];
             const primary = worn[0];
-            const color = primary ? FAMILY_COLORS[labels[primary]?.family ?? ''] ?? '#c9a87c' : undefined;
+            // Hex only — style appends alpha (`${color}22` / `${color}44`).
+            const color = primary ? FAMILY_COLORS[labels[primary]?.family ?? ''] ?? '#0a5f52' : undefined;
             const today = isToday(day);
             return (
               <div

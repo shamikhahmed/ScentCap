@@ -1,6 +1,6 @@
 # Information Architecture — ScentCap
 
-**Version:** 2.0.7 plan · **Date:** 2026-07-30
+**Version:** 2.0.9 · **Date:** 2026-07-30
 
 ## Product shape
 

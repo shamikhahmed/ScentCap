@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Cloud, Droplets, Flame, Layers, Sparkles, Sun, Wind, ChevronRight, MapPin, Briefcase, AlertCircle,
@@ -52,6 +52,7 @@ export function Home() {
   const [loadingDemo, setLoadingDemo] = useState(false);
   const [heroPhotoUrl, setHeroPhotoUrl] = useState<string | null>(null);
   const [wearRatingImage, setWearRatingImage] = useState<string | null>(null);
+  const pickSeq = useRef(0);
 
   const greeting = timeGreeting();
   const streak = wearStreak(history);
@@ -61,17 +62,22 @@ export function Home() {
 
   const runPick = useCallback(async (input: AdvisorInput) => {
     if (!profile || !collection.length) return;
+    const seq = ++pickSeq.current;
     setLoading(true);
     setLogged(false);
     setShareMsg(null);
     const raw = await runAdvisor(collection, input, profile, prefs, weather, history);
+    if (seq !== pickSeq.current) return;
     setLoading(false);
     if (!raw) {
       setResult(null);
       return;
     }
     setResult(raw);
-    void hydrateAdvisorResult(raw).then(setResult);
+    void hydrateAdvisorResult(raw).then((next) => {
+      if (seq !== pickSeq.current) return;
+      setResult(next);
+    });
   }, [profile, collection, prefs, weather, history]);
 
   useEffect(() => {
@@ -297,7 +303,7 @@ export function Home() {
 
       {rotationLow && (
         <div className="mt-3 rounded-2xl border border-orange-500/25 bg-orange-500/10 p-3.5 flex items-start gap-3">
-          <AlertCircle size={18} className="text-orange-500 shrink-0 mt-0.5" />
+          <AlertCircle size={18} className="text-[var(--sc-warning)] shrink-0 mt-0.5" />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold">Rotation at {rotation}%</p>
             <p className="text-xs text-[var(--sc-text-soft)] mt-1 leading-relaxed">
@@ -419,7 +425,7 @@ export function Home() {
                   />
                   <p className="text-[10px] text-[var(--sc-text-muted)] truncate">{n.f.brand}</p>
                   <p className="text-sm font-semibold truncate">{fragranceDisplayName(n.f.name)}</p>
-                  <p className="text-[11px] font-semibold text-orange-500 mt-2">
+                  <p className="text-[11px] font-semibold text-[var(--sc-warning)] mt-2">
                     {n.days === null ? 'Never worn' : `${n.days}d ago`}
                   </p>
                 </div>

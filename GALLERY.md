@@ -1,4 +1,4 @@
-# Documented screen gallery — ScentCap 2.0.7
+# Documented screen gallery — ScentCap 2.0.9
 
 Indexed by tab. Captures live under `docs/screenshots/gallery/` (`npm run gallery`).  
 Each entry: **what** · **how selected** · **state store** · **why organised**.
@@ -63,4 +63,4 @@ Each entry: **what** · **how selected** · **state store** · **why organised**
 - **Offline:** SW + IDB; weather/catalog network optional — proven in e2e offline reload.
 - **Demo banner:** Thin strip; exit → onboarding.
 
-Regenerate: `npm run gallery` → update `docs/screenshots/gallery/gallery-manifest.json` version to 2.0.7.
+Regenerate: `npm run gallery` → update `docs/screenshots/gallery/gallery-manifest.json` version to 2.0.9.

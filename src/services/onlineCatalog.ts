@@ -39,8 +39,10 @@ export function slugId(brand: string, name: string): string {
 }
 
 function pickImage(hit: { image?: string; imageTransparent?: string }): string | undefined {
-  // Prefer opaque product JPG — transparent nobg often blanks on light atelier.
-  return hit.image || hit.imageTransparent;
+  // Prefer opaque product JPG — skip perfume-nobg / empty (blanks on light atelier).
+  if (hit.image && !isPlaceholderCatalogImage(hit.image)) return hit.image;
+  if (hit.imageTransparent && !isPlaceholderCatalogImage(hit.imageTransparent)) return hit.imageTransparent;
+  return undefined;
 }
 
 export function parseConcentrationFromName(name: string): Concentration {
@@ -327,7 +329,8 @@ export async function resolveFragranceImage(
 ): Promise<{ image?: string; slug?: string }> {
   if (catalogSlug) {
     const hit = await findHitBySlug(catalogSlug);
-    if (hit?.image) return { image: pickImage(hit), slug: hit.slug };
+    const image = pickImage(hit ?? {});
+    if (image) return { image, slug: hit?.slug };
   }
 
   const conc = concentration as Concentration | undefined;
@@ -381,10 +384,10 @@ export async function enrichFragranceFromOnline(f: Fragrance): Promise<Fragrance
 
   if (f.catalogSlug) {
     const exact = await fetchFragranceBySlug(f.catalogSlug);
-    if (exact) return mergeImageOnly(exact);
+    if (exact && !isPlaceholderCatalogImage(exact.image)) return mergeImageOnly(exact);
   }
 
-  const needsImage = !f.image || isPlaceholderCatalogImage(f.image);
+  const needsImage = isPlaceholderCatalogImage(f.image);
   if (!needsImage && f.top_notes.length > 0) return f;
 
   const resolved = await resolveFragranceImage(f.brand, f.name, f.concentration, f.catalogSlug);

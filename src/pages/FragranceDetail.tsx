@@ -61,45 +61,60 @@ export function FragranceDetail() {
       .then((rows) => setWardrobeFragrances(rows.filter(Boolean) as Fragrance[]));
   }, [collection]);
 
-  const loadItem = async () => {
-    const col = await getAllCollection();
-    const c = col.find((x) => x.id === id);
-    if (!c) return;
-    setItem(c);
-    setSigRole(c.signatureRole);
-    setEditMeta({
-      sizeMl: c.bottleSizeMl != null ? String(c.bottleSizeMl) : '',
-      price: c.purchasePrice != null ? String(c.purchasePrice) : '',
-      opened: c.openedDate ?? '',
-      purchase: c.purchaseDate ?? '',
-    });
-    const f = await getFragrance(c.fragranceId);
-    setFragrance(f ?? null);
-    if (c.photoBlobId) {
-      const blob = await getPhoto(c.photoBlobId);
-      if (blob) setPhotoUrl(URL.createObjectURL(blob));
-    } else {
-      setPhotoUrl(null);
-    }
-    if (c.parentCollectionId) {
-      const parent = col.find((x) => x.id === c.parentCollectionId);
-      if (parent) {
-        setParentItem(parent);
-        setParentFragrance((await getFragrance(parent.fragranceId)) ?? null);
-      }
-    } else {
-      setParentItem(null);
-      setParentFragrance(null);
-    }
-    const children = await getCollectionByParent(c.id);
-    const childRows = await Promise.all(
-      children.map(async (child) => ({ item: child, f: await getFragrance(child.fragranceId) })),
-    );
-    setChildDecants(childRows);
-  };
-
   useEffect(() => {
-    loadItem();
+    let cancelled = false;
+    let objectUrl: string | null = null;
+
+    const load = async () => {
+      const col = await getAllCollection();
+      const c = col.find((x) => x.id === id);
+      if (!c || cancelled) return;
+      setItem(c);
+      setSigRole(c.signatureRole);
+      setEditMeta({
+        sizeMl: c.bottleSizeMl != null ? String(c.bottleSizeMl) : '',
+        price: c.purchasePrice != null ? String(c.purchasePrice) : '',
+        opened: c.openedDate ?? '',
+        purchase: c.purchaseDate ?? '',
+      });
+      const f = await getFragrance(c.fragranceId);
+      if (cancelled) return;
+      setFragrance(f ?? null);
+      if (c.photoBlobId) {
+        const blob = await getPhoto(c.photoBlobId);
+        if (cancelled) return;
+        if (blob) {
+          objectUrl = URL.createObjectURL(blob);
+          setPhotoUrl(objectUrl);
+        } else {
+          setPhotoUrl(null);
+        }
+      } else {
+        setPhotoUrl(null);
+      }
+      if (c.parentCollectionId) {
+        const parent = col.find((x) => x.id === c.parentCollectionId);
+        if (parent) {
+          setParentItem(parent);
+          setParentFragrance((await getFragrance(parent.fragranceId)) ?? null);
+        }
+      } else {
+        setParentItem(null);
+        setParentFragrance(null);
+      }
+      if (cancelled) return;
+      const children = await getCollectionByParent(c.id);
+      const childRows = await Promise.all(
+        children.map(async (child) => ({ item: child, f: await getFragrance(child.fragranceId) })),
+      );
+      if (!cancelled) setChildDecants(childRows);
+    };
+
+    void load();
+    return () => {
+      cancelled = true;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
   }, [id]);
 
   const save = async (next: CollectionItem) => {
@@ -141,7 +156,10 @@ export function FragranceDetail() {
     const photoId = `photo-${item.id}`;
     await savePhoto(photoId, file);
     await save({ ...item, photoBlobId: photoId });
-    setPhotoUrl(URL.createObjectURL(file));
+    setPhotoUrl((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return URL.createObjectURL(file);
+    });
   };
 
   const saveEdits = async () => {
@@ -182,7 +200,7 @@ export function FragranceDetail() {
 
   if (!item || !fragrance) return <p className="atelier-page text-[var(--sc-text-muted)]">Loading…</p>;
 
-  const aura = FAMILY_COLORS[fragrance.family] ?? '#c9a87c';
+  const aura = FAMILY_COLORS[fragrance.family] ?? 'var(--sc-accent)';
 
   const shareBottle = async () => {
     try {

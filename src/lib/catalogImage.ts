@@ -8,6 +8,7 @@ export function isPlaceholderCatalogImage(image?: string | null): boolean {
 }
 
 /** True when wardrobe bottle still needs a real http product photo. */
-export function needsCatalogImageRefresh(image?: string | null, slug?: string | null): boolean {
-  return !slug || isPlaceholderCatalogImage(image);
+export function needsCatalogImageRefresh(image?: string | null, _slug?: string | null): boolean {
+  // Manual bottles without a slug are fine once they have real art — don't force Fraganty.
+  return isPlaceholderCatalogImage(image);
 }

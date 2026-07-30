@@ -20,8 +20,9 @@ const TYPE_LABEL = {
 };
 
 const ROLE_COLOR = {
-  base: '#c9a87c',
-  accent: 'var(--sc-accent)',
+  // Hex required — UI appends alpha suffixes (`${color}33`).
+  base: '#0a5f52',
+  accent: '#45c4ad',
 };
 
 export function SprayBodyMap({
