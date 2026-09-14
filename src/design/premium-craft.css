@@ -94,31 +94,31 @@ body:not(.light)::before {
 .surface-card,
 body.light .glass-card,
 body.light .glass-premium {
-  background: color-mix(in srgb, var(--sc-panel) 94%, white) !important;
-  border: 1px solid color-mix(in srgb, var(--sc-border-soft) 85%, transparent) !important;
-  border-radius: var(--sc-radius-card) !important;
+  background: color-mix(in srgb, var(--sc-panel) 94%, white);
+  border: 1px solid color-mix(in srgb, var(--sc-border-soft) 85%, transparent);
+  border-radius: var(--sc-radius-card);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.7) inset,
-    var(--sc-shadow-sm) !important;
-  backdrop-filter: none !important;
+    var(--sc-shadow-sm);
+  backdrop-filter: none;
 }
 
 body:not(.light) .atelier-panel,
 body:not(.light) .glass-card,
 body:not(.light) .glass-premium {
-  background: var(--sc-panel) !important;
-  box-shadow: var(--sc-shadow-sm) !important;
+  background: var(--sc-panel);
+  box-shadow: var(--sc-shadow-sm);
 }
 
 /* ── Inputs ── */
 .atelier-input,
 input.atelier-input,
 textarea.atelier-input {
-  border-radius: 14px !important;
-  background: var(--sc-panel) !important;
-  border: 1px solid var(--sc-border) !important;
-  color: var(--sc-text) !important;
-  font-size: 0.9375rem !important;
+  border-radius: 14px;
+  background: var(--sc-panel);
+  border: 1px solid var(--sc-border);
+  color: var(--sc-text);
+  font-size: 0.9375rem;
   font-weight: 500;
   letter-spacing: -0.01em;
   transition: border-color var(--sc-dur) var(--sc-ease), box-shadow var(--sc-dur) var(--sc-ease);
@@ -127,21 +127,21 @@ textarea.atelier-input {
 
 .atelier-input:focus,
 input.atelier-input:focus {
-  border-color: var(--sc-accent) !important;
-  box-shadow: 0 0 0 3px var(--sc-accent-soft) !important;
-  outline: none !important;
+  border-color: var(--sc-accent);
+  box-shadow: 0 0 0 3px var(--sc-accent-soft);
+  outline: none;
 }
 
 /* ── Buttons ── */
 .btn-glow {
-  background: var(--sc-accent) !important;
-  color: #fff !important;
-  border-radius: 14px !important;
-  font-weight: 600 !important;
+  background: var(--sc-accent);
+  color: #fff;
+  border-radius: 14px;
+  font-weight: 600;
   letter-spacing: -0.015em;
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.18) inset,
-    0 8px 20px color-mix(in srgb, var(--sc-accent) 28%, transparent) !important;
+    0 8px 20px color-mix(in srgb, var(--sc-accent) 28%, transparent);
 }
 
 .btn-glow:active {
@@ -150,69 +150,69 @@ input.atelier-input:focus {
 
 /* ── Tab bar ── */
 .atelier-tabbar {
-  padding: 0.45rem 0.5rem calc(0.45rem + env(safe-area-inset-bottom, 0px)) !important;
-  background: color-mix(in srgb, var(--sc-panel) 88%, transparent) !important;
-  border-top: 1px solid var(--sc-border-soft) !important;
-  backdrop-filter: saturate(1.2) blur(16px) !important;
-  -webkit-backdrop-filter: saturate(1.2) blur(16px) !important;
+  padding: 0.45rem 0.5rem calc(0.45rem + env(safe-area-inset-bottom, 0px));
+  background: color-mix(in srgb, var(--sc-panel) 88%, transparent);
+  border-top: 1px solid var(--sc-border-soft);
+  backdrop-filter: saturate(1.2) blur(16px);
+  -webkit-backdrop-filter: saturate(1.2) blur(16px);
   box-shadow: 0 -8px 32px rgba(16, 20, 26, 0.04);
 }
 
 .atelier-tab {
-  gap: 0.28rem !important;
-  border-radius: 14px !important;
-  font-size: 0.625rem !important;
-  font-weight: 700 !important;
+  gap: 0.28rem;
+  border-radius: 14px;
+  font-size: 0.6875rem;
+  font-weight: 700;
   letter-spacing: 0.02em;
   transition: background var(--sc-dur) var(--sc-ease), color var(--sc-dur) var(--sc-ease);
 }
 
 .atelier-tab--on {
-  color: var(--sc-accent) !important;
-  background: var(--sc-accent-soft) !important;
+  color: var(--sc-accent);
+  background: var(--sc-accent-soft);
 }
 
 /* Kill floating + — Collection / desktop Add own that job */
 .atelier-fab {
-  display: none !important;
+  display: none;
 }
 
 /* ── Museum hero craft ── */
 .museum-hero__stage {
-  padding: 1.75rem 1.15rem 1rem !important;
-  border-radius: 28px !important;
+  padding: 1.75rem 1.15rem 1rem;
+  border-radius: 28px;
   background:
     radial-gradient(ellipse 80% 70% at 50% 35%, color-mix(in srgb, var(--aura, var(--sc-accent)) 16%, transparent), transparent 68%),
-    linear-gradient(165deg, var(--sc-panel) 0%, color-mix(in srgb, var(--sc-surface) 70%, var(--sc-panel)) 100%) !important;
-  border: 1px solid var(--sc-border-soft) !important;
+    linear-gradient(165deg, var(--sc-panel) 0%, color-mix(in srgb, var(--sc-surface) 70%, var(--sc-panel)) 100%);
+  border: 1px solid var(--sc-border-soft);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.85) inset,
-    var(--sc-shadow-md) !important;
+    var(--sc-shadow-md);
 }
 
 .museum-hero__thumb {
-  height: 280px !important;
+  height: 280px;
 }
 .museum-hero__bottle-link {
-  width: min(100%, 12.5rem) !important;
+  width: min(100%, 12.5rem);
 }
 
 /* SE / short phones — must follow 280px rule (later cascade wins) */
 @media (max-height: 720px) {
   .museum-hero__stage {
-    padding: 0.75rem 0.75rem 0.35rem !important;
+    padding: 0.75rem 0.75rem 0.35rem;
   }
   .museum-hero__bottle-link {
-    width: min(100%, 8.5rem) !important;
+    width: min(100%, 8.5rem);
   }
   .museum-hero__thumb {
-    height: 150px !important;
+    height: 150px;
   }
   .museum-hero__brand {
-    font-size: clamp(1.35rem, 5.5vw, 1.75rem) !important;
+    font-size: clamp(1.35rem, 5.5vw, 1.75rem);
   }
   .museum-hero__actions {
-    margin-top: 0.75rem !important;
+    margin-top: 0.75rem;
   }
   .home-atelier {
     padding-top: 0.5rem;
@@ -221,26 +221,26 @@ input.atelier-input:focus {
 }
 
 .museum-hero__brand {
-  font-size: clamp(1.9rem, 7.5vw, 2.6rem) !important;
+  font-size: clamp(1.9rem, 7.5vw, 2.6rem);
 }
 
 .museum-hero__name {
-  font-size: 1.05rem !important;
+  font-size: 1.05rem;
   font-weight: 500;
   letter-spacing: -0.015em;
 }
 
 .museum-hero__meta {
-  letter-spacing: 0.08em !important;
+  letter-spacing: 0.08em;
 }
 
 .museum-hero__actions {
-  margin-top: 1.4rem !important;
+  margin-top: 1.4rem;
 }
 
 /* ── Wardrobe shelf ── */
 .wardrobe-shelf-bottle-inner {
-  border-radius: 18px !important;
+  border-radius: 18px;
   overflow: hidden;
   transition: transform var(--sc-dur) var(--sc-ease), box-shadow var(--sc-dur) var(--sc-ease);
 }
@@ -250,24 +250,24 @@ input.atelier-input:focus {
 }
 
 .wardrobe-shelf-brand {
-  font-size: 0.625rem !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.12em !important;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--sc-text-muted) !important;
+  color: var(--sc-text-muted);
 }
 
 .wardrobe-shelf-name {
-  font-size: 0.95rem !important;
+  font-size: 0.95rem;
   margin-top: 0.15rem;
 }
 
 /* ── Chips ── */
 .atelier-chip {
-  border-radius: 999px !important;
-  padding: 0.45rem 0.85rem !important;
-  font-size: 0.72rem !important;
-  font-weight: 600 !important;
+  border-radius: 999px;
+  padding: 0.45rem 0.85rem;
+  font-size: 0.72rem;
+  font-weight: 600;
   letter-spacing: 0.01em;
   transition: background var(--sc-dur) var(--sc-ease), border-color var(--sc-dur) var(--sc-ease), color var(--sc-dur) var(--sc-ease);
 }
@@ -278,7 +278,7 @@ input.atelier-input:focus {
 
 /* ── Mood tiles ── */
 .home-atelier__moods button {
-  border-radius: 16px !important;
+  border-radius: 16px;
   min-height: 4.25rem;
   transition: transform var(--sc-dur-fast) var(--sc-ease), border-color var(--sc-dur) var(--sc-ease), background var(--sc-dur) var(--sc-ease);
 }
@@ -289,11 +289,11 @@ input.atelier-input:focus {
 
 /* ── Demo strip quieter ── */
 .cap-demo-banner {
-  font-size: 0.65rem !important;
+  font-size: 0.65rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  font-weight: 600 !important;
-  background: color-mix(in srgb, var(--sc-surface) 92%, var(--sc-accent-soft)) !important;
+  font-weight: 600;
+  background: color-mix(in srgb, var(--sc-surface) 92%, var(--sc-accent-soft));
 }
 
 /* ── Press feel ── */
@@ -331,17 +331,17 @@ input.atelier-input:focus {
 
 /* ── Detail hero ── */
 .atelier-detail-hero {
-  min-height: 20rem !important;
+  min-height: 20rem;
   background:
     radial-gradient(ellipse 70% 55% at 50% 30%, color-mix(in srgb, var(--hero-aura, var(--sc-accent)) 18%, transparent), transparent 70%),
-    var(--sc-surface) !important;
+    var(--sc-surface);
 }
 
 /* ── Desktop sidebar craft ── */
 @media (min-width: 700px) {
   aside[data-testid="desktop-sidebar"] {
-    background: color-mix(in srgb, var(--sc-panel) 96%, var(--sc-surface)) !important;
-    border-right-color: var(--sc-border-soft) !important;
+    background: color-mix(in srgb, var(--sc-panel) 96%, var(--sc-surface));
+    border-right-color: var(--sc-border-soft);
   }
 }
 
@@ -358,24 +358,24 @@ input.atelier-input:focus {
 
 /* Stat pills */
 .stat-pill {
-  background: var(--sc-panel) !important;
-  border: 1px solid var(--sc-border-soft) !important;
-  border-radius: 16px !important;
-  box-shadow: var(--sc-shadow-sm) !important;
+  background: var(--sc-panel);
+  border: 1px solid var(--sc-border-soft);
+  border-radius: 16px;
+  box-shadow: var(--sc-shadow-sm);
   min-height: 4.25rem;
-  padding: 0.85rem 1rem !important;
+  padding: 0.85rem 1rem;
 }
 .stat-pill-label {
-  font-size: 0.625rem !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.1em !important;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--sc-text-muted) !important;
+  color: var(--sc-text-muted);
 }
 .stat-pill-value {
-  font-family: var(--font-display) !important;
-  font-size: 1.2rem !important;
-  font-weight: 600 !important;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 600;
   letter-spacing: -0.02em;
-  color: var(--sc-text) !important;
+  color: var(--sc-text);
 }

@@ -5,7 +5,7 @@ import { Briefcase, MapPin, Navigation } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useApp } from '@/context/AppContext';
 import { loadDemoData } from '@/services/demo';
-import { geocodeCity, requestLocation, type CityLocation } from '@/services/weather';
+import { geocodeCity, requestLocationDetailed, weatherUnavailableMessage, type CityLocation } from '@/services/weather';
 import type { UserProfile } from '@/types';
 import { AmbientBackground } from '@/components/premium/AmbientBackground';
 import { CyclingShimmerText, DEMO_LOADING_MESSAGES } from '@/components/ui/CyclingShimmerText';
@@ -101,12 +101,12 @@ export function Onboarding() {
 
   const useGpsOnboarding = async () => {
     setLocationError(null);
-    const loc = await requestLocation();
-    if (!loc) {
-      setLocationError('Could not access location — enter your city instead.');
+    const result = await requestLocationDetailed();
+    if (!result.ok) {
+      setLocationError(weatherUnavailableMessage(result.reason) ?? 'Enter your city instead.');
       return;
     }
-    setPendingLocation(loc);
+    setPendingLocation(result.location);
     setCityQuery('');
     setShowLocation(false);
     setShowOfficeSafe(true);
@@ -269,7 +269,7 @@ export function Onboarding() {
         {locationError && <p className="text-xs text-[var(--sc-warning)] mt-2" role="alert">{locationError}</p>}
         <Button variant="ghost" className="w-full mt-4 gap-2" onClick={useGpsOnboarding}>
           <Navigation size={16} />
-          Use device location instead
+          Use my location
         </Button>
         <Button className="w-full mt-4 btn-glow" size="lg" onClick={() => void continueFromLocation()} disabled={finishing}>
           Continue

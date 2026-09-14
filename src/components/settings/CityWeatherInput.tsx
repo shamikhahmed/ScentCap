@@ -6,7 +6,7 @@ import {
   applyCityToProfile,
   applyGpsToProfile,
   getDailyWeather,
-  requestLocation,
+  requestLocationDetailed,
   weatherUnavailableMessage,
 } from '@/services/weather';
 import { inputFieldLg, textSubtle } from '@/lib/ui-classes';
@@ -79,12 +79,12 @@ export function CityWeatherInput({ compact }: { compact?: boolean }) {
     setError(null);
     setStatus(null);
     try {
-      const loc = await requestLocation();
-      if (!loc) {
-        setError(weatherUnavailableMessage('unsupported'));
+      const result = await requestLocationDetailed();
+      if (!result.ok) {
+        setError(weatherUnavailableMessage(result.reason));
         return;
       }
-      await applyLocation(loc);
+      await applyLocation(result.location);
       setCityInput('');
     } finally {
       setBusy(false);
@@ -136,7 +136,7 @@ export function CityWeatherInput({ compact }: { compact?: boolean }) {
       <div className="flex flex-col gap-2 sm:flex-row">
         <Button variant="ghost" className="flex-1 gap-2" onClick={useGps} disabled={busy}>
           <Navigation size={16} />
-          Use device location
+          Use my location
         </Button>
         <Button variant="outline" className="flex-1" onClick={refreshWeather} disabled={busy || profile.lat == null}>
           Refresh weather

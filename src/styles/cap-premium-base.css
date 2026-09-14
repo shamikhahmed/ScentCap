@@ -304,11 +304,11 @@ nav.nav.cap-premium-nav {
 /* Primary CTA */
 .btn-glow,
 .cap-btn-glow {
-  background: linear-gradient(180deg, color-mix(in srgb, var(--cap-accent) 70%, white) 0%, var(--cap-accent) 50%, color-mix(in srgb, var(--cap-accent) 85%, black) 100%) !important;
-  border: none !important;
-  color: var(--cap-accent-contrast) !important;
-  box-shadow: 0 2px 12px color-mix(in srgb, var(--cap-accent) 28%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
-  font-weight: 600 !important;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--cap-accent) 70%, white) 0%, var(--cap-accent) 50%, color-mix(in srgb, var(--cap-accent) 85%, black) 100%);
+  border: none;
+  color: var(--cap-accent-contrast);
+  box-shadow: 0 2px 12px color-mix(in srgb, var(--cap-accent) 28%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  font-weight: 600;
   letter-spacing: -0.01em;
 }
 

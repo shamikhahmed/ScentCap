@@ -276,6 +276,9 @@ export function SettingsPage() {
       <SettingsSection title="About & Legal">
         <Card className="space-y-3">
           <p className="text-sm">ScentCap <span className="text-[var(--sc-text-muted)]">v{APP_VERSION}</span></p>
+          <p className="text-sm text-[var(--sc-text-soft)] leading-relaxed">
+            Brand names belong to their owners. ScentCap isn&apos;t affiliated with any fragrance house.
+          </p>
           <a
             href={`${import.meta.env.BASE_URL}privacy.html`}
             target="_blank"
