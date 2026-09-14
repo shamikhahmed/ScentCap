@@ -23,7 +23,7 @@ export function DemoBanner() {
     >
       <span>Sample wardrobe</span>
       <Button size="sm" variant="ghost" className="!h-7 !min-h-0 !px-2 !text-[11px] shrink-0" onClick={startFresh}>
-        Start mine
+        Use my collection
       </Button>
     </div>
   );

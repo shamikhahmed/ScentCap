@@ -273,10 +273,8 @@ export function Home() {
     <div className="home-atelier">
       <header className="museum-topbar">
         <div className="min-w-0">
-          <p className="home-atelier__brand">ScentCap</p>
           <p className="museum-topbar__sub">
             {greeting.line}
-            {weather ? ` · ${Math.round(weather.tempC)}°` : ''}
           </p>
           {prefs.officeSafeMode && (
             <span className="inline-flex items-center gap-1.5 mt-2 text-xs font-semibold text-[var(--sc-accent)] bg-[var(--sc-accent-soft)] px-2.5 py-1 rounded-lg">
@@ -285,7 +283,7 @@ export function Home() {
           )}
         </div>
         {weather && (
-          <div className="shrink-0 rounded-xl border border-[var(--sc-border-soft)] bg-[var(--sc-panel)] px-2.5 py-1.5 flex items-center gap-1.5">
+          <div className="shrink-0 rounded-xl border border-[var(--sc-border-soft)] bg-[var(--sc-panel)] px-2.5 py-1.5 flex items-center gap-1.5" aria-label={`Weather ${Math.round(weather.tempC)} degrees`}>
             <WIcon size={14} className="text-[var(--sc-accent)]" strokeWidth={2} />
             <span className="text-sm font-semibold tabular-nums">{Math.round(weather.tempC)}°</span>
           </div>
