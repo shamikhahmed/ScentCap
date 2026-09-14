@@ -2,7 +2,12 @@ import { getWeatherCache, saveWeatherCache } from '@/db';
 import type { UserProfile, WeatherCache } from '@/types';
 import { todayKey } from '@/lib/utils';
 
-export type WeatherUnavailableReason = 'no_location' | 'fetch_failed' | 'unsupported' | 'city_not_found';
+export type WeatherUnavailableReason =
+  | 'no_location'
+  | 'fetch_failed'
+  | 'unsupported'
+  | 'city_not_found'
+  | 'permission_denied';
 
 export interface WeatherResult {
   weather: WeatherCache | null;
@@ -18,8 +23,9 @@ export interface CityLocation {
 export const WEATHER_UNAVAILABLE_MESSAGES: Record<WeatherUnavailableReason, string> = {
   no_location: 'Add your city in Settings for weather-aware picks — no GPS required.',
   fetch_failed: 'Weather is temporarily unavailable — recommendations still work without it.',
-  unsupported: 'This browser can’t access GPS — enter your city in Settings instead.',
+  unsupported: 'This browser can’t access GPS — enter your city instead.',
   city_not_found: 'City not found. Try “Paris, France” or “Austin, TX”.',
+  permission_denied: 'Location permission denied — enter your city instead. Weather still works without GPS.',
 };
 
 export function weatherUnavailableMessage(reason?: WeatherUnavailableReason): string | null {
@@ -125,22 +131,42 @@ export async function getDailyWeather(profile: UserProfile, force = false): Prom
   }
 }
 
-export async function requestLocation(): Promise<CityLocation | null> {
+export type LocationRequestResult =
+  | { ok: true; location: CityLocation }
+  | { ok: false; reason: Extract<WeatherUnavailableReason, 'unsupported' | 'permission_denied' | 'fetch_failed'> };
+
+/** GPS only when the user taps “Use my location” — never on cold start. */
+export async function requestLocationDetailed(): Promise<LocationRequestResult> {
   return new Promise((resolve) => {
     if (!navigator.geolocation) {
-      resolve(null);
+      resolve({ ok: false, reason: 'unsupported' });
       return;
     }
     navigator.geolocation.getCurrentPosition(
-      (pos) => resolve({
-        lat: pos.coords.latitude,
-        lon: pos.coords.longitude,
-        label: 'Current location',
-      }),
-      () => resolve(null),
+      (pos) =>
+        resolve({
+          ok: true,
+          location: {
+            lat: pos.coords.latitude,
+            lon: pos.coords.longitude,
+            label: 'Current location',
+          },
+        }),
+      (err) => {
+        if (err.code === err.PERMISSION_DENIED) {
+          resolve({ ok: false, reason: 'permission_denied' });
+          return;
+        }
+        resolve({ ok: false, reason: 'fetch_failed' });
+      },
       { enableHighAccuracy: false, timeout: 10000 },
     );
   });
+}
+
+export async function requestLocation(): Promise<CityLocation | null> {
+  const result = await requestLocationDetailed();
+  return result.ok ? result.location : null;
 }
 
 /** Apply manual city search → profile coords + label. */

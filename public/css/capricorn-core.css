@@ -630,11 +630,11 @@ nav.nav.cap-premium-nav {
 /* Primary CTA */
 .btn-glow,
 .cap-btn-glow {
-  background: linear-gradient(180deg, color-mix(in srgb, var(--cap-accent) 70%, white) 0%, var(--cap-accent) 50%, color-mix(in srgb, var(--cap-accent) 85%, black) 100%) !important;
-  border: none !important;
-  color: var(--cap-accent-contrast) !important;
-  box-shadow: 0 2px 12px color-mix(in srgb, var(--cap-accent) 28%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
-  font-weight: 600 !important;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--cap-accent) 70%, white) 0%, var(--cap-accent) 50%, color-mix(in srgb, var(--cap-accent) 85%, black) 100%);
+  border: none;
+  color: var(--cap-accent-contrast);
+  box-shadow: 0 2px 12px color-mix(in srgb, var(--cap-accent) 28%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  font-weight: 600;
   letter-spacing: -0.01em;
 }
 
@@ -1207,7 +1207,7 @@ body.cap-has-scene > #root {
   font: 500 var(--cap-text-sm, 0.8125rem) var(--cap-font-body, system-ui);
   line-height: 1.45;
 }
-.cap-demo-banner[hidden] { display: none !important; }
+.cap-demo-banner[hidden] { display: none; }
 .cap-demo-banner p { flex: 1; margin: 0; }
 .cap-demo-banner strong { font-weight: 700; }
 .cap-demo-banner__dismiss {
@@ -1359,7 +1359,7 @@ body[data-cap-app="1"] #cap-scene,
 body[data-cap-app="1"] #mist-canvas,
 body[data-cap-app="1"] .cap-ambient,
 body[data-cap-app="1"] .cap-scroll-progress {
-  display: none !important;
+  display: none;
 }
 
 /* Instant content — no staggered reveal on tab switch */
@@ -1369,11 +1369,11 @@ body[data-cap-app="1"] .cap-reveal-lines,
 body[data-cap-app="1"] .cap-reveal-lines .cap-line > span,
 body[data-cap-app="1"] .cap-kinetic .cap-kinetic-line > span,
 body[data-cap-app="1"] .cap-stagger > * {
-  opacity: 1 !important;
-  transform: none !important;
-  filter: none !important;
-  transition: none !important;
-  animation: none !important;
+  opacity: 1;
+  transform: none;
+  filter: none;
+  transition: none;
+  animation: none;
 }
 
 /* Solid elevated surfaces instead of heavy blur compositing */
@@ -1383,8 +1383,8 @@ body[data-cap-app="1"] .glass-tile,
 body[data-cap-app="1"] .cap-glass,
 body[data-cap-app="1"] .cap-glass-heavy,
 body[data-cap-app="1"] .cap-glass-light {
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 @media (max-width: 768px) {
@@ -1395,8 +1395,8 @@ body[data-cap-app="1"] .cap-glass-light {
   body[data-cap-app="1"] .nav-side-btn,
   body[data-cap-app="1"] .bottom-sheet .bs-panel,
   body[data-cap-app="1"] .app-header {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 }
 
@@ -1405,16 +1405,16 @@ body[data-cap-app="1"] [data-cap-parallax],
 body[data-cap-app="1"] .cap-hero-3d-inner,
 body[data-cap-app="1"] .cap-float,
 body[data-cap-app="1"] .cap-magnetic {
-  will-change: auto !important;
-  transform: none !important;
+  will-change: auto;
+  transform: none;
 }
 
 /* Tab screens: no enter animation */
 body[data-cap-app="1"] .screen,
 body[data-cap-app="1"] .page,
 body[data-cap-app="1"] #view > .screen {
-  animation: none !important;
-  transition: none !important;
+  animation: none;
+  transition: none;
 }
 
 /* Respect reduced motion globally on apps */
@@ -1482,16 +1482,16 @@ body[data-cap-app="1"] #view > .screen {
     flex-direction: column;
     min-height: 100dvh;
     min-height: 100vh;
-    max-width: none !important;
-    width: 100% !important;
-    margin: 0 !important;
-    box-shadow: none !important;
-    border: none !important;
+    max-width: none;
+    width: 100%;
+    margin: 0;
+    box-shadow: none;
+    border: none;
   }
 
   body.cap-desktop-nav #nav,
   body.cap-desktop-nav nav.nav.cap-mobile-only {
-    display: none !important;
+    display: none;
   }
 
   .cap-sidebar-brand {
@@ -1538,7 +1538,7 @@ body[data-cap-app="1"] #view > .screen {
 
 @media (max-width: 899px) {
   #cap-nav-sidebar {
-    display: none !important;
+    display: none;
   }
 }
 

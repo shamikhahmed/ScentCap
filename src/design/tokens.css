@@ -109,6 +109,6 @@ body {
   --glass-shadow: var(--sc-shadow-md);
   --glass-shadow-sm: var(--sc-shadow-sm);
   --tab-bar-bg: color-mix(in srgb, var(--sc-panel) 90%, transparent);
-  --font-display: "Newsreader", Georgia, "Times New Roman", serif;
+  --font-display: "Newsreader Variable", "Newsreader", Georgia, "Times New Roman", serif;
   --font-sans: "Figtree", system-ui, sans-serif;
 }

@@ -1,3 +1,12 @@
+## [2.1.0] — 2026-09-14
+
+- Tier 1 finish: FND-04 UI adapters (Switch, ConfirmDialog, Banner, Toast, ErrorState)
+- SCNT-P1-01…07: monogram, Today cleanup, native pack docs + PrivacyInfo, !important → a11y overrides only, brand disclaimer, dirty-file resolution, no Pro gate
+- SCNT-P2: opt-in location + city fallback, photo denied copy, self-hosted Figtree/Newsreader Variable, privacy page rewrite
+- SW `scentcap-v211`
+- ⛔ BLOCKED-EXTERNAL: full Xcode / iOS 26 SDK build not verified on this machine (CLT only)
+
+
 ## [2.0.10] — 2026-07-30
 
 - Cap fleet shell BP **700px** (iPad mini 744 → sidebar); Tailwind `--breakpoint-md`

@@ -1,17 +1,17 @@
 /* ScentCap-only premium extensions — base layer: styles/cap-premium-base.css (synced from shared) */
 
 .btn-glow {
-  background: var(--sc-accent) !important;
-  border: none !important;
-  box-shadow: var(--sc-shadow-sm) !important;
-  font-weight: 600 !important;
+  background: var(--sc-accent);
+  border: none;
+  box-shadow: var(--sc-shadow-sm);
+  font-weight: 600;
   letter-spacing: -0.01em;
-  color: #ffffff !important;
+  color: #ffffff;
 }
 
 .btn-glow:disabled {
   opacity: 0.55;
-  box-shadow: none !important;
+  box-shadow: none;
 }
 
 /* Premium skeleton */
@@ -386,7 +386,7 @@
 }
 
 .catalog-confirm-card {
-  border-color: color-mix(in srgb, var(--color-accent) 35%, transparent) !important;
+  border-color: color-mix(in srgb, var(--color-accent) 35%, transparent);
 }
 
 .catalog-confirm-hero {
@@ -736,7 +736,7 @@ body[data-cap-app="1"] #cap-scene,
 body[data-cap-app="1"] #mist-canvas,
 body[data-cap-app="1"] .cap-ambient,
 body[data-cap-app="1"] .cap-scroll-progress {
-  display: none !important;
+  display: none;
 }
 
 body[data-cap-app="1"] .cap-reveal,
@@ -745,11 +745,11 @@ body[data-cap-app="1"] .cap-reveal-lines,
 body[data-cap-app="1"] .cap-reveal-lines .cap-line > span,
 body[data-cap-app="1"] .cap-kinetic .cap-kinetic-line > span,
 body[data-cap-app="1"] .cap-stagger > * {
-  opacity: 1 !important;
-  transform: none !important;
-  filter: none !important;
-  transition: none !important;
-  animation: none !important;
+  opacity: 1;
+  transform: none;
+  filter: none;
+  transition: none;
+  animation: none;
 }
 
 body[data-cap-app="1"] .glass-premium,
@@ -760,23 +760,23 @@ body[data-cap-app="1"] .cap-glass-heavy,
 body[data-cap-app="1"] .cap-glass-light,
 body[data-cap-app="1"] [class*="glass"],
 body[data-cap-app="1"] .os-card {
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 body[data-cap-app="1"] [data-cap-parallax],
 body[data-cap-app="1"] .cap-hero-3d-inner,
 body[data-cap-app="1"] .cap-float,
 body[data-cap-app="1"] .cap-magnetic {
-  will-change: auto !important;
-  transform: none !important;
+  will-change: auto;
+  transform: none;
 }
 
 body[data-cap-app="1"] .screen,
 body[data-cap-app="1"] .page,
 body[data-cap-app="1"] #view > .screen {
-  animation: none !important;
-  transition: none !important;
+  animation: none;
+  transition: none;
 }
 
 
@@ -800,7 +800,7 @@ body[data-cap-app="1"] #view > .screen {
   border-top: 1px solid var(--sc-border);
 }
 @media (min-width: 700px) {
-  .atelier-tabbar { display: none !important; }
+  .atelier-tabbar { display: none; }
 }
 .atelier-tab {
   display: flex;
@@ -836,24 +836,24 @@ body[data-cap-app="1"] #view > .screen {
   box-shadow: var(--sc-shadow-md);
 }
 @media (min-width: 700px) {
-  .atelier-fab { display: none !important; }
+  .atelier-fab { display: none; }
 }
 
 /* Hide old floating chrome when atelier shell active */
 .floating-tab-shell,
-.fab-premium { display: none !important; }
+.fab-premium { display: none; }
 
 .glass-premium,
 .glass-premium-subtle,
 .tile-premium,
 .hero-pick-premium {
-  background: var(--sc-panel) !important;
-  border: 1px solid var(--sc-border-soft) !important;
-  box-shadow: var(--sc-shadow-sm) !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
+  background: var(--sc-panel);
+  border: 1px solid var(--sc-border-soft);
+  box-shadow: var(--sc-shadow-sm);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
-.hero-aura-glow { opacity: 0.25 !important; filter: none !important; }
+.hero-aura-glow { opacity: 0.25; filter: none; }
 
 .home-atelier {
   padding: max(0.75rem, env(safe-area-inset-top)) 1.1rem 1.5rem;
@@ -915,7 +915,7 @@ body[data-cap-app="1"] #view > .screen {
 }
 
 .onboarding-mist,
-.onboarding-flacon { display: none !important; }
+.onboarding-flacon { display: none; }
 
 /* ─── Track A: Atelier page remint ─── */
 .atelier-page {
@@ -1008,48 +1008,48 @@ body[data-cap-app="1"] #view > .screen {
 /* Wardrobe cabinet → flat atelier (kill wood/cream theater) */
 body.light .wardrobe-cabinet-frame,
 .wardrobe-cabinet-frame {
-  background: var(--sc-panel) !important;
-  border: 1px solid var(--sc-border-soft) !important;
-  border-radius: 18px !important;
-  box-shadow: var(--sc-shadow-sm) !important;
-  padding: 0.65rem !important;
+  background: var(--sc-panel);
+  border: 1px solid var(--sc-border-soft);
+  border-radius: 18px;
+  box-shadow: var(--sc-shadow-sm);
+  padding: 0.65rem;
 }
 body.light .wardrobe-cabinet-rail,
 .wardrobe-cabinet-rail {
-  background: var(--sc-border-soft) !important;
-  height: 3px !important;
-  box-shadow: none !important;
+  background: var(--sc-border-soft);
+  height: 3px;
+  box-shadow: none;
 }
 body.light .wardrobe-cabinet-base,
 .wardrobe-cabinet-base {
-  background: var(--sc-border-soft) !important;
-  height: 4px !important;
+  background: var(--sc-border-soft);
+  height: 4px;
 }
 .wardrobe-featured-spread {
-  background: var(--sc-panel) !important;
-  border: 1px solid var(--sc-border-soft) !important;
-  border-radius: 16px !important;
+  background: var(--sc-panel);
+  border: 1px solid var(--sc-border-soft);
+  border-radius: 16px;
 }
 .wardrobe-shelf-bottle-inner {
-  background: var(--sc-surface) !important;
-  border: 1px solid var(--sc-border-soft) !important;
-  border-radius: 14px !important;
+  background: var(--sc-surface);
+  border: 1px solid var(--sc-border-soft);
+  border-radius: 14px;
 }
 .detail-hero-scrim {
-  background: linear-gradient(to top, var(--sc-bg) 0%, transparent 55%) !important;
+  background: linear-gradient(to top, var(--sc-bg) 0%, transparent 55%);
 }
 
 /* Flat atelier panels for GlassCard / Card */
 body.light .glass-card,
 body.light .glass-premium,
 .glass-card.atelier-flat {
-  background: var(--sc-panel) !important;
-  border: 1px solid var(--sc-border-soft) !important;
-  box-shadow: var(--sc-shadow-sm) !important;
-  border-radius: 16px !important;
+  background: var(--sc-panel);
+  border: 1px solid var(--sc-border-soft);
+  box-shadow: var(--sc-shadow-sm);
+  border-radius: 16px;
 }
 body.light .glass-premium-glow {
-  display: none !important;
+  display: none;
 }
 
 /* Track B — museum hero bottle stage */
@@ -1094,10 +1094,10 @@ body.light .glass-premium-glow {
   width: min(100%, 11.5rem);
 }
 .museum-hero__thumb {
-  width: 100% !important;
-  height: 260px !important;
-  background: transparent !important;
-  border-radius: 0 !important;
+  width: 100%;
+  height: 260px;
+  background: transparent;
+  border-radius: 0;
 }
 .museum-hero__eyebrow {
   margin-top: 1.1rem;
@@ -1145,8 +1145,8 @@ body.light .glass-premium-glow {
   padding: 0 0.15rem;
 }
 .cap-demo-banner {
-  margin: 0 !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
+  margin: 0;
+  border-radius: 0;
+  box-shadow: none;
+  backdrop-filter: none;
 }

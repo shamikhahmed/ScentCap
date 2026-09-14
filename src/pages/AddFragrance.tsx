@@ -327,11 +327,16 @@ export function AddFragrance() {
               <input id="meta-opened" type="date" className={inputClass} autoComplete="off" value={meta.opened} onChange={(e) => setMeta({ ...meta, opened: e.target.value })} onFocus={(e) => scrollInputIntoView(e.currentTarget)} />
             </div>
           </div>
-          <label className="flex items-center gap-2 text-sm text-[var(--sc-text-soft)] cursor-pointer min-h-[44px]">
-            <Camera size={16} aria-hidden />
-            <span>Photo (optional)</span>
-            <input type="file" accept="image/*" className="hidden" aria-label="Choose bottle photo" onChange={(e) => setPhotoFile(e.target.files?.[0] ?? null)} />
-            <span className="text-[var(--sc-accent)] font-semibold">{photoFile ? photoFile.name : 'Choose file'}</span>
+          <label className="flex flex-col gap-1 text-sm text-[var(--sc-text-soft)] cursor-pointer min-h-[44px]">
+            <span className="flex items-center gap-2">
+              <Camera size={16} aria-hidden />
+              <span>Photo (optional)</span>
+              <input type="file" accept="image/*" className="hidden" aria-label="Choose bottle photo" onChange={(e) => setPhotoFile(e.target.files?.[0] ?? null)} />
+              <span className="text-[var(--sc-accent)] font-semibold">{photoFile ? photoFile.name : 'Choose file'}</span>
+            </span>
+            <span className="text-xs text-[var(--sc-text-muted)] pl-6">
+              Photos stay on this device. If camera or Photos access is denied, you can still add bottles without a photo.
+            </span>
           </label>
         </Card>
       )}

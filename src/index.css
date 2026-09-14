@@ -10,8 +10,8 @@
   /* Cap fleet shell: tabs <700 · sidebar ≥700 (iPad mini 744 → sidebar) */
   --breakpoint-md: 700px;
 
-  --font-sans: "Figtree", system-ui, sans-serif;
-  --font-display: "Newsreader", Georgia, serif;
+  --font-sans: "Figtree Variable", "Figtree", system-ui, sans-serif;
+  --font-display: "Newsreader Variable", "Newsreader", Georgia, serif;
 
   --color-bg: var(--sc-bg);
   --color-bg-secondary: var(--sc-surface);
@@ -295,16 +295,16 @@ body.light .text-stone-600 { color: var(--color-text-tertiary); }
 /* Light mode: fix hardcoded dark-surface Tailwind utilities */
 body.light .bg-white\/5,
 body.light .bg-white\/10 {
-  background: var(--color-bg-secondary) !important;
+  background: var(--color-bg-secondary);
 }
 
 body.light .border-white\/10,
 body.light .border-white\/20 {
-  border-color: var(--color-border) !important;
+  border-color: var(--color-border);
 }
 
 body.light .hover\:text-stone-200:hover {
-  color: var(--color-text-primary) !important;
+  color: var(--color-text-primary);
 }
 
 body.light .hero-pick-card,
@@ -319,19 +319,19 @@ body.light .rotation-banner {
 }
 
 body.light .photo-card-scrim {
-  background: linear-gradient(to top, var(--color-bg) 0%, rgba(255, 255, 255, 0.55) 45%, transparent 100%) !important;
+  background: linear-gradient(to top, var(--color-bg) 0%, rgba(255, 255, 255, 0.55) 45%, transparent 100%);
 }
 
 body.light .photo-card-scrim-dark {
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.72) 0%, rgba(0, 0, 0, 0.2) 50%, transparent 100%) !important;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.72) 0%, rgba(0, 0, 0, 0.2) 50%, transparent 100%);
 }
 
 body:not(.light) .photo-card-scrim {
-  background: linear-gradient(to top, var(--color-bg) 0%, transparent 70%) !important;
+  background: linear-gradient(to top, var(--color-bg) 0%, transparent 70%);
 }
 
 body:not(.light) .photo-card-scrim-dark {
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.25) 50%, transparent 100%) !important;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.25) 50%, transparent 100%);
 }
 
 .detail-hero {
@@ -500,7 +500,7 @@ body:not(.light) .photo-card-scrim-dark {
 
 @media (min-width: 900px) {
   main:has(.home-blotter) > div {
-    max-width: min(1180px, 100%) !important;
+    max-width: min(1180px, 100%);
   }
   .home-blotter {
     padding-top: 0;
