@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -22,10 +22,14 @@ export function ConfirmDialog({
   onConfirm: () => void;
   onCancel: () => void;
 }) {
-  const cancelRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
-    if (open) cancelRef.current?.focus();
-  }, [open]);
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onCancel();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open, onCancel]);
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center p-4" role="presentation">
@@ -39,7 +43,7 @@ export function ConfirmDialog({
         <h2 id="confirm-title" className="text-lg font-semibold tracking-tight">{title}</h2>
         {body ? <p className="mt-2 text-sm text-[var(--sc-text-soft)] leading-relaxed">{body}</p> : null}
         <div className="mt-5 flex flex-col-reverse sm:flex-row gap-2 sm:justify-end">
-          <Button ref={cancelRef as never} variant="ghost" onClick={onCancel}>{cancelLabel}</Button>
+          <Button variant="ghost" autoFocus onClick={onCancel}>{cancelLabel}</Button>
           <Button variant={destructive ? 'destructive' : 'default'} onClick={onConfirm}>{confirmLabel}</Button>
         </div>
       </div>
