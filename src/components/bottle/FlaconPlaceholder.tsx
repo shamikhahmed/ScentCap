@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils';
 import { FAMILY_COLORS } from '@/lib/stats';
+import { flaconEtchedLabel, flaconInitials } from '@/lib/flaconMonogram';
 
 /** Sculpted flacon — last resort when no bottle art. Distinct per house. */
 export function FlaconPlaceholder({
@@ -14,21 +15,18 @@ export function FlaconPlaceholder({
   className?: string;
 }) {
   const aura = FAMILY_COLORS[family ?? ''] ?? 'var(--sc-accent)';
-  const label = (brand ?? 'ScentCap').slice(0, 14);
-  const initials = [brand, name]
-    .filter(Boolean)
-    .map((w) => w!.trim().charAt(0).toUpperCase())
-    .join('')
-    .slice(0, 2) || 'SC';
+  const label = flaconEtchedLabel(brand);
+  const initials = flaconInitials(brand, name);
   const gid = `flacon-${(family ?? 'x').replace(/\W/g, '')}-${initials}`;
+  const accessible = brand && name ? `${brand} ${name}` : brand || name || 'Fragrance bottle';
 
   return (
     <div
       className={cn('relative flex items-center justify-center w-full h-full min-h-[4rem]', className)}
       role="img"
-      aria-label={brand && name ? `${brand} ${name}` : 'Fragrance bottle'}
+      aria-label={accessible}
     >
-      <svg viewBox="0 0 80 150" className="w-full h-full max-h-full drop-shadow-lg" aria-hidden>
+      <svg viewBox="0 0 80 150" className="w-full h-full max-h-full drop-shadow-lg" aria-hidden="true">
         <defs>
           <linearGradient id={`${gid}-glass`} x1="0" y1="0" x2="0.35" y2="1">
             <stop offset="0%" stopColor={aura} stopOpacity="0.98" />
