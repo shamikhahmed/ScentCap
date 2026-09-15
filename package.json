@@ -21,7 +21,8 @@
     "matrix": "npm run build && DEVICE_MATRIX=1 playwright test e2e/device-matrix.spec.ts",
     "verify": "npm run lint && npm run test:unit && npm run test:e2e",
     "test:unit": "npx tsx scripts/test-flacon-monogram.mjs",
-    "test:matrix": "npm run build && FINISH_MATRIX=1 playwright test e2e/finish-matrix.spec.ts"
+    "test:matrix": "npm run build && FINISH_MATRIX=1 playwright test e2e/finish-matrix.spec.ts",
+    "tier1": "node ../capricorn-tooling/shared/testing/tier1.mjs"
   },
   "dependencies": {
     "@capacitor/cli": "^8.4.0",
