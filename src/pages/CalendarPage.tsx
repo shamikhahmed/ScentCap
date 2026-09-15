@@ -9,6 +9,7 @@ import { WearRatingModal } from '@/components/ui/WearRatingModal';
 import { useApp } from '@/context/AppContext';
 import { getFragrance, logWear, updateWearRecord } from '@/db';
 import { FAMILY_COLORS, wearStreak, wearsThisMonth } from '@/lib/stats';
+import { SC_ACCENT } from '@/design/tokens';
 import { uid } from '@/lib/utils';
 import { hapticSuccess } from '@/lib/premium/haptics';
 import type { WearRecord } from '@/types';
@@ -127,7 +128,7 @@ export function CalendarPage() {
             const worn = byDay[key] ?? [];
             const primary = worn[0];
             // Hex only — style appends alpha (`${color}22` / `${color}44`).
-            const color = primary ? FAMILY_COLORS[labels[primary]?.family ?? ''] ?? '#0a5f52' : undefined;
+            const color = primary ? FAMILY_COLORS[labels[primary]?.family ?? ''] ?? SC_ACCENT : undefined;
             const today = isToday(day);
             return (
               <div

@@ -1,0 +1,119 @@
+{
+  "app": "scentcap",
+  "version": "2.1.1",
+  "swCache": "scentcap-v212",
+  "generatedAt": "2026-09-15T10:46:52.757Z",
+  "status": "FAIL",
+  "pass": [
+    {
+      "id": "version:field",
+      "detail": "2.1.1"
+    },
+    {
+      "id": "version:sw-cache-match",
+      "detail": "dist/sw.js contains scentcap-v212"
+    },
+    {
+      "id": "records:BASELINE.md",
+      "detail": "present"
+    },
+    {
+      "id": "records:LOG.md",
+      "detail": "present"
+    },
+    {
+      "id": "records:STATES.md",
+      "detail": "present"
+    },
+    {
+      "id": "records:APP-REPORT.md",
+      "detail": "present"
+    },
+    {
+      "id": "records:DOCS-INVENTORY.md",
+      "detail": "present"
+    },
+    {
+      "id": "records:APP-REPORT-size",
+      "detail": "4515 bytes (need ≥1024)"
+    },
+    {
+      "id": "suppressions",
+      "detail": "none"
+    },
+    {
+      "id": "app-ready",
+      "detail": "window.__APP_READY__ referenced"
+    },
+    {
+      "id": "tag",
+      "detail": "found v2.1.1"
+    },
+    {
+      "id": "matrix:spec",
+      "detail": "e2e/finish-matrix.spec.ts"
+    },
+    {
+      "id": "lighthouse:files",
+      "detail": "1 JSON"
+    },
+    {
+      "id": "sinks:SINKS.md",
+      "detail": "present"
+    },
+    {
+      "id": "kill:raw-hex",
+      "detail": "0"
+    },
+    {
+      "id": "kill:sub-11px",
+      "detail": "0"
+    },
+    {
+      "id": "kill:important",
+      "detail": "0"
+    },
+    {
+      "id": "kill:native-dialogs",
+      "detail": "0"
+    },
+    {
+      "id": "kill:outline-none",
+      "detail": "0"
+    },
+    {
+      "id": "kill:console.log",
+      "detail": "0"
+    },
+    {
+      "id": "kill:google-fonts",
+      "detail": "0"
+    },
+    {
+      "id": "kill:innerHTML-classified",
+      "detail": "1 sinks; SINKS.md ok"
+    }
+  ],
+  "fail": [
+    {
+      "id": "ci:main",
+      "detail": "Merge branch 'finish/tier1-wire': C-10 npm run tier1 → failure https://github.com/shamikhahmed/ScentCap/actions/runs/34958794293"
+    }
+  ],
+  "warn": [
+    {
+      "id": "matrix:shots",
+      "detail": "qa/finish-loop/shots missing (run matrix)"
+    }
+  ],
+  "killList": {
+    "rawHex": 0,
+    "sub11": 0,
+    "important": 0,
+    "nativeDialog": 0,
+    "outlineNone": 0,
+    "consoleLog": 0,
+    "googleFonts": 0,
+    "innerHTML": 1
+  }
+}

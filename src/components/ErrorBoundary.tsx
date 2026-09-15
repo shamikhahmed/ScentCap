@@ -1,4 +1,5 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
+import { SC_WHITE } from '@/design/tokens';
 
 interface Props {
   children: ReactNode;
@@ -67,7 +68,7 @@ export class ErrorBoundary extends Component<Props, State> {
               borderRadius: 12,
               border: 'none',
               background: 'var(--sc-accent)',
-              color: '#fff',
+              color: SC_WHITE,
               fontWeight: 600,
               fontSize: 15,
             }}

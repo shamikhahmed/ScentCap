@@ -1,4 +1,5 @@
 import type { AdvisorResult, Fragrance } from '@/types';
+import { SC_SHEET_LIGHT, SC_SHEET_DARK, SC_INK_LIGHT, SC_INK_DARK, SC_MUTED_LIGHT, SC_MUTED_DARK, SC_TERTIARY_LIGHT, SC_TERTIARY_DARK } from '@/design/tokens';
 
 export interface ShareCardInput {
   brand: string;
@@ -101,10 +102,10 @@ export async function exportShareCardPng(
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('Canvas unavailable');
 
-  const bg = light ? '#ffffff' : '#1c1c1e';
-  const textPrimary = light ? '#1d1d1f' : '#f5f5f7';
-  const textSecondary = light ? '#86868b' : '#98989d';
-  const textTertiary = light ? '#aeaeb2' : '#636366';
+  const bg = light ? SC_SHEET_LIGHT : SC_SHEET_DARK;
+  const textPrimary = light ? SC_INK_LIGHT : SC_INK_DARK;
+  const textSecondary = light ? SC_MUTED_LIGHT : SC_MUTED_DARK;
+  const textTertiary = light ? SC_TERTIARY_LIGHT : SC_TERTIARY_DARK;
   const font = '-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif';
 
   ctx.fillStyle = bg;

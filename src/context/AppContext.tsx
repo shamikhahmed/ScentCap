@@ -12,6 +12,7 @@ import { loadDemoData } from '@/services/demo';
 import { ensureSeedLoaded } from '@/services/seed';
 import { getDailyWeather, type WeatherUnavailableReason } from '@/services/weather';
 import type { CollectionItem, Preferences, UserProfile, WearRecord, WeatherCache } from '@/types';
+import { SC_META_LIGHT, SC_META_DARK } from '@/design/tokens';
 
 interface AppState {
   ready: boolean;
@@ -105,7 +106,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const light = prefs.theme !== 'dark';
     document.body.classList.toggle('light', light);
     const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute('content', light ? '#e6eaee' : '#0b0e12');
+    if (meta) meta.setAttribute('content', light ? SC_META_LIGHT : SC_META_DARK);
   }, [prefs.theme]);
 
   const setProfile = useCallback(async (p: UserProfile) => {

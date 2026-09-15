@@ -89,8 +89,7 @@ export function Home() {
     setAdvisorInput(input);
     setActivePresetId(null);
     void runPick(input);
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- re-run on wardrobe/weather, not every wear log
-  }, [profile, collection, prefs, weather]);
+  }, [profile, collection, prefs, weather, runPick]);
 
   const applyPreset = (preset: MoodPreset) => {
     hapticLight();

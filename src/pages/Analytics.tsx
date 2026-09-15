@@ -21,7 +21,7 @@ import {
   wearsThisMonth,
 } from '@/lib/stats';
 
-const COLORS = ['#0c6b5c', '#3dbaa4', '#1a8f7a', '#5a9e92', '#94c9be'];
+import { ANALYTICS_COLORS as COLORS } from '@/design/tokens';
 
 export function AnalyticsPage() {
   const { collection, history } = useApp();

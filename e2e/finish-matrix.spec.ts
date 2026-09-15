@@ -21,7 +21,7 @@ test.describe('finish-matrix', () => {
         await page.goto('/?demo=1');
         await waitForAppReady(page).catch(async () => {
           await page.waitForLoadState('domcontentloaded');
-          const ready = await page.evaluate(() => (window as any).__APP_READY__ === true);
+          const ready = await page.evaluate(() => (window as Window & { __APP_READY__?: boolean }).__APP_READY__ === true);
           if (!ready) throw new Error('__APP_READY__ not set (C-20)');
         });
         await assertNoHorizontalOverflow(page);
