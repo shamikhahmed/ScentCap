@@ -1,7 +1,7 @@
 {
   "app": "ScentCap",
-  "version": "2.0.9",
-  "generated": "2026-07-30T11:24:16.713Z",
+  "version": "2.1.1",
+  "generated": "2026-09-15T12:39:35.758Z",
   "shots": [
     {
       "file": "desktop-00-onboarding.png",
@@ -123,6 +123,5 @@
       "route": "/settings",
       "viewport": "mobile"
     }
-  ],
-  "updated": "2026-07-30"
+  ]
 }
