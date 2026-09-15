@@ -33,3 +33,5 @@ qa/device-matrix/**/*.png
 .env.*
 !.env.example
 !.env.*.example
+
+qa/finish-loop/shots/

@@ -23,3 +23,14 @@ Location only via “Use my location” + city fallback; permission_denied copy;
 
 ### FND-04 ✅
 Button, Card, Switch, ConfirmDialog, Banner, Toast, ErrorState, EmptyState under `src/components/ui/`.
+
+# ScentCap — LOG
+
+## 2026-09-15 — C-23 stub
+- Tier 1 not verified — Review 2
+- Created/updated finish-loop records (BASELINE, LOG, STATES, APP-REPORT, DOCS-INVENTORY)
+- Known gaps:
+  - Tier 1 not verified
+  - Prior APP-REPORT under 1 KB in audit — in-repo rebuilt
+  - __APP_READY__ missing (C-20)
+  - Xcode / store ⛔ BLOCKED-EXTERNAL
