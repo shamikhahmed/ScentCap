@@ -77,6 +77,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       console.error('[ScentCap] Boot refresh failed', err);
     } finally {
       setReady(true);
+      try {
+        (window as Window & { __APP_READY__?: boolean }).__APP_READY__ = true;
+        document.documentElement.dataset.appReady = 'true';
+      } catch { /* ignore */ }
     }
   }, []);
 
