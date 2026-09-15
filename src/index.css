@@ -36,8 +36,8 @@
   --glass-shadow-sm: var(--sc-shadow-sm);
   --tab-bar-bg: color-mix(in srgb, var(--sc-panel) 94%, transparent);
 
-  --color-scent-50: #e9edf0;
-  --color-scent-950: #0e1116;
+  --color-scent-50: var(--sc-surface);
+  --color-scent-950: var(--sc-bg);
 }
 
 .text-display,
@@ -49,7 +49,7 @@
 /* Bridge to Capricorn shared tokens (capricorn-core / portfolio consistency) */
 :root {
   --cap-accent: var(--color-accent);
-  --cap-accent-contrast: #ffffff;
+  --cap-accent-contrast: var(--sc-sheet);
   --cap-bg: var(--color-bg);
   --cap-surface: var(--color-surface);
   --cap-text: var(--color-text-primary);
@@ -166,7 +166,7 @@ body:not(.light) .hero-pick-card {
 }
 
 .tag-pill {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -341,7 +341,7 @@ body:not(.light) .photo-card-scrim-dark {
 /* Active pills on accent — white text in both themes */
 .pill-accent-active {
   background: var(--color-accent);
-  color: #ffffff;
+  color: var(--sc-sheet);
 }
 
 :focus-visible {

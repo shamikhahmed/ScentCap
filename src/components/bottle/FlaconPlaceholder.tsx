@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils';
 import { FAMILY_COLORS } from '@/lib/stats';
+import { SC_WHITE_SOFT } from '@/design/tokens';
 import { flaconEtchedLabel, flaconInitials } from '@/lib/flaconMonogram';
 
 /** Sculpted flacon — last resort when no bottle art. Distinct per house. */
@@ -34,9 +35,9 @@ export function FlaconPlaceholder({
             <stop offset="100%" stopColor={aura} stopOpacity="0.28" />
           </linearGradient>
           <linearGradient id={`${gid}-shine`} x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#fff" stopOpacity="0.42" />
-            <stop offset="55%" stopColor="#fff" stopOpacity="0.05" />
-            <stop offset="100%" stopColor="#fff" stopOpacity="0" />
+            <stop offset="0%" stopColor={SC_WHITE_SOFT} stopOpacity="0.42" />
+            <stop offset="55%" stopColor={SC_WHITE_SOFT} stopOpacity="0.05" />
+            <stop offset="100%" stopColor={SC_WHITE_SOFT} stopOpacity="0" />
           </linearGradient>
           <linearGradient id={`${gid}-cap`} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor={aura} stopOpacity="1" />
@@ -62,7 +63,7 @@ export function FlaconPlaceholder({
           x="40"
           y="82"
           textAnchor="middle"
-          fill="#fff"
+          fill={SC_WHITE_SOFT}
           fontSize="12"
           fontWeight="700"
           fontFamily="var(--font-display), Georgia, serif"
@@ -75,7 +76,7 @@ export function FlaconPlaceholder({
           x="40"
           y="98"
           textAnchor="middle"
-          fill="#fff"
+          fill={SC_WHITE_SOFT}
           fontSize="5.5"
           fontWeight="600"
           fontFamily="var(--font-sans), system-ui, sans-serif"

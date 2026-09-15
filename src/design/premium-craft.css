@@ -129,10 +129,8 @@ textarea.atelier-input {
 input.atelier-input:focus {
   border-color: var(--sc-accent);
   box-shadow: 0 0 0 3px var(--sc-accent-soft);
-  outline: none;
+  outline: 0;
 }
-
-/* ── Buttons ── */
 .btn-glow {
   background: var(--sc-accent);
   color: #fff;

@@ -53,13 +53,7 @@ export function daysSinceWear(fragranceId: string, history: WearRecord[]): numbe
   return Math.floor((Date.now() - new Date(last.wornAt).getTime()) / 86400000);
 }
 
-export const FAMILY_COLORS: Record<string, string> = {
-  Fresh: '#5eead4',
-  Floral: '#f9a8d4',
-  Woody: '#a78bfa',
-  Oriental: '#fb923c',
-  Gourmand: '#fcd34d',
-};
+export { FAMILY_COLORS } from '@/design/tokens';
 
 export function complimentCount(history: WearRecord[]): number {
   return history.filter((h) => h.compliment).length;

@@ -46,7 +46,7 @@ const CapPremiumNav = (() => {
     return nav;
   }
 
-  function upgradeFab(fabSelector = '.fab, #fab') {
+  function upgradeFab(fabSelector = '.fab, [data-fab], .cap-fab') {
     document.querySelectorAll(fabSelector).forEach((fab) => {
       fab.classList.add('cap-premium-fab');
     });
@@ -58,7 +58,7 @@ const CapPremiumNav = (() => {
     const navSel = opts.nav || '#nav, nav.nav';
     const itemSel = opts.item || '.nav-tab, .nav-btn, .ni';
     document.querySelectorAll(navSel).forEach((n) => upgrade(n, itemSel));
-    upgradeFab(opts.fab || '.fab, #fab');
+    upgradeFab(opts.fab || '.fab, [data-fab], .cap-fab');
   }
 
   return { upgrade, upgradeFab, init };

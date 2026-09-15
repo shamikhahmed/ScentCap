@@ -1,5 +1,6 @@
 import { Droplets, Flower2, TreePine, Flame, Candy } from 'lucide-react';
 import { FAMILY_COLORS } from '@/lib/stats';
+import { SC_ACCENT } from '@/design/tokens';
 
 const MAP: Record<string, typeof Droplets> = {
   Fresh: Droplets,
@@ -12,7 +13,7 @@ const MAP: Record<string, typeof Droplets> = {
 export function FamilyIcon({ family, size = 20 }: { family?: string; size?: number }) {
   const Icon = MAP[family ?? ''] ?? Droplets;
   // Hex only — callers append alpha suffixes (`${color}22`).
-  const color = FAMILY_COLORS[family ?? ''] ?? '#0a5f52';
+  const color = FAMILY_COLORS[family ?? ''] ?? SC_ACCENT;
   return (
     <div
       className="rounded-xl flex items-center justify-center"

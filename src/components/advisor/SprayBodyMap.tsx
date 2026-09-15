@@ -19,10 +19,12 @@ const TYPE_LABEL = {
   clothing: 'On clothing',
 };
 
+import { SC_WHITE_SOFT, SPRAY_MAP } from '@/design/tokens';
+
 const ROLE_COLOR = {
-  // Hex required — UI appends alpha suffixes (`${color}33`).
-  base: '#0a5f52',
-  accent: '#45c4ad',
+  // Brand palette — UI appends alpha suffixes (`${color}33`).
+  base: SPRAY_MAP.base,
+  accent: SPRAY_MAP.accent,
 };
 
 export function SprayBodyMap({
@@ -159,7 +161,7 @@ export function SprayBodyMap({
           style={
             isOptional
               ? { border: `1.5px dashed ${color}`, color, background: 'transparent' }
-              : { background: selected ? color : `${color}33`, color: selected ? '#fff' : color }
+              : { background: selected ? color : `${color}33`, color: selected ? SC_WHITE_SOFT : color }
           }
         >
           {isOptional ? <Plus size={compact ? 10 : 12} /> : zone.sprayNumber}

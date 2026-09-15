@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Shield } from 'lucide-react';
-import { useRef, type ReactNode } from 'react';
+import { useRef, useState, type ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ProfileEditor } from '@/components/settings/ProfileEditor';
@@ -9,6 +9,7 @@ import { useApp } from '@/context/AppContext';
 import { exportAllData, exportWearHistoryCsv, importAllData } from '@/db';
 import { exitDemo, loadDemoData } from '@/services/demo';
 import { APP_VERSION } from '@/lib/version';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
 function SettingsSection({
   title,
@@ -41,6 +42,8 @@ export function SettingsPage() {
   const { prefs, setPrefs, refresh, collection } = useApp();
   const navigate = useNavigate();
   const importRef = useRef<HTMLInputElement>(null);
+  const [importError, setImportError] = useState<string | null>(null);
+  const [demoConfirmOpen, setDemoConfirmOpen] = useState(false);
 
   const exportData = async () => {
     const json = await exportAllData();
@@ -66,7 +69,7 @@ export function SettingsPage() {
       await importAllData(await file.text());
       await refresh();
     } catch (err) {
-      window.alert(err instanceof Error ? err.message : 'Import failed.');
+      setImportError(err instanceof Error ? err.message : 'Import failed.');
     } finally {
       if (importRef.current) importRef.current.value = '';
     }
@@ -74,6 +77,28 @@ export function SettingsPage() {
 
   return (
     <div className="atelier-page space-y-8">
+      <ConfirmDialog
+        open={!!importError}
+        title="Import failed"
+        body={importError ?? undefined}
+        confirmLabel="OK"
+        cancelLabel="Dismiss"
+        onConfirm={() => setImportError(null)}
+        onCancel={() => setImportError(null)}
+      />
+      <ConfirmDialog
+        open={demoConfirmOpen}
+        title="Load sample wardrobe?"
+        body="You can export your data anytime from Backup above."
+        confirmLabel="Load samples"
+        onConfirm={async () => {
+          setDemoConfirmOpen(false);
+          await loadDemoData();
+          await refresh();
+          navigate('/');
+        }}
+        onCancel={() => setDemoConfirmOpen(false)}
+      />
       <header>
         <p className="atelier-page__brand">Preferences</p>
         <h1 className="atelier-page__title">Settings</h1>
@@ -259,12 +284,7 @@ export function SettingsPage() {
             <Button
               variant="outline"
               className="w-full"
-              onClick={async () => {
-                if (!window.confirm('Load sample wardrobe? You can export your data anytime from Backup above.')) return;
-                await loadDemoData();
-                await refresh();
-                navigate('/');
-              }}
+              onClick={() => setDemoConfirmOpen(true)}
             >
               Load sample wardrobe
             </Button>

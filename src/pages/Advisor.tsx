@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { MapPin, Briefcase, Share2, Bookmark, UserRound, Layers } from 'lucide-react';
@@ -65,7 +65,7 @@ export function AdvisorPage() {
   const presetRan = useRef(false);
   const pickSeq = useRef(0);
 
-  const run = async () => {
+  const run = useCallback(async () => {
     if (!profile) return;
     const seq = ++pickSeq.current;
     setLoading(true);
@@ -81,14 +81,13 @@ export function AdvisorPage() {
       if (seq !== pickSeq.current) return;
       setResult(next);
     });
-  };
+  }, [profile, collection, input, prefs, weather, history]);
 
   useEffect(() => {
     if (!preset || presetRan.current || !collection.length || !profile) return;
     presetRan.current = true;
-    run();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [preset, collection.length, profile]);
+    void run();
+  }, [preset, collection.length, profile, run]);
 
   if (!collection.length) {
     return (
