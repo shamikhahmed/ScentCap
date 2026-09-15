@@ -1,106 +1,55 @@
 # ScentCap — APP-REPORT
 
-**Status:** Tier 1 not verified — Review 2  
-**Version:** 2.1.0 · **Tag:** (none claimed for Tier 1) · **Merge SHA:** n/a for this stub  
+**Status:** `TIER1.json` **PASS** — fleet Tier 1 **not** claimed (VO evidence not linked; Xcode ⛔ BLOCKED-EXTERNAL)  
+**Version:** 2.1.1 · **SW:** `scentcap-v212` · **Tag:** `v2.1.1`  
 **Live URL:** https://shamikhahmed.github.io/ScentCap/  
-**Live smoke:** not re-certified in this stub (see LOG.md)  
-**Updated:** 2026-09-15 (C-23 scaffold)
+**Updated:** 2026-09-15 (app loop after Step R)
 
-> Honest stub. Previous Tier 1 claims are **revoked** until `qa/finish-loop/TIER1.json` is PASS with linked evidence.
+Evidence: [`TIER1.json`](TIER1.json) · [`SINKS.md`](SINKS.md) · [`lighthouse/home-demo-mobile.json`](lighthouse/home-demo-mobile.json) · CI https://github.com/shamikhahmed/ScentCap/actions/runs/34959937910
 
 ## 1. Status
-- Tier 1: **FAIL / not verified**
-- This file exists so the loop record set is complete while Step R corrections land.
-- Do not treat any score below as a certification.
+- Automated gate file: **PASS** (23 pass, 0 fail, 1 warn: `matrix:shots`)
+- Fleet Tier 1 certification: **not verified** until VoiceOver (macOS Safari or device) evidence is linked
+- Native Xcode 26 build: ⛔ **BLOCKED-EXTERNAL** (CLT only; store pack docs present)
 
-## 2. Scorecard (13 dimensions)
-| Dimension | Baseline | After | Evidence | Gate |
-|---|---|---|---|---|
-| Completeness | unknown | stub | — | FAIL |
-| UI polish | unknown | stub | — | FAIL |
-| UX journeys | unknown | stub | — | FAIL |
-| Typography | unknown | stub | — | FAIL |
-| Accessibility | unknown | stub | axe not re-run here | FAIL |
-| Responsiveness | unknown | stub | finish-matrix pending green | FAIL |
-| Performance | unknown | stub | Lighthouse missing (C-22) | FAIL |
-| Reliability | unknown | stub | — | FAIL |
-| Privacy / Security | unknown | stub | sinks / privacy page TBD | FAIL |
-| Platform / PWA | unknown | stub | — | FAIL |
-| App Store readiness | N/A or EXTERNAL | stub | BLOCKED-EXTERNAL where noted | FAIL |
-| Play readiness | N/A or EXTERNAL | stub | BLOCKED-EXTERNAL where noted | FAIL |
-| Polish | unknown | stub | — | FAIL |
-
-**Overall:** not scored — Tier 1 not verified.
+## 2. Scorecard
+No estimated dimension scores (C-09). Gates use evidence only.
 
 ### G1–G14 (honest)
 | Gate | Result | Notes |
 |---|---|---|
-| G1 Native / store | FAIL / N/A | See gaps |
-| G2 Feature honesty | FAIL pending | Review 2 |
-| G3 Naming | FAIL pending | — |
-| G4 Responsive | FAIL | finish-matrix not fully green |
-| G5 Performance | FAIL | no Lighthouse JSON |
-| G6 Privacy | FAIL pending | — |
-| G7 A11y | FAIL pending | — |
-| G8 Versioning | FAIL pending | — |
-| G9 Fonts / CSP | FAIL pending | C-16 |
-| G10 Security sinks | FAIL pending | — |
-| G11 Tests | FAIL pending | — |
-| G12 Docs | FAIL | this stub |
-| G13 Gallery | FAIL pending | C-20 |
-| G14 Live smoke | FAIL pending | — |
+| G1 Native / store | PARTIAL / EXTERNAL | Capacitor pack + `docs/store/*` + PrivacyInfo; xcodebuild ⛔ |
+| G2 Feature honesty | PASS pending human | No Pro gate; advisor rules on-device |
+| G3 Naming | PASS | ScentCap |
+| G4 Responsive | WARN | finish-matrix spec present; shots warn |
+| G5 Performance | EVIDENCE | LH mobile perf **0.58** recorded — not claimed as G5 pass |
+| G6 Privacy | PASS | `public/privacy.html`; on-device wardrobe |
+| G7 A11y | PARTIAL | LH a11y **0.96**; VO ⛔ not linked |
+| G8 Versioning | PASS | 2.1.1 / scentcap-v212 / tag / CI green |
+| G9 Fonts / CSP | PASS | kill-list Google Fonts 0 |
+| G10 Security sinks | PASS | SINKS.md (1 static demo template) |
+| G11 Tests | PARTIAL | lint + unit + e2e in CI verify |
+| G12 Docs | PASS | finish-loop records + store pack |
+| G13 Gallery | WARN | gallery command exists; regen optional |
+| G14 Live smoke | PASS | Deploy workflow success on main |
 
-## 3. Issues found and resolved
-| ID | Severity | Area | What was wrong (user-visible) | Root cause | What was done | Files | Evidence | Status |
-|---|---|---|---|---|---|---|---|---|
-| C-23 | P1 | Process | Loop records missing / incomplete | Review 2 honesty reset | Stubbed §15.1 report + sibling loop files | `qa/finish-loop/*` | this file | ⏭ open until Tier 1 PASS |
+**Overall:** automated Tier 1 file PASS; product Tier 1 **not** claimed without VO.
 
-## 4. New issues discovered during implementation
-| ID | Severity | Area | What was wrong (user-visible) | Root cause | What was done | Files | Evidence | Status |
-|---|---|---|---|---|---|---|---|---|
-| — | — | — | None recorded in this stub | — | — | — | — | — |
+## 3. Issues found and resolved this slice
+| ID | Severity | What | Done | Evidence |
+|---|---|---|---|---|
+| kill-list hex | P0 | Raw hex outside brand tokens | Moved to `src/design/tokens.ts`; CSS vars | `npm run tier1` kill:raw-hex 0 |
+| native dialogs | P0 | `alert`/`confirm` in Settings | ConfirmDialog | Settings.tsx |
+| suppressions | P0 | eslint-disable exhaustive-deps | useCallback + deps | Advisor/Home |
+| C-22 LH | P1 | Missing LH JSON | home-demo-mobile.json | qa/finish-loop/lighthouse/ |
+| C-10 CI | P0 | finish-matrix `any` lint fail | Typed `__APP_READY__` | CI run 34959937910 |
+
+## 4. Remaining
+- `matrix:shots` warn — run `FINISH_MATRIX=1` capture
+- VO evidence (macOS Safari) for G7 close
+- Xcode 26 simulator build when full Xcode available
 
 ## 5. Decisions applied
-- Review 2: no estimated scores, no Tier 1 claim without TIER1.json PASS.
-- C-09 honesty rules remain in force.
-- DECISIONS IDs from fleet audit apply when the real close-out is written.
-
-## 6. Remaining items (known gaps from PROGRESS)
-- Tier 1 not verified
-- Prior APP-REPORT under 1 KB in audit — in-repo rebuilt
-- __APP_READY__ missing (C-20)
-- Xcode / store ⛔ BLOCKED-EXTERNAL
-
-Human / hardware still required where marked BLOCKED-EXTERNAL.
-
-## 7. Regressions caught
-None in this stub commit. Matrix failures (if any) are expected and drive the queue.
-
-## 8. Metrics before → after
-| Metric | Before | After |
-|---|---|---|
-| Tests | unknown | not re-baselined here |
-| axe serious/critical | unknown | — |
-| Lighthouse perf/a11y/BP | missing | missing (C-22) |
-| Shell JS gzip | unknown | — |
-| Raw hex / sub-11px / !important | unknown | — |
-| Unescaped sinks | unknown | — |
-| Native dialogs | unknown | — |
-| Emoji icons | unknown | — |
-| Matrix overflow/obscured | unknown | smoke spec added where applicable |
-| Console errors | unknown | — |
-
-## 9. Screens
-Not re-captured in this stub. Gallery review remains open (C-20 / §16.1).
-
-## 10. States coverage
-See `STATES.md` (stub). Primary journeys not re-certified.
-
-## 11. Distribution readiness
-PWA / store / TestFlight: **not certified** in Review 2. FLEET-AUDIT §J risks unchanged until close-out.
-
-## 12. Docs, gallery, website, cleanup
-DOCS-INVENTORY.md stubbed. Canonical docs may still drift until app close (§16.2).
-
-## 13. Release log
-No Tier 1 release claimed from this stub. Prior tags/versions may exist on `main` but do **not** imply Tier 1 PASS.
+- D-01 / G-1 native pack without store submission
+- C-09 honesty — no estimated scores
+- FND-04 ConfirmDialog for destructive/confirm flows

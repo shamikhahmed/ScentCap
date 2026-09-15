@@ -2,8 +2,8 @@
   "app": "scentcap",
   "version": "2.1.1",
   "swCache": "scentcap-v212",
-  "generatedAt": "2026-09-15T10:46:52.757Z",
-  "status": "FAIL",
+  "generatedAt": "2026-09-15T10:51:30.822Z",
+  "status": "PASS",
   "pass": [
     {
       "id": "version:field",
@@ -44,6 +44,10 @@
     {
       "id": "app-ready",
       "detail": "window.__APP_READY__ referenced"
+    },
+    {
+      "id": "ci:main",
+      "detail": "Merge branch 'finish/scentcap-tier1': Tier 1 kill-list + gates → success https://github.com/shamikhahmed/ScentCap/actions/runs/34959937910"
     },
     {
       "id": "tag",
@@ -94,12 +98,7 @@
       "detail": "1 sinks; SINKS.md ok"
     }
   ],
-  "fail": [
-    {
-      "id": "ci:main",
-      "detail": "Merge branch 'finish/tier1-wire': C-10 npm run tier1 → failure https://github.com/shamikhahmed/ScentCap/actions/runs/34958794293"
-    }
-  ],
+  "fail": [],
   "warn": [
     {
       "id": "matrix:shots",
