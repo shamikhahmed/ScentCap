@@ -26,6 +26,13 @@ Button, Card, Switch, ConfirmDialog, Banner, Toast, ErrorState, EmptyState under
 
 # ScentCap — LOG
 
+## 2026-09-15 — Tier 1 automated PASS
+- `npm run tier1` → PASS (23/0/1 warn matrix:shots)
+- Kill-list cleared via `src/design/tokens.ts`; Settings ConfirmDialog; SINKS + LH JSON
+- CI green: https://github.com/shamikhahmed/ScentCap/actions/runs/34959937910
+- VO ⛔ not linked · Xcode ⛔ BLOCKED-EXTERNAL
+- Closing app loop → VaultCap next
+
 ## 2026-09-15 — C-23 stub
 - Tier 1 not verified — Review 2
 - Created/updated finish-loop records (BASELINE, LOG, STATES, APP-REPORT, DOCS-INVENTORY)
