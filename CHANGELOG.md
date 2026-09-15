@@ -1,3 +1,7 @@
+## 2.1.1 — 2026-09-15
+- C-16: Self-host Inter on pitch.html; remove Google Fonts.
+- C-20: Set `window.__APP_READY__` when boot finishes (after splash/boot screen).
+
 ## [2.1.0] — 2026-09-14
 
 - Tier 1 finish: FND-04 UI adapters (Switch, ConfirmDialog, Banner, Toast, ErrorState)
