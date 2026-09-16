@@ -12,7 +12,8 @@
   --sc-border-soft: #d5dce5;
   --sc-text: #0c1015;
   --sc-text-soft: #3a434f;
-  --sc-text-muted: #66707c;
+  /* AA ≥4.5:1 on --sc-bg/#e6eaee (was #66707c @ 4.16) */
+  --sc-text-muted: #555e68;
   --sc-accent: #0a5f52;
   --sc-accent-hover: #084c42;
   --sc-accent-soft: #d0e8e3;
@@ -61,7 +62,8 @@ body:not(.light) {
   --sc-border-soft: #272f3a;
   --sc-text: #f0f3f6;
   --sc-text-soft: #a5afbb;
-  --sc-text-muted: #768291;
+  /* AA ≥4.5:1 on --sc-panel/#1a212a (was #768291 @ 4.15) */
+  --sc-text-muted: #8a94a0;
   --sc-accent: #45c4ad;
   --sc-accent-hover: #62d4bf;
   --sc-accent-soft: rgba(69, 196, 173, 0.16);

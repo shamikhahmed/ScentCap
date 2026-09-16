@@ -41,3 +41,9 @@ Button, Card, Switch, ConfirmDialog, Banner, Toast, ErrorState, EmptyState under
   - Prior APP-REPORT under 1 KB in audit — in-repo rebuilt
   - __APP_READY__ missing (C-20)
   - Xcode / store ⛔ BLOCKED-EXTERNAL
+
+## 2026-09-16 — C-35 axe serious/critical (finish/scentcap-a11y)
+**Baseline (live):** 393-light 5 · 1440-dark 5 (color-contrast on muted labels — eyebrow/meta/section-label)
+**Root cause:** `--sc-text-muted: #66707c` on `--sc-bg/#e6eaee` = 4.16:1; dark `#768291` on panel = 4.15:1.
+**Fix:** light `#555e68` · dark `#8a94a0` in `src/design/tokens.css`.
+**Verify:** local axe on vite preview after build.
