@@ -5,7 +5,7 @@
  */
 import type { Concentration, Fragrance, GenderLean, Longevity, Projection, Season } from '@/types';
 import { applyFragranceProfile } from '@/services/fragranceProfile';
-import { isPlaceholderCatalogImage } from '@/lib/catalogImage';
+import { isPlaceholderCatalogImage, isUnlicensedRemoteCatalogImage } from '@/lib/catalogImage';
 
 const API_BASE = 'https://fraganty.ai/api';
 
@@ -39,10 +39,15 @@ export function slugId(brand: string, name: string): string {
 }
 
 function pickImage(hit: { image?: string; imageTransparent?: string }): string | undefined {
-  // Prefer opaque product JPG — skip perfume-nobg / empty (blanks on light atelier).
-  if (hit.image && !isPlaceholderCatalogImage(hit.image)) return hit.image;
-  if (hit.imageTransparent && !isPlaceholderCatalogImage(hit.imageTransparent)) return hit.imageTransparent;
+  // C-42: do not adopt remote retailer product photos (license uncleared).
+  void hit;
   return undefined;
+}
+
+/** Keep Capricorn SVG / local art; drop unlicensed remote URLs. */
+function sanitizeLocalImage(image?: string | null): string | undefined {
+  if (!image || isUnlicensedRemoteCatalogImage(image)) return undefined;
+  return image;
 }
 
 export function parseConcentrationFromName(name: string): Concentration {
@@ -363,7 +368,8 @@ export async function enrichFragranceFromOnline(f: Fragrance): Promise<Fragrance
 
   const mergeImageOnly = (remote: Fragrance): Fragrance => ({
     ...f,
-    image: remote.image ?? f.image,
+    // Never store remote product photos (C-42 / IMAGE-LEDGER).
+    image: sanitizeLocalImage(f.image),
     catalogSlug: remote.catalogSlug ?? f.catalogSlug,
     top_notes: f.top_notes.length ? f.top_notes : remote.top_notes,
     heart_notes: f.heart_notes.length ? f.heart_notes : remote.heart_notes,
@@ -384,21 +390,24 @@ export async function enrichFragranceFromOnline(f: Fragrance): Promise<Fragrance
 
   if (f.catalogSlug) {
     const exact = await fetchFragranceBySlug(f.catalogSlug);
-    if (exact && !isPlaceholderCatalogImage(exact.image)) return mergeImageOnly(exact);
+    if (exact) return mergeImageOnly(exact);
   }
 
   const needsImage = isPlaceholderCatalogImage(f.image);
   if (!needsImage && f.top_notes.length > 0) return f;
 
   const resolved = await resolveFragranceImage(f.brand, f.name, f.concentration, f.catalogSlug);
-  if (!resolved.image && !resolved.slug) return f;
+  if (!resolved.image && !resolved.slug) {
+    const cleaned = sanitizeLocalImage(f.image);
+    return cleaned === f.image ? f : { ...f, image: cleaned };
+  }
 
   let enriched: Fragrance = {
     ...f,
-    image: resolved.image ?? f.image,
+    // Keep local art only; ignore resolved remote product image.
+    image: sanitizeLocalImage(f.image),
     catalogSlug: resolved.slug ?? f.catalogSlug,
   };
-
   if (key && resolved.slug) {
     const full = await fetchFullPerfume(resolved.slug, key);
     if (full) {

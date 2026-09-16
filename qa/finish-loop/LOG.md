@@ -41,3 +41,8 @@ Button, Card, Switch, ConfirmDialog, Banner, Toast, ErrorState, EmptyState under
   - Prior APP-REPORT under 1 KB in audit — in-repo rebuilt
   - __APP_READY__ missing (C-20)
   - Xcode / store ⛔ BLOCKED-EXTERNAL
+
+## 2026-09-16 — C-42 finish/scentcap-r3
+- Remove duplicate "scored N/100" under MATCH (advisor reasoning)
+- IMAGE-LEDGER.md + block unlicensed Fraganty/retailer product photos → FlaconPlaceholder
+- Sample wardrobe demo banner ≥11px (was 0.65rem / 10.4px)

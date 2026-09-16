@@ -3,7 +3,11 @@ import { cn } from '@/lib/utils';
 import { FlaconPlaceholder } from '@/components/bottle/FlaconPlaceholder';
 import { ensureFragranceImage } from '@/services/catalogSearch';
 import { ensureCatalogImageBlob } from '@/catalog/images';
-import { isPlaceholderCatalogImage } from '@/lib/catalogImage';
+import {
+  catalogImageForDisplay,
+  isPlaceholderCatalogImage,
+  isUnlicensedRemoteCatalogImage,
+} from '@/lib/catalogImage';
 import { FAMILY_COLORS } from '@/lib/stats';
 import type { Fragrance } from '@/types';
 
@@ -37,8 +41,8 @@ export function FragranceThumb({
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
   const [imageFailed, setImageFailed] = useState(false);
 
-  const rawCatalog = resolvedImage ?? catalogImage ?? fragrance?.image ?? null;
-  // Prefer live http product photo over baked demo SVG.
+  const rawCatalog = catalogImageForDisplay(resolvedImage ?? catalogImage ?? fragrance?.image ?? null);
+  // Capricorn SVG / licensed art only — never retailer http photos (C-42).
   const catalog =
     blobUrl ??
     (rawCatalog && !isPlaceholderCatalogImage(rawCatalog) ? rawCatalog : null) ??
@@ -65,8 +69,9 @@ export function FragranceThumb({
     let cancelled = false;
     void ensureFragranceImage(fragrance).then((f) => {
       if (cancelled) return;
-      if (f.image && !isPlaceholderCatalogImage(f.image)) {
-        setResolvedImage(f.image);
+      const next = catalogImageForDisplay(f.image);
+      if (next && !isPlaceholderCatalogImage(next)) {
+        setResolvedImage(next);
       }
     });
     return () => {
@@ -77,7 +82,7 @@ export function FragranceThumb({
   useEffect(() => {
     if (photoUrl) return;
     const url = resolvedImage ?? catalogImage ?? fragrance?.image;
-    if (!url || !url.startsWith('http')) return;
+    if (!url || !url.startsWith('http') || isUnlicensedRemoteCatalogImage(url)) return;
     let cancelled = false;
     let created: string | null = null;
     void ensureCatalogImageBlob(url).then((obj) => {
@@ -90,7 +95,6 @@ export function FragranceThumb({
       if (created) URL.revokeObjectURL(created);
     };
   }, [catalogImage, resolvedImage, fragrance?.image, photoUrl]);
-
   return (
     <div
       className={cn(

@@ -58,8 +58,8 @@ export async function runAdvisor(
         prefs.officeMaxSprays,
       )
     : computeSprayGuidance(top.fragrance, input, profile, prefs.officeMaxSprays);
+  // SCNT-P1-02 / C-42: do not duplicate the % MATCH badge with a "scored N/100" line.
   const reasoning = [
-    `${top.fragrance.brand} ${top.fragrance.name} scored ${top.breakdown.total}/100`,
     ...top.breakdown.reasons,
     `Occasion fit: ${top.breakdown.occasion}/25`,
     `Weather fit: ${top.breakdown.weather}/20`,
