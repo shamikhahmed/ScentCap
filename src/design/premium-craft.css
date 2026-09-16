@@ -133,7 +133,7 @@ input.atelier-input:focus {
 }
 .btn-glow {
   background: var(--sc-accent);
-  color: #fff;
+  color: var(--sc-on-accent);
   border-radius: 14px;
   font-weight: 600;
   letter-spacing: -0.015em;

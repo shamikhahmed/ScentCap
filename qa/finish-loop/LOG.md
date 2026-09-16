@@ -47,3 +47,9 @@ Button, Card, Switch, ConfirmDialog, Banner, Toast, ErrorState, EmptyState under
 **Root cause:** `--sc-text-muted: #66707c` on `--sc-bg/#e6eaee` = 4.16:1; dark `#768291` on panel = 4.15:1.
 **Fix:** light `#555e68` · dark `#8a94a0` in `src/design/tokens.css`.
 **Verify:** local axe on vite preview after build.
+
+## C-35 a11y color-contrast — 2026-09-16
+
+- **Changed:** `--sc-text-muted` AA on light/dark; `--sc-on-accent` + button/btn-glow use it; system theme respects `prefers-color-scheme`; demo theme=`system`; skip atelier light-force in demo.
+- **Root cause:** muted `#66707c` on `#e6eaee` @ 4.16; white on dark teal accent @ 2.15; demo always light.
+- **Verify:** axe home light+dark → 0. Evidence: `qa/finish-loop/axe/home-{light,dark}.json`.

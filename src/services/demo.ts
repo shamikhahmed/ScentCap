@@ -98,7 +98,7 @@ export async function loadDemoData(): Promise<void> {
     id: 'preferences',
     officeMaxSprays: 3,
     officeSafeMode: false,
-    theme: 'light',
+    theme: 'system',
     demoMode: true,
     signatures: workSignature ? { work: workSignature.id } : {},
   };
