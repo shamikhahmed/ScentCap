@@ -6,7 +6,8 @@
   box-shadow: var(--sc-shadow-sm);
   font-weight: 600;
   letter-spacing: -0.01em;
-  color: #ffffff;
+  /* Dark ink on accent — white failed AA on bright dark-theme teal (#45c4ad @ 2.15). */
+  color: var(--sc-on-accent);
 }
 
 .btn-glow:disabled {

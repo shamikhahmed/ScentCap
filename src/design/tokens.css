@@ -17,6 +17,7 @@
   --sc-accent: #0a5f52;
   --sc-accent-hover: #084c42;
   --sc-accent-soft: #d0e8e3;
+  --sc-on-accent: #ffffff;
   --sc-ink: #0c1015;
   --sc-line: #24303a;
   --sc-success: #2a6f45;
@@ -62,11 +63,13 @@ body:not(.light) {
   --sc-border-soft: #272f3a;
   --sc-text: #f0f3f6;
   --sc-text-soft: #a5afbb;
-  /* AA ≥4.5:1 on --sc-panel/#1a212a (was #768291 @ 4.15) */
-  --sc-text-muted: #8a94a0;
+  /* AA ≥4.5:1 on elevated tiles ~#282e37 (was #8a94a0 @ 4.44) */
+  --sc-text-muted: #8e98a4;
   --sc-accent: #45c4ad;
   --sc-accent-hover: #62d4bf;
   --sc-accent-soft: rgba(69, 196, 173, 0.16);
+  /* Dark ink on bright teal — white on #45c4ad is only ~2.15:1 */
+  --sc-on-accent: #0b0e12;
   --sc-ink: #f0f3f6;
   --sc-line: #9aa6b4;
   --sc-focus: #45c4ad;
@@ -101,6 +104,7 @@ body {
   --color-text-secondary: var(--sc-text-soft);
   --color-text-tertiary: var(--sc-text-muted);
   --color-accent: var(--sc-accent);
+  --color-on-accent: var(--sc-on-accent);
   --color-accent-dim: color-mix(in srgb, var(--sc-accent) 85%, white);
   --color-blush: var(--sc-blush);
   --color-accent-muted: var(--sc-accent-soft);

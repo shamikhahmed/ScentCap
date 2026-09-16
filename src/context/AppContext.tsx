@@ -50,7 +50,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setProfileState(p);
       let nextPrefs = { ...pr, officeSafeMode: pr.officeSafeMode ?? false };
       try {
-        if (localStorage.getItem('scentcap_atelier_203') !== '1') {
+        // One-time atelier default to light for existing installs — skip in demo so
+        // prefers-color-scheme / theme=system can be audited in both themes.
+        if (!isDemoUrl() && !nextPrefs.demoMode && localStorage.getItem('scentcap_atelier_203') !== '1') {
           nextPrefs = { ...nextPrefs, theme: 'light' };
           localStorage.setItem('scentcap_atelier_203', '1');
           void savePreferences(nextPrefs);
@@ -103,10 +105,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [refresh]);
 
   useEffect(() => {
-    const light = prefs.theme !== 'dark';
-    document.body.classList.toggle('light', light);
-    const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute('content', light ? SC_META_LIGHT : SC_META_DARK);
+    const mq = window.matchMedia('(prefers-color-scheme: light)');
+    const apply = () => {
+      const isLight =
+        prefs.theme === 'light' ? true : prefs.theme === 'dark' ? false : mq.matches;
+      document.body.classList.toggle('light', isLight);
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', isLight ? SC_META_LIGHT : SC_META_DARK);
+    };
+    apply();
+    mq.addEventListener('change', apply);
+    return () => mq.removeEventListener('change', apply);
   }, [prefs.theme]);
 
   const setProfile = useCallback(async (p: UserProfile) => {

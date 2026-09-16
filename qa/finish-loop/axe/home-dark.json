@@ -1,0 +1,14 @@
+{
+  "url": "http://127.0.0.1:4173/ScentCap/?demo=1",
+  "theme": "dark",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "timestamp": "2026-09-16T10:35:53.963Z",
+  "violations": [],
+  "passes": 23,
+  "incomplete": 1,
+  "seriousCriticalNodeCount": 0,
+  "seriousCriticalIds": []
+}
