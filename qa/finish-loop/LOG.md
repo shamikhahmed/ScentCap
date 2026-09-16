@@ -53,3 +53,5 @@ Button, Card, Switch, ConfirmDialog, Banner, Toast, ErrorState, EmptyState under
 - **Changed:** `--sc-text-muted` AA on light/dark; `--sc-on-accent` + button/btn-glow use it; system theme respects `prefers-color-scheme`; demo theme=`system`; skip atelier light-force in demo.
 - **Root cause:** muted `#66707c` on `#e6eaee` @ 4.16; white on dark teal accent @ 2.15; demo always light.
 - **Verify:** axe home light+dark → 0. Evidence: `qa/finish-loop/axe/home-{light,dark}.json`.
+
+**After (local axe):** 393-light **0** · 1440-dark **0** serious/critical.
