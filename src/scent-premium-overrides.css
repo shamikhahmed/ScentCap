@@ -6,7 +6,7 @@
   box-shadow: var(--sc-shadow-sm);
   font-weight: 600;
   letter-spacing: -0.01em;
-  /* Dark ink on accent — white failed AA on bright dark-theme teal (#45c4ad @ 2.15). */
+  /* Dark ink on accent — white failed AA on bright dark-theme teal (~2.15:1). */
   color: var(--sc-on-accent);
 }
 
@@ -79,7 +79,7 @@
   left: 10%;
   width: 55%;
   height: 38%;
-  background: color-mix(in srgb, var(--color-blush, #d4a8b8) 28%, transparent);
+  background: color-mix(in srgb, var(--color-blush) 28%, transparent);
   opacity: 0.55;
 }
 
@@ -107,7 +107,7 @@
   width: 18px;
   height: 22px;
   border-radius: 4px 4px 0 0;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--color-accent) 60%, #fff) 0%, var(--color-accent) 100%);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--color-accent) 60%, var(--sc-pure)) 0%, var(--color-accent) 100%);
   border: 1px solid color-mix(in srgb, var(--color-accent) 50%, transparent);
 }
 
@@ -121,7 +121,7 @@
   border-radius: 8px 8px 14px 14px;
   background: linear-gradient(
     145deg,
-    color-mix(in srgb, var(--color-blush, #d4a8b8) 18%, var(--color-surface)) 0%,
+    color-mix(in srgb, var(--color-blush) 18%, var(--color-surface)) 0%,
     var(--color-surface-elevated) 45%,
     color-mix(in srgb, var(--color-accent) 12%, var(--color-surface)) 100%
   );
@@ -149,7 +149,7 @@
   transform: translateX(-50%);
   width: 90px;
   height: 40px;
-  background: radial-gradient(ellipse 80% 60% at 50% 100%, color-mix(in srgb, var(--color-blush, #d4a8b8) 35%, transparent), transparent 70%);
+  background: radial-gradient(ellipse 80% 60% at 50% 100%, color-mix(in srgb, var(--color-blush) 35%, transparent), transparent 70%);
   filter: blur(6px);
   opacity: 0.7;
 }
@@ -287,7 +287,7 @@
 }
 
 .catalog-editorial-issue {
-  font-size: 0.625rem;
+  font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -295,7 +295,7 @@
 }
 
 .catalog-editorial-variants {
-  font-size: 0.625rem;
+  font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -376,7 +376,7 @@
 }
 
 .catalog-variant-badge {
-  font-size: 0.5625rem;
+  font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -446,7 +446,7 @@
   padding: 0.75rem 0.75rem 1rem;
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, #8b6914 8%, var(--color-bg-secondary)) 0%,
+    color-mix(in srgb, var(--sc-wood-gilt) 8%, var(--color-bg-secondary)) 0%,
     var(--color-bg-secondary) 8%,
     var(--color-bg) 100%
   );
@@ -459,7 +459,7 @@
 body.light .wardrobe-cabinet-frame {
   background: linear-gradient(
     180deg,
-    #f5efe6 0%,
+    var(--sc-wood-paper) 0%,
     var(--color-bg-secondary) 12%,
     var(--color-bg) 100%
   );
@@ -473,16 +473,16 @@ body.light .wardrobe-cabinet-frame {
 .wardrobe-cabinet-rail {
   height: 6px;
   border-radius: 999px;
-  background: linear-gradient(90deg, #3d3428, #6b5344, #3d3428);
+  background: linear-gradient(90deg, var(--sc-wood-rail), var(--sc-wood-rail-mid), var(--sc-wood-rail));
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 body.light .wardrobe-cabinet-rail {
-  background: linear-gradient(90deg, #c4a882, #e8dcc8, #c4a882);
+  background: linear-gradient(90deg, var(--sc-wood-rail-light), var(--sc-wood-rail-light-mid), var(--sc-wood-rail-light));
 }
 
 .wardrobe-cabinet-label {
-  font-size: 0.625rem;
+  font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -501,11 +501,11 @@ body.light .wardrobe-cabinet-rail {
   height: 10px;
   margin-top: 0.75rem;
   border-radius: 0 0 12px 12px;
-  background: linear-gradient(180deg, #2a241c, #1a1612);
+  background: linear-gradient(180deg, var(--sc-wood-base), var(--sc-wood-base-deep));
 }
 
 body.light .wardrobe-cabinet-base {
-  background: linear-gradient(180deg, #d4c4ae, #b8a690);
+  background: linear-gradient(180deg, var(--sc-wood-base-light), var(--sc-wood-base-light-mid));
 }
 
 .wardrobe-shelf {
@@ -535,9 +535,9 @@ body.light .wardrobe-cabinet-base {
   border-radius: 2px;
   background: linear-gradient(
     180deg,
-    #5c4a3a 0%,
-    #3d3228 40%,
-    #2a221a 100%
+    var(--sc-wood-shelf) 0%,
+    var(--sc-wood-shelf-mid) 40%,
+    var(--sc-wood-shelf-deep) 100%
   );
   box-shadow:
     0 4px 8px rgba(0, 0, 0, 0.35),
@@ -545,7 +545,7 @@ body.light .wardrobe-cabinet-base {
 }
 
 body.light .wardrobe-shelf-board {
-  background: linear-gradient(180deg, #d9c9b0 0%, #c4b098 50%, #a89078 100%);
+  background: linear-gradient(180deg, var(--sc-wood-shelf-light) 0%, var(--sc-wood-shelf-light-mid) 50%, var(--sc-wood-shelf-light-deep) 100%);
 }
 
 .wardrobe-shelf-bottle {
@@ -594,7 +594,7 @@ body.light .wardrobe-shelf-board {
   position: absolute;
   top: 4px;
   left: 4px;
-  font-size: 0.5rem;
+  font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -610,7 +610,7 @@ body.light .wardrobe-shelf-board {
 }
 
 .wardrobe-shelf-brand {
-  font-size: 0.5625rem;
+  font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -637,7 +637,7 @@ body.light .wardrobe-shelf-board {
   justify-content: space-between;
   gap: 0.35rem;
   margin-top: 0.35rem;
-  font-size: 0.625rem;
+  font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -833,7 +833,7 @@ body[data-cap-app="1"] #view > .screen {
   align-items: center;
   justify-content: center;
   background: var(--sc-accent);
-  color: #fff;
+  color: var(--sc-pure);
   box-shadow: var(--sc-shadow-md);
 }
 @media (min-width: 700px) {

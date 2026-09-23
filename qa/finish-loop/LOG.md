@@ -85,3 +85,11 @@ Button, Card, Switch, ConfirmDialog, Banner, Toast, ErrorState, EmptyState under
 ## 2026-09-23 — gates
 - After v2.1.2 tag + evidence: only kill:raw-hex (84) + kill:sub-11px (13) remain (plus live VERSION until Pages deploy).
 - Mobile LH meets thresholds (P96).
+
+## 2026-09-23 — C-29 kill:raw-hex + kill:sub-11px (finish/scentcap-stepR)
+
+- **Before:** kill:raw-hex 84 · kill:sub-11px 13
+- **After:** both 0 (hardened scan)
+- **Approach:** Cap hex → `public/css/tokens.css` (C-29 exempt); strip fallbacks from `capricorn-core.css`; wardrobe/pill hex → `src/design/tokens.css` vars; floor rem type to ≥0.6875rem; vite PWA bg via `tokens.ts`; deploy `cp VERSION.json dist/`
+- **VERSION:** 2.1.3 / scentcap-v214
+- **Verify:** `npm run tier1` — kill-list PASS; leftover: tag v2.1.3, live VERSION until Pages deploy

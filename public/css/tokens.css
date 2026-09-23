@@ -1,0 +1,77 @@
+/* Cap foundation + ScentCap shared hex — C-29 hex-exempt (tokens.css). */
+:root {
+  /* ── Brand core ── */
+  --cap-gold: #c9a227;
+  --cap-gold-soft: rgba(201, 162, 39, 0.35);
+  --cap-accent: var(--cap-gold);
+  --cap-accent-contrast: #0a0e17;
+
+  /* ── Surfaces (dark — default) ── */
+  --cap-bg: #0a0e17;
+  --cap-bg-2: #111827;
+  --cap-surface: rgba(244, 240, 232, 0.04);
+  --cap-surface-2: rgba(244, 240, 232, 0.07);
+  --cap-border: rgba(244, 240, 232, 0.10);
+  --cap-border-strong: rgba(244, 240, 232, 0.18);
+
+  /* ── Text ── */
+  --cap-text: #f4f0e8;
+  --cap-text-dim: #9ca3af;
+  --cap-text-faint: #6b7280;
+  --cap-text-muted: var(--cap-text-dim);
+
+  /* ── Semantic ── */
+  --cap-success: #34d399;
+  --cap-warning: #fbbf24;
+  --cap-danger: #f87171;
+  --cap-info: #60a5fa;
+  --cap-hot: #ff9f0a;
+  --cap-good: #30d158;
+  --cap-ios-success: #34c759;
+  --cap-ios-danger: #ff453a;
+  --cap-tab-active: #2563eb;
+  --cap-tab-hover: #f3f4f6;
+  --cap-pure: #fff;
+  --cap-pure-white: #ffffff;
+  --cap-ink-soft: #f5f5f7;
+  --cap-black: #000;
+  --cap-cyan-short: #0af;
+  --cap-sidebar-accent: #5b8dee;
+  --cap-surface-1: #1c1c1e;
+  --cap-desktop-bg: #0a0a0f;
+}
+
+[data-cap-theme="light"] {
+  --cap-bg: #faf8f4;
+  --cap-bg-2: #f0ede6;
+  --cap-surface: rgba(10, 14, 23, 0.04);
+  --cap-surface-2: rgba(10, 14, 23, 0.07);
+  --cap-border: rgba(10, 14, 23, 0.10);
+  --cap-border-strong: rgba(10, 14, 23, 0.20);
+  --cap-text: #131722;
+  --cap-text-dim: #4b5563;
+  --cap-text-faint: #9ca3af;
+  --cap-glass-bg: rgba(250, 248, 244, 0.78);
+  --cap-glass-border: rgba(10, 14, 23, 0.10);
+  --cap-shadow-1: 0 1px 2px rgba(16, 20, 32, 0.08);
+  --cap-shadow-2: 0 4px 16px rgba(16, 20, 32, 0.10);
+  --cap-shadow-3: 0 12px 40px rgba(16, 20, 32, 0.14);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: light) {
+  [data-cap-theme="auto"] {
+    --cap-bg: #faf8f4;
+    --cap-bg-2: #f0ede6;
+    --cap-surface: rgba(10, 14, 23, 0.04);
+    --cap-surface-2: rgba(10, 14, 23, 0.07);
+    --cap-border: rgba(10, 14, 23, 0.10);
+    --cap-border-strong: rgba(10, 14, 23, 0.20);
+    --cap-text: #131722;
+    --cap-text-dim: #4b5563;
+    --cap-text-faint: #9ca3af;
+    --cap-glass-bg: rgba(250, 248, 244, 0.78);
+    --cap-glass-border: rgba(10, 14, 23, 0.10);
+    color-scheme: light;
+  }
+}

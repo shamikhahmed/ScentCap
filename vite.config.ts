@@ -4,6 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import path from 'path';
 import versionManifest from './VERSION.json';
+import { SC_META_LIGHT } from './src/design/tokens';
 
 const isCapacitor = process.env.CAPACITOR === 'true' || process.env.VITE_CAPACITOR === 'true';
 const base = isCapacitor ? '/' : '/ScentCap/';
@@ -26,13 +27,14 @@ export default defineConfig({
         'icon-1024.png',
         'icon-maskable-192.png',
         'icon-maskable-512.png',
+        'VERSION.json',
       ],
       manifest: {
         name: 'ScentCap',
         short_name: 'ScentCap',
         description: 'Your personal fragrance operating system',
-        theme_color: '#e6eaee',
-        background_color: '#e6eaee',
+        theme_color: SC_META_LIGHT,
+        background_color: SC_META_LIGHT,
         display: 'standalone',
         orientation: 'portrait',
         start_url: startUrl,

@@ -33,6 +33,26 @@
   --sc-blush: #74848f;
   --sc-rose: #85656e;
   --sc-olive: #5a7456;
+  --sc-pure: #ffffff;
+  --sc-hot: #ff9f0a;
+  --sc-good: #30d158;
+  /* Wardrobe cabinet wood (light/dark) */
+  --sc-wood-gilt: #8b6914;
+  --sc-wood-paper: #f5efe6;
+  --sc-wood-rail: #3d3428;
+  --sc-wood-rail-mid: #6b5344;
+  --sc-wood-rail-light: #c4a882;
+  --sc-wood-rail-light-mid: #e8dcc8;
+  --sc-wood-base: #2a241c;
+  --sc-wood-base-deep: #1a1612;
+  --sc-wood-base-light: #d4c4ae;
+  --sc-wood-base-light-mid: #b8a690;
+  --sc-wood-shelf: #5c4a3a;
+  --sc-wood-shelf-mid: #3d3228;
+  --sc-wood-shelf-deep: #2a221a;
+  --sc-wood-shelf-light: #d9c9b0;
+  --sc-wood-shelf-light-mid: #c4b098;
+  --sc-wood-shelf-light-deep: #a89078;
 
   --sc-radius-btn: 14px;
   --sc-radius-card: 18px;

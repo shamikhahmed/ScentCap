@@ -45,6 +45,7 @@ jobs:
       - run: npm ci
       - run: npm run generate-icons
       - run: npm run build
+      - run: cp VERSION.json dist/VERSION.json
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
