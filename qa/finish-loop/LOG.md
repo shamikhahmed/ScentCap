@@ -112,3 +112,7 @@ Button, Card, Switch, ConfirmDialog, Banner, Toast, ErrorState, EmptyState under
 - Change: outside-#root boot shell; system fonts; demo offline path; keep #sc-boot until ready; gzip-aware local LH; VERSION 2.1.4 / scentcap-v215.
 - Evidence: mobile P97 LCP~1.9s; desktop P100 LCP~0.5s (local gzip serve mirroring Pages).
 - Verification: `npm run tier1` after tag v2.1.4 (live VERSION warn until Pages deploy).
+
+### Evidence refresh (post v2.1.4 UI commit)
+- Re-ran gzip LH: mobile P97 / desktop P100
+- Matrix 6/6 + gallery regen for freshness vs UI tip
