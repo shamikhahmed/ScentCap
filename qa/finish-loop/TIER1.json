@@ -1,17 +1,17 @@
 {
   "app": "scentcap",
-  "version": "2.1.3",
-  "swCache": "scentcap-v214",
-  "generatedAt": "2026-09-23T05:58:26.727Z",
+  "version": "2.1.4",
+  "swCache": "scentcap-v215",
+  "generatedAt": "2026-09-23T08:59:08.306Z",
   "status": "FAIL",
   "pass": [
     {
       "id": "version:field",
-      "detail": "2.1.3"
+      "detail": "2.1.4"
     },
     {
       "id": "version:sw-cache-match",
-      "detail": "dist/sw.js contains scentcap-v214"
+      "detail": "dist/sw.js contains scentcap-v215"
     },
     {
       "id": "records:BASELINE.md",
@@ -54,10 +54,6 @@
       "detail": "Deploy to GitHub Pages @ 868cf34 → success https://github.com/shamikhahmed/ScentCap/actions/runs/35086544739"
     },
     {
-      "id": "tag",
-      "detail": "found v2.1.3"
-    },
-    {
       "id": "matrix:spec",
       "detail": "e2e/finish-matrix.spec.ts"
     },
@@ -72,6 +68,18 @@
     {
       "id": "matrix:freshness",
       "detail": "2026-09-23T05:54:23.963Z"
+    },
+    {
+      "id": "lighthouse:home-demo-desktop.json",
+      "detail": "perf 100 a11y 100 bp 100 LCP 454.3727 TBT 0 CLS 0.05650404180530019"
+    },
+    {
+      "id": "lighthouse:home-demo-mobile.json",
+      "detail": "perf 97 a11y 100 bp 100 LCP 1857.7758 TBT 33.5 CLS 0.07372146069698357"
+    },
+    {
+      "id": "lighthouse:passing",
+      "detail": "2/2 files meet thresholds"
     },
     {
       "id": "axe:serious-critical",
@@ -120,18 +128,18 @@
   ],
   "fail": [
     {
-      "id": "lighthouse:home-demo-mobile.json",
-      "detail": "perf 56 a11y 96 bp 96 LCP 36048.5 TBT 762.5 CLS 0.0009024686731019861"
-    },
-    {
-      "id": "lighthouse:passing",
-      "detail": "0/1 files meet thresholds"
+      "id": "tag",
+      "detail": "missing tag v2.1.4 (have: v2.0.10, v2.1.0, v2.1.1, v2.1.2, v2.1.3)"
     }
   ],
   "warn": [
     {
       "id": "live:VERSION.json",
       "detail": "https://shamikhahmed.github.io/ScentCap/VERSION.json → 404"
+    },
+    {
+      "id": "g15:architecture",
+      "detail": "map not present (docs/architecture or architecture/) — soft until per-app map lands; tooling pilots use npm run architecture:check"
     }
   ],
   "killList": {

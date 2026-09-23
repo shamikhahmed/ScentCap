@@ -25,6 +25,44 @@
     <meta name="twitter:description" content="Offline-first fragrance wardrobe OS — catalog bottles, track wears, layer with confidence. Your collection stays on your device." />
     <meta name="twitter:image" content="https://shamikhahmed.github.io/assets/screenshots/scentcap.png" />
     <title>ScentCap — Fragrance Wardrobe</title>
+    <style>
+      /* Outside #root so React mount does not destroy early FCP/LCP.
+         rgb() (not hex); avoid important overrides — C-29 kill-list. Matches --sc-bg / muted / ink. */
+      #sc-boot {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        margin: 0;
+        padding: max(20px, env(safe-area-inset-top)) 20px 24px;
+        box-sizing: border-box;
+        background: rgb(230, 234, 238);
+        color: rgb(12, 16, 21);
+        font-family: Georgia, "Times New Roman", serif;
+      }
+      #sc-boot .sc-boot__brand {
+        margin: 0;
+        font-family: system-ui, sans-serif;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgb(85, 94, 104);
+      }
+      #sc-boot .sc-boot__title {
+        margin: 6px 0 0;
+        font-size: 1.35rem;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+      }
+      #sc-boot .sc-boot__hero {
+        margin: 2.5rem 0 0;
+        font-size: clamp(2.75rem, 14vw, 4rem);
+        font-weight: 600;
+        letter-spacing: -0.03em;
+        line-height: 1.05;
+        max-width: 11ch;
+      }
+    </style>
   </head>
   <body data-cap-app="1" class="light">
     <script>
@@ -41,9 +79,12 @@
         }
       })(window.location);
     </script>
+    <div id="sc-boot" aria-busy="true" aria-label="Loading ScentCap">
+      <p class="sc-boot__brand">ScentCap</p>
+      <h1 class="sc-boot__title">Wardrobe</h1>
+      <p class="sc-boot__hero">Today’s pick</p>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <script src="js/capricorn-motion.js"></script>
-    <script src="js/cap-demo-mode.js"></script>
 </body>
 </html>

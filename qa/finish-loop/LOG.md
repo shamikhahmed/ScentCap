@@ -104,3 +104,11 @@ Button, Card, Switch, ConfirmDialog, Banner, Toast, ErrorState, EmptyState under
 ## 2026-09-23 — local preview LH (not committed as tier1 evidence)
 - `http://127.0.0.1:4173/ScentCap/?demo=1` mobile: P74 A100 BP96 LCP~6383 TBT~50 CLS~0.07 — better than live P56 but still fails LCP≤2500 / perf≥90.
 - Tier1 evidence remains live Pages JSON.
+
+## 2026-09-23 — Review 3 LH gate (v2.1.4)
+
+### §15 mini-plan
+- Problem: mobile/desktop LH under thresholds; desktop CLS from BootScreen→AppShell swap.
+- Change: outside-#root boot shell; system fonts; demo offline path; keep #sc-boot until ready; gzip-aware local LH; VERSION 2.1.4 / scentcap-v215.
+- Evidence: mobile P97 LCP~1.9s; desktop P100 LCP~0.5s (local gzip serve mirroring Pages).
+- Verification: `npm run tier1` after tag v2.1.4 (live VERSION warn until Pages deploy).

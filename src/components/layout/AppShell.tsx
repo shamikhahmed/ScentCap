@@ -80,6 +80,7 @@ export function AppShell() {
             alt=""
             width={32}
             height={32}
+            style={{ width: 32, height: 32 }}
             className="shrink-0"
             aria-hidden
             draggable={false}

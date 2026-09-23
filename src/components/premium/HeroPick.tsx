@@ -1,9 +1,8 @@
-import { motion } from 'framer-motion';
 import { Check, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PressableLink } from '@/components/ui/PressableScale';
 import { FragranceThumb } from '@/components/collection/FragranceThumb';
-import { fragranceDisplayName } from '@/services/onlineCatalog';
+import { fragranceDisplayName } from '@/lib/fragranceName';
 import type { AdvisorResult } from '@/types';
 
 /** Museum hero: bottle dominates. Reason / spray / layering live below fold on Home. */
@@ -32,12 +31,9 @@ export function HeroPick({
   const displayName = fragranceDisplayName(primary.fragrance.name);
 
   return (
-    <motion.div
+    <div
       className="museum-hero"
       style={{ '--aura': familyColor } as React.CSSProperties}
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
     >
       <div className="museum-hero__stage">
         <PressableLink
@@ -86,6 +82,6 @@ export function HeroPick({
         </Button>
       </div>
       {shareMsg && <p className="museum-hero__share-msg">{shareMsg}</p>}
-    </motion.div>
+    </div>
   );
 }

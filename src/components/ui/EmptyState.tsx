@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { AmbientBackground } from '@/components/premium/AmbientBackground';
 import { BrandMark } from '@/components/premium/BrandMark';
@@ -29,12 +28,7 @@ export function EmptyState({
   return (
     <div className="relative min-h-[70dvh] flex flex-col items-center justify-center safe-pt safe-pb px-5 py-10 text-center overflow-x-hidden">
       <AmbientBackground />
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] }}
-        className="relative z-10 w-full max-w-sm"
-      >
+      <div className="relative z-10 w-full max-w-sm">
         <div className="mx-auto mb-6 w-24 h-36">
           <FlaconPlaceholder brand="Scent" name="Cap" family="Fresh" />
         </div>
@@ -65,7 +59,7 @@ export function EmptyState({
             <HowToGuide />
           </div>
         )}
-      </motion.div>
+      </div>
     </div>
   );
 }

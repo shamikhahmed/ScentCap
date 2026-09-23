@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { FlaconPlaceholder } from '@/components/bottle/FlaconPlaceholder';
-import { ensureFragranceImage } from '@/services/catalogSearch';
 import { ensureCatalogImageBlob } from '@/catalog/images';
 import { isPlaceholderCatalogImage } from '@/lib/catalogImage';
+import { isDemoSession, isDemoUrl } from '@/lib/demoMode';
 import { FAMILY_COLORS } from '@/lib/stats';
 import type { Fragrance } from '@/types';
+
 
 export function FragranceThumb({
   brand,
@@ -32,17 +33,20 @@ export function FragranceThumb({
   const resolvedName = name ?? fragrance?.name;
   const resolvedFamily = family ?? fragrance?.family;
   const aura = FAMILY_COLORS[resolvedFamily ?? ''] ?? 'var(--sc-amber)';
+  const isHero = size === 'hero';
+  const demoOffline = isDemoUrl() || isDemoSession();
 
   const [resolvedImage, setResolvedImage] = useState<string | null>(null);
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
   const [imageFailed, setImageFailed] = useState(false);
 
   const rawCatalog = resolvedImage ?? catalogImage ?? fragrance?.image ?? null;
-  // Prefer live http product photo over baked demo SVG.
+  // Prefer live http product photo. Skip huge data: SVG <img> on hero — FlaconPlaceholder
+  // paints with first frame and keeps LCP on text instead of a late-decoded data-URI.
   const catalog =
     blobUrl ??
     (rawCatalog && !isPlaceholderCatalogImage(rawCatalog) ? rawCatalog : null) ??
-    (rawCatalog?.startsWith('data:') ? rawCatalog : null);
+    (!isHero && rawCatalog?.startsWith('data:') ? rawCatalog : null);
   const image = photoUrl ?? catalog;
   const showPhoto = Boolean(image) && !imageFailed;
   const heights = { sm: 96, md: 120, lg: 152, hero: 280 };
@@ -57,25 +61,27 @@ export function FragranceThumb({
   }, [catalogImage, fragrance?.id, fragrance?.image, photoUrl]);
 
   useEffect(() => {
-    if (photoUrl) return;
+    if (demoOffline || photoUrl) return;
     if (!fragrance) return;
     const candidate = catalogImage ?? fragrance.image;
     if (!isPlaceholderCatalogImage(candidate)) return;
 
     let cancelled = false;
-    void ensureFragranceImage(fragrance).then((f) => {
-      if (cancelled) return;
-      if (f.image && !isPlaceholderCatalogImage(f.image)) {
-        setResolvedImage(f.image);
-      }
-    });
+    void import('@/services/catalogSearch')
+      .then(({ ensureFragranceImage }) => ensureFragranceImage(fragrance))
+      .then((f) => {
+        if (cancelled) return;
+        if (f.image && !isPlaceholderCatalogImage(f.image)) {
+          setResolvedImage(f.image);
+        }
+      });
     return () => {
       cancelled = true;
     };
-  }, [fragrance, photoUrl, catalogImage]);
+  }, [fragrance, photoUrl, catalogImage, demoOffline]);
 
   useEffect(() => {
-    if (photoUrl) return;
+    if (demoOffline || photoUrl) return;
     const url = resolvedImage ?? catalogImage ?? fragrance?.image;
     if (!url || !url.startsWith('http')) return;
     let cancelled = false;
@@ -89,7 +95,7 @@ export function FragranceThumb({
       cancelled = true;
       if (created) URL.revokeObjectURL(created);
     };
-  }, [catalogImage, resolvedImage, fragrance?.image, photoUrl]);
+  }, [catalogImage, resolvedImage, fragrance?.image, photoUrl, demoOffline]);
 
   return (
     <div
@@ -111,8 +117,9 @@ export function FragranceThumb({
           src={image!}
           alt=""
           className="absolute inset-0 w-full h-full object-contain p-2"
-          loading="lazy"
-          decoding="async"
+          loading={isHero ? 'eager' : 'lazy'}
+          fetchPriority={isHero ? 'high' : undefined}
+          decoding={isHero ? 'sync' : 'async'}
           referrerPolicy="no-referrer"
           onError={() => setImageFailed(true)}
         />
