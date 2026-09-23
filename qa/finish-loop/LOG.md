@@ -55,3 +55,6 @@ Button, Card, Switch, ConfirmDialog, Banner, Toast, ErrorState, EmptyState under
 - **Verify:** axe home light+dark → 0. Evidence: `qa/finish-loop/axe/home-{light,dark}.json`.
 
 **After (local axe):** 393-light **0** · 1440-dark **0** serious/critical.
+
+## 2026-09-23 — gallery regen
+- `npm run gallery`: 2/2 passed (10 mobile + 10 desktop).
