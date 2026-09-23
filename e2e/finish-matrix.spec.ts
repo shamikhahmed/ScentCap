@@ -10,6 +10,7 @@ import {
   applyFinishTheme,
   writeMatrixResults,
 } from './helpers/finish-matrix.js';
+import { installTestMocks } from './helpers';
 
 const RUN = process.env.FINISH_MATRIX === '1' || process.env.FINISH_MATRIX_FULL === '1';
 const SHOTS = path.join('qa', 'finish-loop', 'shots');
@@ -25,6 +26,7 @@ test.describe('finish-matrix', () => {
         test.setTimeout(90_000);
         try {
           await page.setViewportSize({ width: vp.width, height: vp.height });
+          await installTestMocks(page);
           await applyFinishTheme(page, theme);
           await page.goto('/?demo=1');
           await waitForAppReady(page).catch(async () => {
