@@ -76,3 +76,8 @@ Button, Card, Switch, ConfirmDialog, Banner, Toast, ErrorState, EmptyState under
 - Demo URL skips online enrich; matrix applies theme after boot.
 - FINISH_MATRIX: **6/6 passed**.
 - VERSION 2.1.2 / scentcap-v213.
+
+## 2026-09-23 — post-tag evidence refresh
+- Tag **v2.1.2** pushed.
+- Matrix 6/6; gallery regen; mobile LH **P96** (live) — check LCP/TBT/CLS vs gates.
+- public/VERSION.json for Pages live gate.

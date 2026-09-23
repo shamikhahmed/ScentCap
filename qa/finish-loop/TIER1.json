@@ -1,17 +1,17 @@
 {
   "app": "scentcap",
-  "version": "2.1.1",
-  "swCache": "scentcap-v212",
-  "generatedAt": "2026-09-23T05:41:32.556Z",
+  "version": "2.1.2",
+  "swCache": "scentcap-v213",
+  "generatedAt": "2026-09-23T05:45:05.815Z",
   "status": "FAIL",
   "pass": [
     {
       "id": "version:field",
-      "detail": "2.1.1"
+      "detail": "2.1.2"
     },
     {
       "id": "version:sw-cache-match",
-      "detail": "vite.config.ts workbox/VitePWA cacheId ↔ scentcap-v212"
+      "detail": "dist/sw.js contains scentcap-v213"
     },
     {
       "id": "records:BASELINE.md",
@@ -55,7 +55,7 @@
     },
     {
       "id": "tag",
-      "detail": "found v2.1.1"
+      "detail": "found v2.1.2"
     },
     {
       "id": "matrix:spec",
@@ -71,15 +71,19 @@
     },
     {
       "id": "matrix:freshness",
-      "detail": "2026-09-23T05:38:36.324Z"
+      "detail": "2026-09-23T05:43:46.987Z"
+    },
+    {
+      "id": "lighthouse:home-demo-mobile.json",
+      "detail": "perf 96 a11y 96 bp 96 LCP 2338.511 TBT 128 CLS 0.0009024686731019861"
+    },
+    {
+      "id": "lighthouse:passing",
+      "detail": "1/1 files meet thresholds"
     },
     {
       "id": "axe:serious-critical",
       "detail": "3 JSON clean"
-    },
-    {
-      "id": "gallery:freshness",
-      "detail": "docs/screenshots/gallery/gallery-manifest.json @ 2026-09-23T10:40:17+05:00"
     },
     {
       "id": "sinks:SINKS.md",
@@ -112,12 +116,8 @@
   ],
   "fail": [
     {
-      "id": "lighthouse:home-demo-mobile.json",
-      "detail": "perf 56 a11y 96 bp 96 LCP 36268.701 TBT 595 CLS 0.0009024686731019861"
-    },
-    {
-      "id": "lighthouse:passing",
-      "detail": "0/1 files meet thresholds"
+      "id": "gallery:freshness",
+      "detail": "gallery 2026-09-23T10:40:17+05:00 before last UI commit 2026-09-23T10:42:06+05:00"
     },
     {
       "id": "kill:raw-hex",
