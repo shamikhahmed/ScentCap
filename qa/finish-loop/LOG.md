@@ -63,3 +63,10 @@ Button, Card, Switch, ConfirmDialog, Banner, Toast, ErrorState, EmptyState under
 - LH mobile live: P64 A96 BP96 LCP~51s — far below gate
 - matrix: FAIL __APP_READY__ not set on home/iphone-se3/light (0/6 shots)
 - Preview debug: app stuck on “Taking too long…” at /ScentCap/?demo=1 — C-20 boot blocker
+
+## 2026-09-23 — Step R evidence (finish/scentcap-stepR)
+
+- Added CI-WORKFLOW.txt (`Deploy to GitHub Pages`) + skip-allowlist (device/finish-matrix/gallery).
+- writeMatrixResults + installTestMocks in finish-matrix (demo boot was blocked by fraganty.ai 500s).
+- Gallery regen; FINISH_MATRIX=1 → 6/6; real LH mobile vs live Pages (no stubs).
+- Honest Tier1: kill-list + LH thresholds still FAIL — no fleet Tier 1 claim.

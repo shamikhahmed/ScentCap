@@ -2,8 +2,8 @@
   "app": "scentcap",
   "version": "2.1.1",
   "swCache": "scentcap-v212",
-  "generatedAt": "2026-09-15T10:51:30.822Z",
-  "status": "PASS",
+  "generatedAt": "2026-09-23T05:39:47.512Z",
+  "status": "FAIL",
   "pass": [
     {
       "id": "version:field",
@@ -35,19 +35,23 @@
     },
     {
       "id": "records:APP-REPORT-size",
-      "detail": "4515 bytes (need ≥1024)"
+      "detail": "2904 bytes (need ≥1024)"
     },
     {
       "id": "suppressions",
       "detail": "none"
     },
     {
+      "id": "test-skip",
+      "detail": "none"
+    },
+    {
       "id": "app-ready",
-      "detail": "window.__APP_READY__ referenced"
+      "detail": "window.__APP_READY__ assigned in product code"
     },
     {
       "id": "ci:main",
-      "detail": "Merge branch 'finish/scentcap-tier1': Tier 1 kill-list + gates → success https://github.com/shamikhahmed/ScentCap/actions/runs/34959937910"
+      "detail": "Deploy to GitHub Pages @ 868cf34 → success https://github.com/shamikhahmed/ScentCap/actions/runs/35086544739"
     },
     {
       "id": "tag",
@@ -58,20 +62,24 @@
       "detail": "e2e/finish-matrix.spec.ts"
     },
     {
-      "id": "lighthouse:files",
-      "detail": "1 JSON"
+      "id": "matrix:failures",
+      "detail": "0"
+    },
+    {
+      "id": "matrix:shot-count",
+      "detail": "6 shots (need routes×viewports×themes = 6)"
+    },
+    {
+      "id": "matrix:freshness",
+      "detail": "2026-09-23T05:38:36.324Z"
+    },
+    {
+      "id": "axe:serious-critical",
+      "detail": "3 JSON clean"
     },
     {
       "id": "sinks:SINKS.md",
       "detail": "present"
-    },
-    {
-      "id": "kill:raw-hex",
-      "detail": "0"
-    },
-    {
-      "id": "kill:sub-11px",
-      "detail": "0"
     },
     {
       "id": "kill:important",
@@ -98,16 +106,37 @@
       "detail": "1 sinks; SINKS.md ok"
     }
   ],
-  "fail": [],
+  "fail": [
+    {
+      "id": "lighthouse:home-demo-mobile.json",
+      "detail": "perf 56 a11y 96 bp 96 LCP 36268.701 TBT 595 CLS 0.0009024686731019861"
+    },
+    {
+      "id": "lighthouse:passing",
+      "detail": "0/1 files meet thresholds"
+    },
+    {
+      "id": "gallery:freshness",
+      "detail": "gallery 2026-09-23T10:31:48+05:00 before last UI commit 2026-09-23T10:37:53+05:00"
+    },
+    {
+      "id": "kill:raw-hex",
+      "detail": "84"
+    },
+    {
+      "id": "kill:sub-11px",
+      "detail": "13"
+    }
+  ],
   "warn": [
     {
-      "id": "matrix:shots",
-      "detail": "qa/finish-loop/shots missing (run matrix)"
+      "id": "live:VERSION.json",
+      "detail": "https://shamikhahmed.github.io/ScentCap/VERSION.json → 404"
     }
   ],
   "killList": {
-    "rawHex": 0,
-    "sub11": 0,
+    "rawHex": 84,
+    "sub11": 13,
     "important": 0,
     "nativeDialog": 0,
     "outlineNone": 0,
