@@ -1,9 +1,7 @@
 import { Link, type LinkProps } from 'react-router-dom';
-import { motion, type HTMLMotionProps } from 'framer-motion';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import { triggerHaptic } from '@/lib/premium/haptics';
-import { SPRING_PRESS } from '@/lib/premium/motion';
 
 const buttonVariants = cva(
   'inline-flex items-center justify-center gap-2 rounded-[14px] font-semibold transition-colors disabled:opacity-50 min-h-[48px] pressable tracking-tight',
@@ -28,7 +26,7 @@ const buttonVariants = cva(
 
 type HapticFeedback = 'none' | 'light' | 'medium' | 'selection' | 'success' | 'error';
 
-type ButtonProps = Omit<HTMLMotionProps<'button'>, 'ref' | 'children'> &
+type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
   VariantProps<typeof buttonVariants> & {
     haptic?: HapticFeedback;
     to?: LinkProps['to'];
@@ -86,9 +84,8 @@ export function Button({
   }
 
   return (
-    <motion.button
-      whileTap={disabled ? undefined : { scale: 0.96 }}
-      transition={SPRING_PRESS}
+    <button
+      type="button"
       className={classes}
       onClick={handleClick}
       disabled={disabled}
@@ -96,6 +93,6 @@ export function Button({
       {...props}
     >
       {children}
-    </motion.button>
+    </button>
   );
 }

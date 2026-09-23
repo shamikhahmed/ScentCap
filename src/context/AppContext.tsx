@@ -65,7 +65,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setHistory(hist);
       if (p?.onboardingComplete) {
         try {
-          const { weather: w, unavailableReason } = await getDailyWeather(p);
+          // Demo seeds today's weather into IDB; avoid network on the boot critical path.
+          const { weather: w, unavailableReason } = await getDailyWeather(p, false);
           setWeather(w);
           setWeatherUnavailable(unavailableReason);
         } catch {
@@ -83,6 +84,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       try {
         (window as Window & { __APP_READY__?: boolean }).__APP_READY__ = true;
         document.documentElement.dataset.appReady = 'true';
+        document.getElementById('sc-boot')?.setAttribute('hidden', '');
       } catch { /* ignore */ }
     }
   }, []);

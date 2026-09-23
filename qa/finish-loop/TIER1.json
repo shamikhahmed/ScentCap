@@ -1,17 +1,17 @@
 {
   "app": "scentcap",
-  "version": "2.1.1",
-  "swCache": "scentcap-v212",
-  "generatedAt": "2026-09-15T10:51:30.822Z",
+  "version": "2.1.4",
+  "swCache": "scentcap-v215",
+  "generatedAt": "2026-09-23T09:06:07.571Z",
   "status": "PASS",
   "pass": [
     {
       "id": "version:field",
-      "detail": "2.1.1"
+      "detail": "2.1.4"
     },
     {
       "id": "version:sw-cache-match",
-      "detail": "dist/sw.js contains scentcap-v212"
+      "detail": "dist/sw.js contains scentcap-v215"
     },
     {
       "id": "records:BASELINE.md",
@@ -35,31 +35,63 @@
     },
     {
       "id": "records:APP-REPORT-size",
-      "detail": "4515 bytes (need ≥1024)"
+      "detail": "2904 bytes (need ≥1024)"
     },
     {
       "id": "suppressions",
       "detail": "none"
     },
     {
+      "id": "test-skip",
+      "detail": "none"
+    },
+    {
       "id": "app-ready",
-      "detail": "window.__APP_READY__ referenced"
+      "detail": "window.__APP_READY__ assigned in product code"
     },
     {
       "id": "ci:main",
-      "detail": "Merge branch 'finish/scentcap-tier1': Tier 1 kill-list + gates → success https://github.com/shamikhahmed/ScentCap/actions/runs/34959937910"
+      "detail": "Deploy to GitHub Pages @ 868cf34 → success https://github.com/shamikhahmed/ScentCap/actions/runs/35086544739"
     },
     {
       "id": "tag",
-      "detail": "found v2.1.1"
+      "detail": "found v2.1.4"
     },
     {
       "id": "matrix:spec",
       "detail": "e2e/finish-matrix.spec.ts"
     },
     {
-      "id": "lighthouse:files",
-      "detail": "1 JSON"
+      "id": "matrix:failures",
+      "detail": "0"
+    },
+    {
+      "id": "matrix:shot-count",
+      "detail": "6 shots (need routes×viewports×themes = 6)"
+    },
+    {
+      "id": "matrix:freshness",
+      "detail": "2026-09-23T09:04:45.420Z"
+    },
+    {
+      "id": "lighthouse:home-demo-desktop.json",
+      "detail": "perf 100 a11y 100 bp 100 LCP 505.0801 TBT 0 CLS 0.05650404180530019"
+    },
+    {
+      "id": "lighthouse:home-demo-mobile.json",
+      "detail": "perf 97 a11y 100 bp 100 LCP 1851.1504 TBT 22.5 CLS 0.07372146069698357"
+    },
+    {
+      "id": "lighthouse:passing",
+      "detail": "2/2 files meet thresholds"
+    },
+    {
+      "id": "axe:serious-critical",
+      "detail": "3 JSON clean"
+    },
+    {
+      "id": "gallery:freshness",
+      "detail": "docs/screenshots/gallery/gallery-manifest.json @ 2026-09-23T14:05:59+05:00"
     },
     {
       "id": "sinks:SINKS.md",
@@ -101,8 +133,12 @@
   "fail": [],
   "warn": [
     {
-      "id": "matrix:shots",
-      "detail": "qa/finish-loop/shots missing (run matrix)"
+      "id": "live:VERSION.json",
+      "detail": "https://shamikhahmed.github.io/ScentCap/VERSION.json → 404"
+    },
+    {
+      "id": "g15:architecture",
+      "detail": "map not present (docs/architecture or architecture/) — soft until per-app map lands; tooling pilots use npm run architecture:check"
     }
   ],
   "killList": {

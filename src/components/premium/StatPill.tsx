@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { PressableLink } from '@/components/ui/PressableScale';
 
@@ -7,13 +6,13 @@ export function StatPill({
   label,
   value,
   tone = 'default',
-  delay = 0,
   to,
 }: {
   icon: React.ReactNode;
   label: string;
   value: string;
   tone?: 'default' | 'hot' | 'warn' | 'good';
+  /** Kept for call-site compat; animations removed for LCP. */
   delay?: number;
   to?: string;
 }) {
@@ -31,26 +30,11 @@ export function StatPill({
 
   if (to) {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay, duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
-      >
-        <PressableLink to={to} className={className} aria-label={`${label}: ${value}`}>
-          {inner}
-        </PressableLink>
-      </motion.div>
+      <PressableLink to={to} className={className} aria-label={`${label}: ${value}`}>
+        {inner}
+      </PressableLink>
     );
   }
 
-  return (
-    <motion.div
-      className={className}
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
-    >
-      {inner}
-    </motion.div>
-  );
+  return <div className={className}>{inner}</div>;
 }

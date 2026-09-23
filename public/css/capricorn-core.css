@@ -14,30 +14,9 @@
    ════════════════════════════════════════════════════════════════ */
 
 :root {
-  /* ── Brand core ── */
-  --cap-gold: #c9a227;
-  --cap-gold-soft: rgba(201, 162, 39, 0.35);
-  --cap-accent: var(--cap-gold);          /* apps override this */
-  --cap-accent-contrast: #0a0e17;         /* text color on accent */
-
-  /* ── Surfaces (dark — default) ── */
-  --cap-bg: #0a0e17;
-  --cap-bg-2: #111827;
-  --cap-surface: rgba(244, 240, 232, 0.04);
-  --cap-surface-2: rgba(244, 240, 232, 0.07);
-  --cap-border: rgba(244, 240, 232, 0.10);
-  --cap-border-strong: rgba(244, 240, 232, 0.18);
-
-  /* ── Text ── */
-  --cap-text: #f4f0e8;
-  --cap-text-dim: #9ca3af;
-  --cap-text-faint: #6b7280;
-
-  /* ── Semantic ── */
-  --cap-success: #34d399;
-  --cap-warning: #fbbf24;
-  --cap-danger: #f87171;
-  --cap-info: #60a5fa;
+  /* Color hex lives in css/tokens.css (C-29). Non-color tokens below. */
+  --cap-accent: var(--cap-gold);
+  --cap-accent-contrast: var(--cap-bg);
 
   /* ── Type scale (fluid, 320 → 2560) ── */
   --cap-font-body: 'Inter', system-ui, -apple-system, sans-serif;
@@ -91,7 +70,7 @@
   --cap-touch-target: 44px;
 
   /* ── Motion ── */
-  --cap-ease: cubic-bezier(0.22, 1, 0.36, 1);        /* signature out-quint */
+  --cap-ease: cubic-bezier(0.22, 1, 0.36, 1);
   --cap-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
   --cap-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --cap-dur-fast: 150ms;
@@ -106,36 +85,13 @@
    Apps opt in with <html data-cap-theme="light"> or it follows the
    OS when data-cap-theme="auto". Dark stays the Capricorn default. */
 [data-cap-theme="light"] {
-  --cap-bg: #faf8f4;
-  --cap-bg-2: #f0ede6;
-  --cap-surface: rgba(10, 14, 23, 0.04);
-  --cap-surface-2: rgba(10, 14, 23, 0.07);
-  --cap-border: rgba(10, 14, 23, 0.10);
-  --cap-border-strong: rgba(10, 14, 23, 0.20);
-  --cap-text: #131722;
-  --cap-text-dim: #4b5563;
-  --cap-text-faint: #9ca3af;
-  --cap-glass-bg: rgba(250, 248, 244, 0.78);
-  --cap-glass-border: rgba(10, 14, 23, 0.10);
-  --cap-shadow-1: 0 1px 2px rgba(16, 20, 32, 0.08);
-  --cap-shadow-2: 0 4px 16px rgba(16, 20, 32, 0.10);
-  --cap-shadow-3: 0 12px 40px rgba(16, 20, 32, 0.14);
+  /* colors in css/tokens.css */
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: light) {
   [data-cap-theme="auto"] {
-    --cap-bg: #faf8f4;
-    --cap-bg-2: #f0ede6;
-    --cap-surface: rgba(10, 14, 23, 0.04);
-    --cap-surface-2: rgba(10, 14, 23, 0.07);
-    --cap-border: rgba(10, 14, 23, 0.10);
-    --cap-border-strong: rgba(10, 14, 23, 0.20);
-    --cap-text: #131722;
-    --cap-text-dim: #4b5563;
-    --cap-text-faint: #9ca3af;
-    --cap-glass-bg: rgba(250, 248, 244, 0.78);
-    --cap-glass-border: rgba(10, 14, 23, 0.10);
+    /* colors in css/tokens.css */
     color-scheme: light;
   }
 }
@@ -455,7 +411,7 @@ body.light .ambient-grain { opacity: 0.02; }
 .hero-name { font-size: 1.0625rem; color: var(--color-text-secondary); margin-top: 0.25rem; }
 
 .tag-premium {
-  font-size: 0.625rem;
+  font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -485,11 +441,11 @@ body.light .ambient-grain { opacity: 0.02; }
 
 a.stat-pill:active, button.stat-pill:active { transform: scale(0.97); }
 .stat-pill-icon { display: flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: 10px; background: var(--color-accent-muted); color: var(--color-accent); }
-.stat-pill-label { font-size: 0.625rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-text-tertiary); }
+.stat-pill-label { font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-text-tertiary); }
 .stat-pill-value { font-size: 1.25rem; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
-.stat-pill--hot .stat-pill-icon { background: rgba(255, 149, 0, 0.15); color: #ff9f0a; }
-.stat-pill--warn .stat-pill-icon { background: rgba(255, 159, 10, 0.15); color: #ff9f0a; }
-.stat-pill--good .stat-pill-icon { background: rgba(48, 209, 88, 0.15); color: #30d158; }
+.stat-pill--hot .stat-pill-icon { background: rgba(255, 149, 0, 0.15); color: var(--cap-hot); }
+.stat-pill--warn .stat-pill-icon { background: rgba(255, 159, 10, 0.15); color: var(--cap-hot); }
+.stat-pill--good .stat-pill-icon { background: rgba(48, 209, 88, 0.15); color: var(--cap-good); }
 
 /* Floating tab bar */
 .floating-tab-shell {
@@ -576,7 +532,7 @@ nav.nav.cap-premium-nav {
 }
 
 .floating-tab-label,
-.nav-label { position: relative; z-index: 1; font-size: 0.5625rem; font-weight: 600; letter-spacing: 0.02em; }
+.nav-label { position: relative; z-index: 1; font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.02em; }
 .floating-tab-icon,
 .nav-icon { position: relative; z-index: 1; }
 
@@ -1008,14 +964,14 @@ body.cap-has-scene > #root {
   user-select: none;
   border: 1px solid var(--cap-border, var(--border, rgba(255, 255, 255, 0.12)));
   background: var(--cap-glass, var(--glass, transparent));
-  color: var(--cap-text-muted, var(--text3, var(--os-text-secondary, #9ca3af)));
+  color: var(--cap-text-muted, var(--text3, var(--os-text-secondary)));
   transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 .cap-tab:hover,
 .div-tab:hover,
 .tab-pill:hover,
 .search-chip:hover,
-.perf-tab:hover { color: var(--cap-text, var(--text, var(--os-text, #f3f4f6))); }
+.perf-tab:hover { color: var(--cap-text, var(--text, var(--os-text))); }
 
 .cap-tab.on,
 .cap-tab.active,
@@ -1023,9 +979,9 @@ body.cap-has-scene > #root {
 .tab-pill.on,
 .search-chip.on,
 .perf-tab.active {
-  background: var(--cap-accent, var(--accent, var(--os-accent, #2563eb)));
-  border-color: var(--cap-accent, var(--accent, var(--os-accent, #2563eb)));
-  color: #fff;
+  background: var(--cap-accent, var(--accent, var(--os-accent)));
+  border-color: var(--cap-accent, var(--accent, var(--os-accent)));
+  color: var(--cap-pure);
   box-shadow: 0 0 12px color-mix(in srgb, var(--cap-accent, var(--accent)) 35%, transparent);
 }
 
@@ -1058,8 +1014,8 @@ body.cap-has-scene > #root {
 .cap-tab-bar--segmented .cap-tab.active,
 .rt-mode-bar .rt-mode-btn.active {
   background: var(--cap-accent-soft, var(--os-accent-soft, rgba(37, 99, 235, 0.12)));
-  border: 1px solid var(--cap-accent, var(--os-accent, #2563eb));
-  color: var(--cap-accent, var(--os-accent, #2563eb));
+  border: 1px solid var(--cap-accent, var(--os-accent));
+  color: var(--cap-accent, var(--os-accent));
   box-shadow: none;
 }
 
@@ -1105,7 +1061,7 @@ body.cap-has-scene > #root {
   justify-content: center;
   font-size: 30px;
   flex-shrink: 0;
-  background: linear-gradient(135deg, color-mix(in srgb, var(--cap-accent, var(--accent)) 80%, #000), color-mix(in srgb, var(--cap-accent, var(--accent)) 40%, #0af));
+  background: linear-gradient(135deg, color-mix(in srgb, var(--cap-accent, var(--accent)) 80%, var(--cap-black)), color-mix(in srgb, var(--cap-accent, var(--accent)) 40%));
 }
 .cap-member-meta { flex: 1; min-width: 0; }
 .cap-member-name {
@@ -1200,9 +1156,9 @@ body.cap-has-scene > #root {
   gap: 10px;
   padding: 11px 14px;
   border-radius: 14px;
-  background: linear-gradient(90deg, color-mix(in srgb, var(--cap-accent) 85%, #000), var(--cap-accent));
-  border: 1px solid color-mix(in srgb, var(--cap-accent-contrast, #fff) 22%, transparent);
-  color: var(--cap-accent-contrast, #fff);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--cap-accent) 85%, var(--cap-black)), var(--cap-accent));
+  border: 1px solid color-mix(in srgb, var(--cap-accent-contrast, var(--cap-pure)) 22%, transparent);
+  color: var(--cap-accent-contrast, var(--cap-pure));
   box-shadow: var(--cap-shadow-3, 0 8px 28px rgba(0, 0, 0, 0.35));
   font: 500 var(--cap-text-sm, 0.8125rem) var(--cap-font-body, system-ui);
   line-height: 1.45;
@@ -1225,7 +1181,7 @@ body.cap-has-scene > #root {
   font-size: 1rem;
 }
 .cap-demo-banner__dismiss:focus-visible {
-  outline: 2px solid var(--cap-accent-contrast, #fff);
+  outline: 2px solid var(--cap-accent-contrast, var(--cap-pure));
   outline-offset: 2px;
 }
 
@@ -1241,14 +1197,14 @@ body.cap-has-scene > #root {
   border: 1px solid var(--cap-glass-border, rgba(255, 255, 255, 0.12));
   border-radius: var(--cap-radius-pill, 999px);
   font: 500 var(--cap-text-sm, 0.8125rem) var(--cap-font-body, system-ui);
-  color: var(--cap-text, #f5f5f7);
+  color: var(--cap-text, var(--cap-ink-soft));
   box-shadow: var(--cap-shadow-3, 0 8px 28px rgba(0, 0, 0, 0.35));
   animation: cap-toast-in 0.28s var(--cap-ease, ease);
   pointer-events: none;
 }
-.cap-toast-inline[data-tone="success"] { border-color: color-mix(in srgb, var(--cap-success, #34c759) 40%, transparent); }
-.cap-toast-inline[data-tone="warning"] { border-color: color-mix(in srgb, var(--cap-warning, #ff9f0a) 40%, transparent); }
-.cap-toast-inline[data-tone="danger"] { border-color: color-mix(in srgb, var(--cap-danger, #ff453a) 40%, transparent); }
+.cap-toast-inline[data-tone="success"] { border-color: color-mix(in srgb, var(--cap-success, var(--cap-ios-success)) 40%, transparent); }
+.cap-toast-inline[data-tone="warning"] { border-color: color-mix(in srgb, var(--cap-warning, var(--cap-hot)) 40%, transparent); }
+.cap-toast-inline[data-tone="danger"] { border-color: color-mix(in srgb, var(--cap-danger, var(--cap-ios-danger)) 40%, transparent); }
 
 @keyframes cap-toast-in {
   from { opacity: 0; transform: translate(-50%, 12px); }
@@ -1271,7 +1227,7 @@ body.cap-has-scene > #root {
 }
 .cap-empty__title {
   font: 700 var(--cap-text-lg, 1.0625rem) var(--cap-font-body, system-ui);
-  color: var(--cap-text, #f5f5f7);
+  color: var(--cap-text, var(--cap-ink-soft));
   letter-spacing: -0.02em;
   margin-bottom: 0.35rem;
 }
@@ -1289,9 +1245,9 @@ body.cap-has-scene > #root {
   border-radius: var(--cap-radius-md, 12px);
   background: linear-gradient(
     90deg,
-    color-mix(in srgb, var(--cap-text, #fff) 6%, transparent) 0%,
-    color-mix(in srgb, var(--cap-text, #fff) 12%, transparent) 50%,
-    color-mix(in srgb, var(--cap-text, #fff) 6%, transparent) 100%
+    color-mix(in srgb, var(--cap-text, var(--cap-pure)) 6%, transparent) 0%,
+    color-mix(in srgb, var(--cap-text, var(--cap-pure)) 12%, transparent) 50%,
+    color-mix(in srgb, var(--cap-text, var(--cap-pure)) 6%, transparent) 100%
   );
   background-size: 200% 100%;
   animation: cap-skeleton-pulse 1.25s ease-in-out infinite;
@@ -1311,9 +1267,9 @@ body.cap-has-scene > #root {
   max-width: min(420px, calc(100vw - 24px));
   padding: 8px 14px;
   border-radius: var(--cap-radius-pill, 999px);
-  background: color-mix(in srgb, var(--cap-warning, #ff9f0a) 18%, var(--cap-surface-1, #1c1c1e));
-  border: 1px solid color-mix(in srgb, var(--cap-warning, #ff9f0a) 35%, transparent);
-  color: var(--cap-text, #f5f5f7);
+  background: color-mix(in srgb, var(--cap-warning, var(--cap-hot)) 18%, var(--cap-surface-1));
+  border: 1px solid color-mix(in srgb, var(--cap-warning, var(--cap-hot)) 35%, transparent);
+  color: var(--cap-text, var(--cap-ink-soft));
   font: 500 var(--cap-text-xs, 0.75rem) var(--cap-font-body, system-ui);
   text-align: center;
   box-shadow: var(--cap-shadow-2, 0 4px 16px rgba(0, 0, 0, 0.25));
@@ -1336,7 +1292,7 @@ body.cap-has-scene > #root {
 }
 .empty-ios .ei-title {
   font: 700 var(--cap-text-lg, 1.0625rem) var(--cap-font-body, system-ui);
-  color: var(--cap-text, #f5f5f7);
+  color: var(--cap-text, var(--cap-ink-soft));
   letter-spacing: -0.02em;
   margin-bottom: 0.35rem;
 }
@@ -1434,7 +1390,6 @@ body[data-cap-app="1"] #view > .screen {
    ════════════════════════════════════════════════════════════════ */
 
 :root {
-  --cap-desktop-bg: #0a0a0f;
   --cap-sidebar-w: 248px;
   --cap-sidebar-w-wide: 272px;
 }
@@ -1498,7 +1453,7 @@ body[data-cap-app="1"] #view > .screen {
     font: 700 1.0625rem var(--cap-font-body, system-ui);
     letter-spacing: -0.02em;
     padding: 0 0.75rem 1.25rem;
-    color: var(--cap-text, #f5f5f7);
+    color: var(--cap-text, var(--cap-ink-soft));
   }
 
   .cap-side-btn {
@@ -1518,13 +1473,13 @@ body[data-cap-app="1"] #view > .screen {
     transition: background 0.15s ease, color 0.15s ease;
   }
   .cap-side-btn:hover {
-    background: color-mix(in srgb, var(--cap-text, #fff) 6%, transparent);
-    color: var(--cap-text, #f5f5f7);
+    background: color-mix(in srgb, var(--cap-text, var(--cap-pure)) 6%, transparent);
+    color: var(--cap-text, var(--cap-ink-soft));
   }
   .cap-side-btn.on,
   .cap-side-btn.active {
-    background: color-mix(in srgb, var(--cap-accent, #5b8dee) 18%, transparent);
-    color: var(--cap-accent, #5b8dee);
+    background: color-mix(in srgb, var(--cap-accent, var(--cap-sidebar-accent)) 18%, transparent);
+    color: var(--cap-accent, var(--cap-sidebar-accent));
     font-weight: 600;
   }
   .cap-side-btn span:first-child {

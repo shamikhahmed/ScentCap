@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Cloud, Droplets, Flame, Layers, Sparkles, Sun, Wind, ChevronRight, MapPin, Briefcase, AlertCircle,
@@ -10,7 +10,6 @@ import { useApp } from '@/context/AppContext';
 import { runAdvisor } from '@/engines/advisor';
 import { getFragrance, getPhoto, logWear, updateWearRecord } from '@/db';
 import type { AdvisorInput, AdvisorResult, Fragrance } from '@/types';
-import { WearRatingModal } from '@/components/ui/WearRatingModal';
 import { HeroPick } from '@/components/premium/HeroPick';
 import { FragranceThumb } from '@/components/collection/FragranceThumb';
 import { StatPill } from '@/components/premium/StatPill';
@@ -18,8 +17,7 @@ import { timeGreeting } from '@/lib/greetings';
 import { FAMILY_COLORS, rotationHealth, wearStreak, wearsThisMonth, daysSinceWear } from '@/lib/stats';
 import { weatherUnavailableMessage } from '@/services/weather';
 import { uid } from '@/lib/utils';
-import { fragranceDisplayName } from '@/services/onlineCatalog';
-import { advisorToShareInput, downloadBlob, exportShareCardPng, shareWearCard } from '@/lib/shareCard';
+import { fragranceDisplayName } from '@/lib/fragranceName';
 import { loadDemoData } from '@/services/demo';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { hapticSuccess, hapticLight } from '@/lib/premium/haptics';
@@ -32,6 +30,10 @@ import {
   moodLabel,
   type MoodPreset,
 } from '@/lib/advisorPresets';
+
+const WearRatingModal = lazy(() =>
+  import('@/components/ui/WearRatingModal').then((m) => ({ default: m.WearRatingModal })),
+);
 
 const WEATHER_ICON: Record<string, typeof Sun> = {
   hot: Sun, clear: Sun, cold: Wind, rain: Cloud, cloudy: Cloud, windy: Wind, snow: Cloud,
@@ -206,6 +208,7 @@ export function Home() {
 
   const shareToday = async () => {
     if (!result) return;
+    const { advisorToShareInput, downloadBlob, exportShareCardPng, shareWearCard } = await import('@/lib/shareCard');
     try {
       const input = advisorToShareInput(result);
       const outcome = await shareWearCard(input, familyColor, { format: 'square' });
@@ -463,13 +466,17 @@ export function Home() {
         </PressableLink>
       </section>
 
-      <WearRatingModal
-        open={ratingOpen}
-        fragranceName={pendingWear?.name ?? ''}
-        catalogImage={wearRatingImage}
-        onSubmit={saveRating}
-        onSkip={() => { setRatingOpen(false); setPendingWear(null); setWearRatingImage(null); }}
-      />
+      {ratingOpen ? (
+        <Suspense fallback={null}>
+          <WearRatingModal
+            open={ratingOpen}
+            fragranceName={pendingWear?.name ?? ''}
+            catalogImage={wearRatingImage}
+            onSubmit={saveRating}
+            onSkip={() => { setRatingOpen(false); setPendingWear(null); setWearRatingImage(null); }}
+          />
+        </Suspense>
+      ) : null}
     </div>
   );
 }
@@ -481,9 +488,19 @@ function RecentWears({
   history: { id: string; fragranceId: string; wornAt: string }[];
   collection: { id: string; fragranceId: string }[];
 }) {
-  const [rows, setRows] = useState<{ id: string; name: string; wornAt: string; collectionId?: string; f?: Fragrance }[]>([]);
+  type Row = { id: string; name: string; wornAt: string; collectionId?: string; f?: Fragrance };
+  // Reserve row slots immediately so async fragrance lookups do not grow the section (CLS).
+  const [rows, setRows] = useState<Row[]>(() =>
+    history.map((h) => ({
+      id: h.id,
+      name: '…',
+      wornAt: h.wornAt,
+      collectionId: collection.find((x) => x.fragranceId === h.fragranceId)?.id,
+    })),
+  );
 
   useEffect(() => {
+    let cancelled = false;
     Promise.all(history.map(async (h) => {
       const f = await getFragrance(h.fragranceId);
       const c = collection.find((x) => x.fragranceId === h.fragranceId);
@@ -494,11 +511,16 @@ function RecentWears({
         collectionId: c?.id,
         f,
       };
-    })).then(setRows);
+    })).then((next) => {
+      if (!cancelled) setRows(next);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [history, collection]);
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2" style={{ minHeight: history.length * 64 }}>
       {rows.map((row) => {
         const inner = (
           <>

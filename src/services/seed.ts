@@ -1,12 +1,21 @@
 import { getDb, getAllCollection, getPreferences, getWishlist, putFragrance, savePreferences } from '@/db';
-import { enrichFragranceFromOnline } from '@/services/onlineCatalog';
 import { needsCatalogImageRefresh } from '@/lib/catalogImage';
+import { isDemoSession, isDemoUrl } from '@/lib/demoMode';
 import type { Fragrance } from '@/types';
 
 /** v3: no bundled seed — catalog is built from live Fraganty API + user cache. */
 const CATALOG_VERSION = 3;
 
 let seeded = false;
+
+function skipOnlineEnrich(): boolean {
+  return isDemoUrl() || isDemoSession();
+}
+
+async function enrichOnline(f: Fragrance): Promise<Fragrance> {
+  const { enrichFragranceFromOnline } = await import('@/services/onlineCatalog');
+  return enrichFragranceFromOnline(f);
+}
 
 async function referencedFragranceIds(): Promise<Set<string>> {
   const db = await getDb();
@@ -30,11 +39,14 @@ async function migrateToCatalogV3(): Promise<void> {
     }
   }
 
+  // Demo / Finish loops must not block __APP_READY__ on Fraganty (often 5xx / hung).
+  if (skipOnlineEnrich()) return;
+
   await Promise.all(
     [...keep].slice(0, 24).map(async (id) => {
       const f = await db.get('fragrances', id);
       if (!f) return;
-      const enriched = await enrichFragranceFromOnline(f);
+      const enriched = await enrichOnline(f);
       await putFragrance(enriched);
     }),
   );
@@ -56,8 +68,9 @@ export async function ensureSeedLoaded(): Promise<number> {
 }
 
 export async function enrichFragranceOnce(f: Fragrance): Promise<Fragrance> {
+  if (skipOnlineEnrich()) return f;
   const enriched = needsCatalogImageRefresh(f.image, f.catalogSlug)
-    ? await enrichFragranceFromOnline(f)
+    ? await enrichOnline(f)
     : f;
   if (enriched !== f || enriched.image !== f.image || enriched.catalogSlug !== f.catalogSlug) {
     await putFragrance(enriched);
@@ -67,6 +80,7 @@ export async function enrichFragranceOnce(f: Fragrance): Promise<Fragrance> {
 
 /** Backfill bottle images for wardrobe fragrances missing real catalog art. */
 export async function enrichFragranceImages(ids: string[]): Promise<void> {
+  if (skipOnlineEnrich()) return;
   const unique = [...new Set(ids)];
   // Cover full demo wardrobe (12) + a few extras.
   const batch = unique.slice(0, 16);
@@ -75,7 +89,7 @@ export async function enrichFragranceImages(ids: string[]): Promise<void> {
       const db = await getDb();
       const f = await db.get('fragrances', id);
       if (!f || !needsCatalogImageRefresh(f.image, f.catalogSlug)) return;
-      const enriched = await enrichFragranceFromOnline(f);
+      const enriched = await enrichOnline(f);
       await putFragrance(enriched);
     }),
   );
@@ -87,6 +101,7 @@ export async function hydrateAdvisorResult<T extends {
   backups: { fragrance: Fragrance }[];
   layering?: { secondary: Fragrance } | null;
 }>(result: T): Promise<T> {
+  if (skipOnlineEnrich()) return result;
   const primaryFragrance = await enrichFragranceOnce(result.primary.fragrance);
   const backups = await Promise.all(
     result.backups.map(async (b) => ({

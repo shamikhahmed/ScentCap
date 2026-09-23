@@ -1,0 +1,16 @@
+{
+  "entries": [
+    {
+      "pattern": "e2e/device-matrix.spec.ts",
+      "reason": "Device matrix capture gated behind DEVICE_MATRIX=1 — intentional skip when unset (C-32)"
+    },
+    {
+      "pattern": "e2e/finish-matrix.spec.ts",
+      "reason": "Finish matrix gated behind FINISH_MATRIX=1 — CI must set it (C-31/C-32)"
+    },
+    {
+      "pattern": "e2e/gallery.spec.ts",
+      "reason": "Gallery capture gated behind CAPTURE_GALLERY=1 — only acceptable skip (C-32)"
+    }
+  ]
+}

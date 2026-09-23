@@ -60,7 +60,17 @@ function Guard({ children }: { children: React.ReactNode }) {
     return () => window.clearTimeout(t);
   }, [ready]);
 
-  if (!ready) return <BootScreen stuck={stuck} />;
+  // Stuck recovery replaces the HTML boot shell; otherwise leave #root empty so
+  // #sc-boot (fixed, outside React) is the only paint — avoids BootScreen→AppShell CLS.
+  useEffect(() => {
+    if (!stuck || ready) return;
+    document.getElementById('sc-boot')?.setAttribute('hidden', '');
+  }, [stuck, ready]);
+
+  if (!ready) {
+    if (!stuck) return null;
+    return <BootScreen stuck />;
+  }
   if (!profile?.onboardingComplete) return <Navigate to="/onboarding" replace />;
   return children;
 }
@@ -96,7 +106,7 @@ function TitleSync() {
 
 function AppRoutes() {
   return (
-    <Suspense fallback={<BootScreen />}>
+    <Suspense fallback={null}>
       <TitleSync />
       <Routes>
         <Route path="/onboarding" element={<Onboarding />} />

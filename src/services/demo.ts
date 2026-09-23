@@ -52,9 +52,7 @@ export async function loadDemoData(): Promise<void> {
   markDemoSession();
 
   const bySlug = new Map(DEMO_FRAGRANCES.map((f) => [f.catalogSlug!, f]));
-  for (const f of DEMO_FRAGRANCES) {
-    await putFragrance(f);
-  }
+  await Promise.all(DEMO_FRAGRANCES.map((f) => putFragrance(f)));
 
   const now = new Date().toISOString();
   const collection: CollectionItem[] = [];
@@ -74,8 +72,8 @@ export async function loadDemoData(): Promise<void> {
       addedAt: now,
     };
     collection.push(item);
-    await addToCollection(item);
   }
+  await Promise.all(collection.map((item) => addToCollection(item)));
 
   const workSignature = collection.find((c) => c.isSignature);
   const profile: UserProfile = {
@@ -105,8 +103,11 @@ export async function loadDemoData(): Promise<void> {
   await savePreferences(prefs);
 
   const date = todayKey();
+  // Must match weatherCacheId(date, lat, lon) in weather.ts — otherwise demo cold-load
+  // misses cache and blocks __APP_READY__ on Open-Meteo.
+  const weatherId = `${date}@${profile.lat!.toFixed(3)},${profile.lon!.toFixed(3)}`;
   await saveWeatherCache({
-    id: date,
+    id: weatherId,
     date,
     tempC: 18,
     humidity: 55,
@@ -115,14 +116,8 @@ export async function loadDemoData(): Promise<void> {
     fetchedAt: now,
   });
 
-  for (const record of buildWearHistory(collection)) {
-    await logWear(record);
-  }
-
-  // Best-effort catalog bottle art when online — never block demo open.
-  void import('@/services/seed').then(({ enrichFragranceImages }) =>
-    enrichFragranceImages(DEMO_FRAGRANCES.map((f) => f.id)),
-  );
+  await Promise.all(buildWearHistory(collection).map((record) => logWear(record)));
+  // No Fraganty enrich on demo — baked SVG art is intentional offline wardrobe.
 }
 
 export async function exitDemo(): Promise<void> {
