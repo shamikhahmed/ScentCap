@@ -58,3 +58,8 @@ Button, Card, Switch, ConfirmDialog, Banner, Toast, ErrorState, EmptyState under
 
 ## 2026-09-23 — gallery regen
 - `npm run gallery`: 2/2 passed (10 mobile + 10 desktop).
+
+## 2026-09-23 — matrix/LH attempt
+- LH mobile live: P64 A96 BP96 LCP~51s — far below gate
+- matrix: FAIL __APP_READY__ not set on home/iphone-se3/light (0/6 shots)
+- Preview debug: app stuck on “Taking too long…” at /ScentCap/?demo=1 — C-20 boot blocker

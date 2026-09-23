@@ -1,0 +1,20 @@
+{
+  "failures": [
+    "home/iphone-se3/light: __APP_READY__ not set (C-20)"
+  ],
+  "shotCount": 0,
+  "expectedShots": 6,
+  "generatedAt": "2026-09-23T05:36:31.066Z",
+  "routes": [
+    "home"
+  ],
+  "viewports": [
+    "iphone-se3",
+    "iphone-16",
+    "laptop"
+  ],
+  "themes": [
+    "light",
+    "dark"
+  ]
+}
