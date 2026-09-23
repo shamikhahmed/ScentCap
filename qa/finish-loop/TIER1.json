@@ -2,8 +2,8 @@
   "app": "scentcap",
   "version": "2.1.4",
   "swCache": "scentcap-v215",
-  "generatedAt": "2026-09-23T08:59:08.306Z",
-  "status": "FAIL",
+  "generatedAt": "2026-09-23T09:06:07.571Z",
+  "status": "PASS",
   "pass": [
     {
       "id": "version:field",
@@ -54,6 +54,10 @@
       "detail": "Deploy to GitHub Pages @ 868cf34 → success https://github.com/shamikhahmed/ScentCap/actions/runs/35086544739"
     },
     {
+      "id": "tag",
+      "detail": "found v2.1.4"
+    },
+    {
       "id": "matrix:spec",
       "detail": "e2e/finish-matrix.spec.ts"
     },
@@ -67,15 +71,15 @@
     },
     {
       "id": "matrix:freshness",
-      "detail": "2026-09-23T05:54:23.963Z"
+      "detail": "2026-09-23T09:04:45.420Z"
     },
     {
       "id": "lighthouse:home-demo-desktop.json",
-      "detail": "perf 100 a11y 100 bp 100 LCP 454.3727 TBT 0 CLS 0.05650404180530019"
+      "detail": "perf 100 a11y 100 bp 100 LCP 505.0801 TBT 0 CLS 0.05650404180530019"
     },
     {
       "id": "lighthouse:home-demo-mobile.json",
-      "detail": "perf 97 a11y 100 bp 100 LCP 1857.7758 TBT 33.5 CLS 0.07372146069698357"
+      "detail": "perf 97 a11y 100 bp 100 LCP 1851.1504 TBT 22.5 CLS 0.07372146069698357"
     },
     {
       "id": "lighthouse:passing",
@@ -87,7 +91,7 @@
     },
     {
       "id": "gallery:freshness",
-      "detail": "docs/screenshots/gallery/gallery-manifest.json @ 2026-09-23T10:55:24+05:00"
+      "detail": "docs/screenshots/gallery/gallery-manifest.json @ 2026-09-23T14:05:59+05:00"
     },
     {
       "id": "sinks:SINKS.md",
@@ -126,12 +130,7 @@
       "detail": "1 sinks; SINKS.md ok"
     }
   ],
-  "fail": [
-    {
-      "id": "tag",
-      "detail": "missing tag v2.1.4 (have: v2.0.10, v2.1.0, v2.1.1, v2.1.2, v2.1.3)"
-    }
-  ],
+  "fail": [],
   "warn": [
     {
       "id": "live:VERSION.json",
