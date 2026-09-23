@@ -1,6 +1,7 @@
 import { getDb, getAllCollection, getPreferences, getWishlist, putFragrance, savePreferences } from '@/db';
 import { enrichFragranceFromOnline } from '@/services/onlineCatalog';
 import { needsCatalogImageRefresh } from '@/lib/catalogImage';
+import { isDemoUrl } from '@/lib/demoMode';
 import type { Fragrance } from '@/types';
 
 /** v3: no bundled seed — catalog is built from live Fraganty API + user cache. */
@@ -29,6 +30,9 @@ async function migrateToCatalogV3(): Promise<void> {
       await db.delete('fragrances', f.id);
     }
   }
+
+  // Demo / Finish loops must not block __APP_READY__ on Fraganty (often 5xx / hung).
+  if (isDemoUrl()) return;
 
   await Promise.all(
     [...keep].slice(0, 24).map(async (id) => {
