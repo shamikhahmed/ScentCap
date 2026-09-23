@@ -70,3 +70,9 @@ Button, Card, Switch, ConfirmDialog, Banner, Toast, ErrorState, EmptyState under
 - writeMatrixResults + installTestMocks in finish-matrix (demo boot was blocked by fraganty.ai 500s).
 - Gallery regen; FINISH_MATRIX=1 → 6/6; real LH mobile vs live Pages (no stubs).
 - Honest Tier1: kill-list + LH thresholds still FAIL — no fleet Tier 1 claim.
+
+## 2026-09-23 — C-20 demo boot
+- Root cause: `migrateToCatalogV3` awaited Fraganty enrich (5xx/hang) before `__APP_READY__`.
+- Demo URL skips online enrich; matrix applies theme after boot.
+- FINISH_MATRIX: **6/6 passed**.
+- VERSION 2.1.2 / scentcap-v213.

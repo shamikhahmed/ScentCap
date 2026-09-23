@@ -27,7 +27,6 @@ test.describe('finish-matrix', () => {
         try {
           await page.setViewportSize({ width: vp.width, height: vp.height });
           await installTestMocks(page);
-          await applyFinishTheme(page, theme);
           await page.goto('/?demo=1');
           await waitForAppReady(page).catch(async () => {
             await page.waitForLoadState('domcontentloaded');
@@ -36,6 +35,8 @@ test.describe('finish-matrix', () => {
             );
             if (!ready) throw new Error('__APP_READY__ not set (C-20)');
           });
+          /* Theme after boot — applyFinishTheme before goto can race a cold shell. */
+          await applyFinishTheme(page, theme);
           await assertNoHorizontalOverflow(page);
           await assertNotObscured(page, 'body');
           fs.mkdirSync(path.join(SHOTS, 'home', theme), { recursive: true });
