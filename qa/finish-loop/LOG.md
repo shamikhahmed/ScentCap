@@ -96,3 +96,7 @@ Button, Card, Switch, ConfirmDialog, Banner, Toast, ErrorState, EmptyState under
 
 ## 2026-09-23 — gallery regen
 - npm run gallery: 2/2 (10 mobile + 10 desktop).
+
+## 2026-09-23 — live Pages mobile LH (honest)
+- https://shamikhahmed.github.io/ScentCap/?demo=1 → P56 A96 BP96 LCP~36s TBT~762 — **below** gate.
+- Earlier P96 was not reproduced on current live deploy (stepR not merged / Pages stale).
