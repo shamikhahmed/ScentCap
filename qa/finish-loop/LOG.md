@@ -100,3 +100,7 @@ Button, Card, Switch, ConfirmDialog, Banner, Toast, ErrorState, EmptyState under
 ## 2026-09-23 — live Pages mobile LH (honest)
 - https://shamikhahmed.github.io/ScentCap/?demo=1 → P56 A96 BP96 LCP~36s TBT~762 — **below** gate.
 - Earlier P96 was not reproduced on current live deploy (stepR not merged / Pages stale).
+
+## 2026-09-23 — local preview LH (not committed as tier1 evidence)
+- `http://127.0.0.1:4173/ScentCap/?demo=1` mobile: P74 A100 BP96 LCP~6383 TBT~50 CLS~0.07 — better than live P56 but still fails LCP≤2500 / perf≥90.
+- Tier1 evidence remains live Pages JSON.
