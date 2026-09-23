@@ -81,3 +81,7 @@ Button, Card, Switch, ConfirmDialog, Banner, Toast, ErrorState, EmptyState under
 - Tag **v2.1.2** pushed.
 - Matrix 6/6; gallery regen; mobile LH **P96** (live) — check LCP/TBT/CLS vs gates.
 - public/VERSION.json for Pages live gate.
+
+## 2026-09-23 — gates
+- After v2.1.2 tag + evidence: only kill:raw-hex (84) + kill:sub-11px (13) remain (plus live VERSION until Pages deploy).
+- Mobile LH meets thresholds (P96).
