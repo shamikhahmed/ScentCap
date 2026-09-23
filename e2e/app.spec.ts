@@ -180,8 +180,9 @@ test.describe('ScentCap PWA features', () => {
     await context.setOffline(false);
   });
 
-  test('demo wardrobe hydrates real catalog bottle photos', async ({ page }) => {
-    test.setTimeout(90_000);
+  test('demo wardrobe ships baked bottle art offline (no Fraganty)', async ({ page }) => {
+    // Demo is intentionally offline for cold-path LH — SVG data URIs, not live catalog HTTPS.
+    test.setTimeout(60_000);
     await loadDemoWardrobe(page);
     await expect(page.getByRole('button', { name: /Wear this today/i })).toBeVisible({ timeout: 20_000 });
 
@@ -200,9 +201,11 @@ test.describe('ScentCap PWA features', () => {
             req.onerror = () => reject(req.error);
           });
           db.close();
-          return all.filter((f) => typeof f.image === 'string' && /^https?:\/\//.test(f.image)).length;
+          return all.filter(
+            (f) => typeof f.image === 'string' && /^data:image\//.test(f.image),
+          ).length;
         });
-      }, { timeout: 45_000 })
+      }, { timeout: 15_000 })
       .toBeGreaterThanOrEqual(6);
   });
 });
