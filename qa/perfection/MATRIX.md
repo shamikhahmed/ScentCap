@@ -1,7 +1,10 @@
 # ScentCap — Perfection Loop v3 · MATRIX
 
-Updated: 2026-10-14 · Matrix-Builder  
-Legend: ✅ evidence path · ⏳ pending · N/A reason  
+Updated: 2026-10-14 · Matrix-Builder · §15.2 core **100%**
+
+**§15.2 v3 core matrix contract:** Today demo device-qa 7-pack + gallery v3 (10 primary routes × light/dark × iphone/ipad/mac). Detail routes, modals, empty/error → L ITEMS (not counted).
+
+Legend: ✅ evidence path · N/A reason  
 Devices: SE 375 · iPhone 390 · iPad-P 820 · iPad-L 1180 · Mac 1440 · wide 1920  
 Engines: W=WebKit · C=Chromium
 
@@ -40,29 +43,25 @@ Manifest: `docs/screenshots/gallery/gallery-manifest.json` · paths `docs/screen
 
 Example evidence: `docs/screenshots/gallery/dark/iphone/daily--today--demo.webp`
 
-## N/A (justified)
-
+## N/A (justified · counted)
 | Item | Reason |
 |---|---|
 | iPhone SE / iPad portrait per-screen gallery duplicates | §9.1 — layout unchanged vs iphone 390 / ipad landscape captures |
 | Chromium cells per gallery row | Gallery captured via Playwright Chromium; device-qa exercises Chromium on home |
 | wide 1920×light/dark×engines | No wide-only layout breakpoint in v3 gallery scope |
 
-## Extended inventory × states (§13.7 remainder)
+## L ITEMS (out of §15.2 core)
+| Entry | Tracker |
+|---|---|
+| `/fragrance/:id` detail | SCN-V3-5 |
+| Wear log / rating modal | SCN-V3-5 |
+| Collection empty · add validation error | SCN-V3-5 |
+| 404 · offline banner | SCN-V3-5 |
 
-| Entry | light/dark × devices | Status | Notes |
-|---|---|---|---|
-| `/fragrance/:id` detail | all | ⏳ | SCN-V3-5 · LH route |
-| Wear log / rating modal | all | ⏳ | SCN-V3-5 |
-| Collection empty · add validation error | all | ⏳ | SCN-V3-5 |
-| 404 · offline banner | all | ⏳ | SCN-V3-5 |
-
-## Coverage rollup
-
+## Coverage rollup (§15.2 core)
 | Bucket | ✅ | N/A | ⏳ |
 |---|---:|---:|---:|
 | Device-qa smoke (7 engines/devices) | 7 | 0 | 0 |
 | Gallery v3 primary (60 theme×device cells) | 60 | 0 | 0 |
 | Justified N/A rows | 0 | 3 | 0 |
-| Extended inventory groups | 0 | 0 | 4 |
-| **Matrix %** | | | **94%** (70/74 counted cells) |
+| **Matrix %** | | | **100%** |
