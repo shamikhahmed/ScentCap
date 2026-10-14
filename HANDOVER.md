@@ -1,24 +1,26 @@
 # ScentCap — Handover
 
 > Read this + `ROADMAP.md` + `~/Capricorn-Brain/01 Projects/ScentCap.md` before working here.
-> Last updated: 2026-07-27 · Fleet-wide standard: `capricorn-tooling/shared/CAP-STANDARD.md`
+> Last updated: 2026-10-14 · Fleet-wide standard: `capricorn-tooling/shared/CAP-STANDARD.md`
 
 ## What this is
-Fragrance wardrobe OS — Atelier chalk/forest UI, weather-aware picks, layering lab, analytics. CAP STANDARD REFERENCE APP.
+Fragrance wardrobe — Atelier chalk/forest UI, weather-aware picks, layering lab, analytics. Cap Standard pilot.
 
 ## Facts
-**Version:** 2.1.0
+**Version:** 2.2.0 · tag `v2.2.0` · SW `scentcap-v220`
 **Live:** https://shamikhahmed.github.io/ScentCap/
 **Repo:** https://github.com/shamikhahmed/ScentCap
 **Stack:** React 19 + TypeScript + Vite 8 + Tailwind v4. IndexedDB (idb). vite-plugin-pwa. Capacitor iOS shell. Playwright.
-**Data:** IndexedDB via idb (v5: fragrances, catalog, images blob cache). Optional Open-Meteo + Fraganty. No accounts. SW `scentcap-v211`.
+**Data:** IndexedDB via idb (v5: fragrances, catalog, images blob cache). Optional Open-Meteo + Fraganty. No accounts.
+**Perfection v3:** `qa/perfection/` — SCN-V3-1/2/3 FIXED (Phase I); SCN-V3-4 gallery OPEN.
 
 ## Run & verify
 ```bash
 npm install
-npm run verify       # lint + build + 13 e2e — CI gate
-npm run gallery      # regen 20-shot gallery
+npm run verify       # lint + unit + e2e — CI gate
+npm run gallery      # regen gallery shots
 npm run gallery:view # http://127.0.0.1:8771/screen-gallery.html
+# device-qa (PW_CORE + PLAYWRIGHT_BROWSERS_PATH): see qa/perfection/STATE.md
 ```
 
 ## Architecture
