@@ -35,3 +35,6 @@ qa/device-matrix/**/*.png
 !.env.*.example
 
 qa/finish-loop/shots/
+
+# v3 evidence screenshots stay local
+qa/perfection/**/*.png

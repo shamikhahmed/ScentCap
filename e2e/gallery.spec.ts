@@ -13,7 +13,7 @@ import {
   prepareGalleryPage,
   shotEntry,
   shotRelativePath,
-} from '../../capricorn-tooling/shared/gallery/capture-helpers.mjs';
+} from './helpers/gallery-capture-helpers.mjs';
 import { installTestMocks } from './helpers';
 
 const GALLERY_DIR = join(process.cwd(), 'docs', 'screenshots', 'gallery');
