@@ -1,3 +1,11 @@
+## [2.2.0] — 2026-10-14
+
+- Perfection Loop v3 Phase I (G-8): SW `scentcap-v220`
+- SCN-V3-1: tip CI green — demo e2e asserts offline SVG bottle art (not Fraganty HTTPS)
+- SCN-V3-2: brand captions ≥ 12px; remove flacon etched SVG brand strings that scaled &lt; 11px
+- SCN-V3-3: DemoBanner “Use my collection” tap target ≥ 44×44
+- Open: SCN-V3-4 full v3 gallery (Phase G)
+
 ## 2.1.1 — 2026-09-15
 - C-16: Self-host Inter on pitch.html; remove Google Fonts.
 - C-20: Set `window.__APP_READY__` when boot finishes (after splash/boot screen).

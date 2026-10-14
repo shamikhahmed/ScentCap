@@ -50,7 +50,7 @@ export function BottleCard({ c, f }: { c: CollectionItem; f?: Fragrance }) {
           )}
           <div className="relative z-10 min-w-0">
             {c.isFavorite && <Star size={14} className="text-[var(--color-accent)] mb-2" fill="currentColor" />}
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--color-text-tertiary)] truncate">{f?.brand}</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-tertiary)] truncate">{f?.brand}</p>
             <p className="font-semibold leading-tight tracking-tight mt-0.5 truncate">{f?.name ?? '…'}</p>
             <div className="flex justify-between items-center mt-2.5 gap-2 flex-wrap">
               {f?.concentration && (
