@@ -2,148 +2,80 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ScentCap — Screen Gallery</title>
-  <style>
-    :root {
-      --bg: #0a0a0c;
-      --surface: #141418;
-      --border: #2a2a32;
-      --text: #f4f4f6;
-      --muted: #9a9aa8;
-      --accent: #0a84ff;
-      --accent-dim: rgba(10, 132, 255, 0.15);
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.5;
-    }
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(10, 10, 12, 0.92);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      padding: 16px 20px;
-    }
-    h1 { margin: 0 0 4px; font-size: 1.35rem; font-weight: 650; }
-    .sub { color: var(--muted); font-size: 0.85rem; margin: 0 0 12px; }
-    .toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-    .btn {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      color: var(--text);
-      border-radius: 8px;
-      padding: 8px 12px;
-      font-size: 0.85rem;
-      cursor: pointer;
-    }
-    .btn.active { border-color: var(--accent); background: var(--accent-dim); color: var(--accent); }
-    main { padding: 20px; }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 16px;
-    }
-    .grid.desktop-view { grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); }
-    figure {
-      margin: 0;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-      cursor: zoom-in;
-    }
-    figure img { width: 100%; display: block; }
-    figcaption { padding: 10px 12px; font-size: 0.8rem; }
-    figcaption .route { color: var(--muted); font-family: ui-monospace, monospace; font-size: 0.72rem; }
-    #lightbox {
-      position: fixed; inset: 0; z-index: 200;
-      background: rgba(0, 0, 0, 0.92);
-      display: none; align-items: center; justify-content: center;
-      cursor: zoom-out;
-    }
-    #lightbox.open { display: flex; }
-    #lightbox img { max-width: 94vw; max-height: 94vh; border-radius: 8px; }
-    .empty { color: var(--muted); padding: 40px; text-align: center; }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Screen Gallery</title>
+  <link rel="stylesheet" href="screen-gallery.css" />
 </head>
 <body>
-  <header>
-    <h1>ScentCap — Screen Gallery</h1>
-    <p class="sub" id="meta">Loading manifest…</p>
-    <div class="toolbar" id="filters"></div>
-  </header>
-  <main>
-    <div class="grid" id="grid"></div>
-    <div class="empty" id="empty" hidden>
-      No screenshots yet. Run <code>npm run gallery</code> first.
+  <a class="skip-link" href="#gallery-main">Skip to gallery</a>
+
+  <header class="sg-header" role="banner">
+    <div class="sg-header-top">
+      <div class="sg-brand">
+        <h1 class="sg-title" id="sg-title">Screen Gallery</h1>
+        <p class="sg-meta" id="sg-meta" aria-live="polite">Loading manifest…</p>
+      </div>
+      <div class="sg-theme-toggle" role="group" aria-label="Viewer appearance">
+        <button type="button" class="sg-chip" data-chrome="system" aria-pressed="true">System</button>
+        <button type="button" class="sg-chip" data-chrome="light" aria-pressed="false">Light</button>
+        <button type="button" class="sg-chip" data-chrome="dark" aria-pressed="false">Dark</button>
+      </div>
     </div>
+
+    <div class="sg-toolbar" role="toolbar" aria-label="Gallery filters">
+      <div class="sg-filter-group" role="group" aria-label="Colour mode">
+        <span class="sg-filter-label" id="lbl-theme">Theme</span>
+        <button type="button" class="sg-chip" data-theme="light" aria-pressed="false" aria-describedby="lbl-theme">Light</button>
+        <button type="button" class="sg-chip" data-theme="dark" aria-pressed="false" aria-describedby="lbl-theme">Dark</button>
+        <button type="button" class="sg-chip" data-theme="both" aria-pressed="true" aria-describedby="lbl-theme">Both</button>
+      </div>
+
+      <div class="sg-filter-group" role="group" aria-label="Device">
+        <span class="sg-filter-label" id="lbl-device">Device</span>
+        <button type="button" class="sg-chip" data-device="iphone" aria-pressed="false" aria-describedby="lbl-device">iPhone</button>
+        <button type="button" class="sg-chip" data-device="ipad" aria-pressed="false" aria-describedby="lbl-device">iPad</button>
+        <button type="button" class="sg-chip" data-device="mac" aria-pressed="false" aria-describedby="lbl-device">Mac</button>
+        <button type="button" class="sg-chip" data-device="all" aria-pressed="true" aria-describedby="lbl-device">All</button>
+      </div>
+
+      <div class="sg-filter-group sg-state-group">
+        <label class="sg-filter-label" for="sg-state">State</label>
+        <select id="sg-state" class="sg-select" aria-label="Filter by state">
+          <option value="all">All states</option>
+        </select>
+      </div>
+
+      <div class="sg-search-wrap">
+        <label class="visually-hidden" for="sg-search">Search screens</label>
+        <input id="sg-search" class="sg-search" type="search" placeholder="Search screens…" autocomplete="off" enterkeyhint="search" />
+      </div>
+    </div>
+  </header>
+
+  <main id="gallery-main" class="sg-main" tabindex="-1">
+    <div id="sg-rails" class="sg-rails"></div>
+    <p id="sg-empty" class="sg-empty" hidden>
+      No screenshots match these filters. Run <code>npm run gallery</code> with
+      <code>CAPTURE_GALLERY=1</code>, or adjust theme / device / state / search.
+    </p>
   </main>
-  <div id="lightbox"><img alt="" /></div>
-  <script>
-    const DIR = 'docs/screenshots/gallery/';
-    const grid = document.getElementById('grid');
-    const filters = document.getElementById('filters');
-    const meta = document.getElementById('meta');
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImg = lightbox.querySelector('img');
-    let shots = [];
-    let viewport = 'mobile';
 
-    function render() {
-      grid.className = 'grid' + (viewport === 'desktop' ? ' desktop-view' : '');
-      grid.innerHTML = '';
-      const visible = shots.filter((s) => s.viewport === viewport);
-      document.getElementById('empty').hidden = visible.length > 0;
-      for (const s of visible) {
-        const fig = document.createElement('figure');
-        const img = document.createElement('img');
-        img.loading = 'lazy';
-        img.src = DIR + s.file;
-        img.alt = s.label;
-        const cap = document.createElement('figcaption');
-        cap.innerHTML = `<strong>${s.label}</strong><br /><span class="route">${s.route}</span>`;
-        fig.append(img, cap);
-        fig.addEventListener('click', () => {
-          lightboxImg.src = img.src;
-          lightbox.classList.add('open');
-        });
-        grid.append(fig);
-      }
-    }
+  <dialog id="sg-lightbox" class="sg-lightbox" aria-labelledby="sg-lb-caption">
+    <div class="sg-lb-chrome">
+      <button type="button" class="sg-lb-btn" id="sg-lb-prev" aria-label="Previous shot">‹</button>
+      <button type="button" class="sg-lb-btn" id="sg-lb-next" aria-label="Next shot">›</button>
+      <button type="button" class="sg-lb-btn sg-lb-close" id="sg-lb-close" aria-label="Close lightbox">✕</button>
+    </div>
+    <div class="sg-lb-stage" id="sg-lb-stage">
+      <img id="sg-lb-img" alt="" draggable="false" />
+    </div>
+    <div class="sg-lb-meta">
+      <p id="sg-lb-caption" class="sg-lb-caption"></p>
+      <p id="sg-lb-detail" class="sg-lb-detail"></p>
+    </div>
+  </dialog>
 
-    function renderFilters() {
-      filters.innerHTML = '';
-      for (const v of ['mobile', 'desktop']) {
-        const btn = document.createElement('button');
-        btn.className = 'btn' + (v === viewport ? ' active' : '');
-        btn.textContent = v[0].toUpperCase() + v.slice(1);
-        btn.addEventListener('click', () => { viewport = v; renderFilters(); render(); });
-        filters.append(btn);
-      }
-    }
-
-    lightbox.addEventListener('click', () => lightbox.classList.remove('open'));
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') lightbox.classList.remove('open'); });
-
-    fetch(DIR + 'gallery-manifest.json')
-      .then((r) => r.json())
-      .then((m) => {
-        shots = m.shots;
-        meta.textContent = `v${m.version} · ${m.shots.length} shots · generated ${new Date(m.generated).toLocaleString()}`;
-        renderFilters();
-        render();
-      })
-      .catch(() => {
-        meta.textContent = 'Manifest missing.';
-        document.getElementById('empty').hidden = false;
-      });
-  </script>
+  <script src="screen-gallery.js" defer></script>
 </body>
 </html>
