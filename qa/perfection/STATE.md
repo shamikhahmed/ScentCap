@@ -6,7 +6,7 @@ Branch: `perfection/scentcap-v3`
 App version: 2.1.4 (no release bump — Phase I)
 
 ## Last commits
-- Tip: see `git rev-parse HEAD` on `perfection/scentcap-v3` after push
+- Tip: `6a58e2a` on `origin/perfection/scentcap-v3`
 - Base: `602cdff` (main tip — e2e offline SVG assert; tip CI green)
 
 ## What's running
