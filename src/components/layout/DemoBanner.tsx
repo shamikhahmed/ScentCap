@@ -18,11 +18,16 @@ export function DemoBanner() {
 
   return (
     <div
-      className="cap-demo-banner sticky top-0 z-40 flex items-center justify-between gap-2 px-4 pb-1.5 pt-[max(0.375rem,env(safe-area-inset-top))] text-[11px] font-medium border-b border-[var(--sc-border-soft)] bg-[var(--sc-surface)] text-[var(--sc-text-muted)]"
+      className="cap-demo-banner sticky top-0 z-40 flex items-center justify-between gap-2 px-4 pb-2 pt-[max(0.5rem,env(safe-area-inset-top))] text-xs font-medium border-b border-[var(--sc-border-soft)] bg-[var(--sc-surface)] text-[var(--sc-text-muted)]"
       role="status"
     >
       <span>Sample wardrobe</span>
-      <Button size="sm" variant="ghost" className="!h-7 !min-h-0 !px-2 !text-[11px] shrink-0" onClick={startFresh}>
+      <Button
+        size="sm"
+        variant="ghost"
+        className="!min-h-[44px] !min-w-[44px] !h-11 !px-3 !text-xs shrink-0"
+        onClick={startFresh}
+      >
         Use my collection
       </Button>
     </div>

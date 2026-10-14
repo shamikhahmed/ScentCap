@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 import { FAMILY_COLORS } from '@/lib/stats';
 import { SC_WHITE_SOFT } from '@/design/tokens';
-import { flaconEtchedLabel, flaconInitials } from '@/lib/flaconMonogram';
+import { flaconInitials } from '@/lib/flaconMonogram';
 
 /** Sculpted flacon — last resort when no bottle art. Distinct per house. */
 export function FlaconPlaceholder({
@@ -16,7 +16,6 @@ export function FlaconPlaceholder({
   className?: string;
 }) {
   const aura = FAMILY_COLORS[family ?? ''] ?? 'var(--sc-accent)';
-  const label = flaconEtchedLabel(brand);
   const initials = flaconInitials(brand, name);
   const gid = `flacon-${(family ?? 'x').replace(/\W/g, '')}-${initials}`;
   const accessible = brand && name ? `${brand} ${name}` : brand || name || 'Fragrance bottle';
@@ -59,31 +58,19 @@ export function FlaconPlaceholder({
           fill={`url(#${gid}-shine)`}
         />
         <ellipse cx="40" cy="126" rx="18" ry="4.5" fill={aura} opacity="0.18" />
+        {/* Monogram only — etched brand strings scale below 11px on small flacons and fail device-qa. Brand shows in HTML captions. */}
         <text
           x="40"
-          y="82"
+          y="88"
           textAnchor="middle"
           fill={SC_WHITE_SOFT}
-          fontSize="12"
+          fontSize="14"
           fontWeight="700"
           fontFamily="var(--font-display), Georgia, serif"
           opacity="0.95"
           letterSpacing="0.08em"
         >
           {initials}
-        </text>
-        <text
-          x="40"
-          y="98"
-          textAnchor="middle"
-          fill={SC_WHITE_SOFT}
-          fontSize="5.5"
-          fontWeight="600"
-          fontFamily="var(--font-sans), system-ui, sans-serif"
-          opacity="0.75"
-          letterSpacing="0.12em"
-        >
-          {label.toUpperCase()}
         </text>
       </svg>
     </div>

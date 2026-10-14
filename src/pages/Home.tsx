@@ -392,7 +392,7 @@ export function Home() {
                     size="sm"
                     className="mb-2.5 w-full"
                   />
-                  <p className="text-[10px] text-[var(--sc-text-muted)] truncate">{b.fragrance.brand}</p>
+                  <p className="text-xs text-[var(--sc-text-muted)] truncate">{b.fragrance.brand}</p>
                   <p className="text-sm font-semibold truncate tracking-tight">{fragranceDisplayName(b.fragrance.name)}</p>
                   <p className="text-xs font-semibold text-[var(--sc-accent)] mt-1">{Math.round(b.score)}%</p>
                 </div>
@@ -423,7 +423,7 @@ export function Home() {
                     size="sm"
                     className="mb-3 w-full"
                   />
-                  <p className="text-[10px] text-[var(--sc-text-muted)] truncate">{n.f.brand}</p>
+                  <p className="text-xs text-[var(--sc-text-muted)] truncate">{n.f.brand}</p>
                   <p className="text-sm font-semibold truncate">{fragranceDisplayName(n.f.name)}</p>
                   <p className="text-[11px] font-semibold text-[var(--sc-warning)] mt-2">
                     {n.days === null ? 'Never worn' : `${n.days}d ago`}
