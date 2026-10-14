@@ -1,7 +1,7 @@
 # ScentCap — Perfection Loop v3 · STATE
 
-Updated: 2026-10-14T11:55:00Z  
-Phase: **I · Release** (merge → main · tag `v2.2.0`)  
+Updated: 2026-10-14T12:20:00Z  
+Phase: **C · Matrix** (gallery bridged · extended states open)  
 Branch: `main` (from `perfection/scentcap-v3`)  
 App version: **2.2.0** · SW `scentcap-v220`
 
@@ -14,7 +14,7 @@ App version: **2.2.0** · SW `scentcap-v220`
 - Live: `qa/perfection/live-v2.2.0/device-qa.json` (after Pages deploy)
 
 ## Open
-- SCN-V3-4 gallery → full v3 (Phase G)
+- SCN-V3-5 matrix extended routes/states (P2)
 
 ## Reproduce (live)
 ```bash
