@@ -1,4 +1,4 @@
-# ScentCap — Fragrance OS
+# ScentCap — your fragrance collection
 
 **Version:** 2.2.0
 
