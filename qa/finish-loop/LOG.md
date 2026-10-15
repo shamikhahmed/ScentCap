@@ -116,3 +116,12 @@ Button, Card, Switch, ConfirmDialog, Banner, Toast, ErrorState, EmptyState under
 ### Evidence refresh (post v2.1.4 UI commit)
 - Re-ran gzip LH: mobile P97 / desktop P100
 - Matrix 6/6 + gallery regen for freshness vs UI tip
+
+## 2026-10-15 — TestFlight / store readiness (perfection v4 / G-1 D-01)
+
+- Complete `docs/store/` pack (APP-STORE, PRIVACY-LABELS, SCREENSHOTS, TESTFLIGHT).
+- App-level `PrivacyInfo.xcprivacy` + Info.plist purpose strings verified/fixed.
+- Xcode 26 / iOS 26 SDK build steps documented in `docs/IOS-BUILD.md` + `docs/store/TESTFLIGHT.md`.
+- Clean native build: **BLOCKED** — machine has Command Line Tools only; no `/Applications/Xcode.app`; `iphoneos` SDK missing. Exact next step: install Xcode 26 → `sudo xcode-select -s /Applications/Xcode.app/Contents/Developer` → archive / `flutter build ipa` / `xcodebuild` as documented.
+- No App Store Connect upload/submit (owner action).
+
