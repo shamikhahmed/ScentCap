@@ -1,6 +1,14 @@
-# Privacy Nutrition Labels (draft)
+# ScentCap — App Store privacy nutrition labels (draft)
 
-- **Data Not Collected** for account, contact info, location *linked to identity*, browsing, search, identifiers for tracking.
-- **Location:** optional, on device / to Open-Meteo only when user enables weather — not used for tracking.
-- **Photos / Camera:** optional, stored on device in the app sandbox / IndexedDB equivalent — not uploaded.
-- **Diagnostics:** none by default.
+Publisher: Capricorn Systems. No analytics (G-9). No tracking.
+
+| Data type | Linked to you | Tracking | Purpose | Notes |
+|---|---|---|---|---|
+| Photos or Videos | No | No | App Functionality | Optional bottle photos; stored on device only |
+| Precise Location | No | No | App Functionality | Optional; sent only to Open-Meteo for weather when user enables weather picks |
+| Product Interaction | No | No | App Functionality | Wardrobe / wear logs on device (IndexedDB) |
+
+**Not collected:** contact info, identifiers for advertising, usage data for analytics, diagnostics sold to third parties, financial info.
+
+Contact / support: https://shamikhahmed.github.io/support.html  
+Privacy policy: https://shamikhahmed.github.io/ScentCap/privacy.html

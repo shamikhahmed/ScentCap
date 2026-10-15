@@ -1,34 +1,31 @@
 # ScentCap — iOS Build Guide
 
-> Version 1.0.8 · Capacitor wrapper for native App Store distribution
+> Version 2.2.0 · Capacitor 8 · App Store / TestFlight readiness (no submission in finish program)
 
 ## Prerequisites
 
-- macOS with Xcode 15+
-- Apple Developer account (for device testing and App Store)
+- macOS with **Xcode 26** (iOS 26 SDK) — required for current App Store uploads
+- Apple Developer account (device testing / TestFlight / App Store — owner only)
 - Node.js 20+
-- CocoaPods (`sudo gem install cocoapods`)
+- Active developer directory must be full Xcode, not Command Line Tools:
+
+```bash
+sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+xcodebuild -version
+xcrun --sdk iphoneos --show-sdk-version
+```
 
 ## Quick start
 
 ```bash
-# Install dependencies (includes @capacitor/core, cli, ios)
 npm install
-
-# Generate PWA + iOS app icons
 npm run generate-icons
-
-# Build web assets with root base path (required for Capacitor)
-npm run build:cap
-
-# Sync web build into native projects
+npm run build:cap          # web assets with base `/` for Capacitor
 npx cap sync ios
-
-# Open in Xcode
-npx cap open ios
+npx cap open ios           # or: npm run cap:ios
 ```
 
-Or use the combined scripts:
+Combined scripts:
 
 ```bash
 npm run cap:sync    # build:cap + cap sync
@@ -41,51 +38,66 @@ npm run cap:open    # open existing ios/ project
 | Target | Base path | Build command |
 |--------|-----------|---------------|
 | GitHub Pages PWA | `/ScentCap/` | `npm run build` |
-| Capacitor iOS/Android | `/` | `npm run build:cap` |
+| Capacitor iOS | `/` | `npm run build:cap` |
 
-`vite.config.ts` reads `CAPACITOR=true` to switch `base` and PWA `start_url`. Never deploy a Capacitor build to GitHub Pages without resetting the base path.
+Never deploy a Capacitor build to GitHub Pages without resetting the base path.
 
-## Xcode workflow
+## Xcode 26 workflow
 
 1. Run `npm run cap:ios`
-2. In Xcode, select your Team under **Signing & Capabilities**
-3. Choose a simulator or connected device
-4. Product → Run (⌘R)
+2. Signing & Capabilities → Team; bundle `com.capricorn.scentcap`
+3. Product → Clean Build Folder → Archive (generic iOS device)
+4. Distribute → App Store Connect → Upload (**owner**; outside finish program)
+5. TestFlight Internal Testing
+
+CLI smoke build (no signing):
+
+```bash
+xcodebuild -project ios/App/App.xcodeproj -scheme App \
+  -configuration Release -sdk iphoneos \
+  -destination 'generic/platform=iOS' \
+  clean build CODE_SIGNING_ALLOWED=NO
+```
 
 ## Info.plist (pre-configured)
 
 - `CFBundleDisplayName`: ScentCap
-- `MARKETING_VERSION`: 1.0.8
+- `MARKETING_VERSION`: 2.2.0 · `CURRENT_PROJECT_VERSION`: 220
 - `NSCameraUsageDescription` — bottle photos
 - `NSPhotoLibraryUsageDescription` — photo picker
 - `NSLocationWhenInUseUsageDescription` — weather (Open-Meteo)
+- `ITSAppUsesNonExemptEncryption`: false
+
+## Privacy manifest
+
+`ios/App/App/PrivacyInfo.xcprivacy` — no tracking; UserDefaults / File Timestamp / Disk Space reason APIs declared.
 
 ## Pricing
 
-ScentCap is completely free. No Stripe, no App Store IAP, no Pro gates. Do not create subscription products in App Store Connect.
+Completely free. No Stripe, no App Store IAP, no Pro gates (G-2).
+
+## Agent / CI machine status (2026-10-15)
+
+⛔ **BLOCKED:** This machine has only Command Line Tools (`xcode-select` → `/Library/Developer/CommandLineTools`). No `/Applications/Xcode.app`, no `iphoneos` SDK.
+
+**Exact next step:** Install Xcode 26 → `sudo xcode-select -s /Applications/Xcode.app/Contents/Developer` → re-run clean archive. See [`store/TESTFLIGHT.md`](./store/TESTFLIGHT.md).
 
 ## Troubleshooting
 
 | Issue | Fix |
 |-------|-----|
-| Blank white screen in simulator | Ensure `npm run build:cap` was used (base must be `/`) |
-| `ios/` folder missing | Run `npx cap add ios` after `npm install` |
-| CocoaPods errors | `cd ios/App && pod install` |
-| UIScene lifecycle warning in Xcode | Fixed in v1.1.1 — `SceneDelegate.swift` + `UIApplicationSceneManifest` in Info.plist |
-| WebContent process crash (signal 9) in Simulator | Often Recharts + WKWebView; fixed chart sizing in v1.1.1. If it persists: Simulator → Device → Erase All Content; avoid opening Analytics immediately on cold launch |
-| Harmless simulator noise | `RTIInputSystemClient`, `WebPrivacy`, `CA Event` — ignore; not app bugs |
-| Routing 404 on deep links | Capacitor uses `BrowserRouter` with `basename` from `import.meta.env.BASE_URL` |
-| IAP products empty | N/A — app is free; no IAP products |
-| Missing app icon in Xcode | Run `npm run generate-icons` |
+| Blank white screen in simulator | Use `npm run build:cap` (base must be `/`) |
+| `ios/` folder missing | `npx cap add ios` after `npm install` |
+| SPM / Capacitor resolve errors | Network once for `capacitor-swift-pm` 8.4.0; File → Packages → Resolve |
+| UIScene lifecycle warning | `SceneDelegate.swift` + `UIApplicationSceneManifest` already present |
+| Missing app icon | `npm run generate-icons` |
 
 ## Version sync
 
 After bumping version, update:
 
-- `package.json` / `VERSION.json`
-- `docs/APP-STORE.md` / `docs/PRE-LAUNCH.md`
-- `CHANGELOG.md`
+- `package.json`
 - `ios/App/App.xcodeproj` → `MARKETING_VERSION` + `CURRENT_PROJECT_VERSION`
-- `vite.config.ts` → workbox cache name
-
-See [PRE-LAUNCH.md](./PRE-LAUNCH.md) for the full submission checklist.
+- `docs/store/APP-STORE.md` + `docs/store/TESTFLIGHT.md`
+- `CHANGELOG.md`
+- Vite / workbox cache name if applicable
