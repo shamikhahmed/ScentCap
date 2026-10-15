@@ -68,6 +68,9 @@ function MobileTab({ to, icon: Icon, label }: { to: string; icon: typeof Home; l
 export function AppShell() {
   return (
     <div className="min-h-dvh flex flex-col md:flex-row md:max-w-[1280px] md:mx-auto md:w-full relative bg-[var(--sc-bg)]">
+      <a href="#main" className="cap-skip-link">
+        Skip to content
+      </a>
       <OfflineStatusBar />
 
       <aside
