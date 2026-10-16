@@ -45,4 +45,25 @@ test.describe('ScentCap viewport contract', () => {
     await expect(page.locator('.atelier-tabbar')).toBeHidden();
     await expect(page.getByTestId('desktop-sidebar').getByRole('link', { name: 'Collection' })).toBeVisible();
   });
+
+  test('375px — no content clipped behind floating tabs on primary routes', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await loadDemoWardrobe(page);
+    const labels = ['Today', 'Collection', 'Advisor', 'Calendar', 'You'];
+    for (const label of labels) {
+      const link = page.locator('.atelier-tabbar').getByRole('link', { name: label });
+      if (await link.count()) await link.click();
+      await page.waitForTimeout(400);
+      const ok = await page.evaluate(() => {
+        const main = document.querySelector('main.atelier-main') || document.querySelector('main');
+        const nav = document.querySelector('.atelier-tabbar');
+        if (!main || !nav) return false;
+        // atelier-main padding-bottom (7.5rem + safe) is the anti-clip contract.
+        const pad = parseFloat(getComputedStyle(main).paddingBottom) || 0;
+        const navH = nav.getBoundingClientRect().height;
+        return pad + 1 >= navH;
+      });
+      expect(ok, `tab ${label}: main padding clears floating tabs`).toBe(true);
+    }
+  });
 });
