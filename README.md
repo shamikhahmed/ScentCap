@@ -63,7 +63,7 @@ Your wardrobe stays on your device. See [PRIVACY.md](./PRIVACY.md) and [privacy.
 
 Built by [Shamikh Ahmed](https://shamikhahmed.github.io/) — part of the Cap portfolio alongside Capricorn Systems.
 
-## Real stories
+## Example stories
 
 Illustrative day-in-the-life stories (fictional personas) with screenshots and captions:
 
