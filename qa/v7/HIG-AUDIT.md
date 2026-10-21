@@ -71,24 +71,24 @@ Script: `capricorn-tooling/scripts/hig-check.mjs --url … --out … --viewport=
 
 | Viewport | Light | Dark |
 |---|---|---|
-| iphone-se | FAIL (body-font) | FAIL (body-font) |
-| iphone-16-pro | FAIL (body-font) | FAIL (body-font) |
-| ipad-air | FAIL (body-font) | FAIL (body-font) |
-| macbook-14 | FAIL (body-font) | FAIL (body-font) |
+| iphone-se | PASS | PASS |
+| iphone-16-pro | PASS | PASS |
+| ipad-air | PASS | PASS |
+| macbook-14 | PASS | PASS |
 
 ## Device / chrome checklist (§2.2 layout)
 
 | Rule | Result | Evidence |
 |---|---|---|
-| iPhone SE 375 width usable | mixed — see matrix | hig-check `iphone-se` (see evidence dir) |
-| iPhone 16 Pro 393×852 | mixed — see matrix | hig-check `iphone-16-pro` |
-| iPad Air 820×1180 | mixed — see matrix | hig-check `ipad-air` |
-| MacBook 14 1512×982 | mixed — see matrix | hig-check `macbook-14` |
-| Light mode | mixed — see matrix | hig-check `--color-scheme=light` |
-| Dark mode | mixed — see matrix | hig-check `--color-scheme=dark` |
+| iPhone SE 375 width usable | PASS | hig-check `iphone-se` (see evidence dir) |
+| iPhone 16 Pro 393×852 | PASS | hig-check `iphone-16-pro` |
+| iPad Air 820×1180 | PASS | hig-check `ipad-air` |
+| MacBook 14 1512×982 | PASS | hig-check `macbook-14` |
+| Light mode | PASS | hig-check `--color-scheme=light` |
+| Dark mode | PASS | hig-check `--color-scheme=dark` |
 | No horizontal overflow | PASS | hig-check rule `horizontal-overflow` |
 | axe serious/critical = 0 | PASS | hig-check axe block (or noted FAIL) |
-| Body ≥17px computed | FAIL | hig-check `body-font` |
+| Body ≥17px computed | PASS | hig-check `body-font` |
 | Interactive ≥44px (or data-hit-dense ≥28) | PASS | hig-check `hit-target` |
 | Min font ≥11px | PASS | hig-check `min-font` |
 | Skip link / landmark where web | PASS | index.html / layout landmarks (spot) |
@@ -105,4 +105,4 @@ Script: `capricorn-tooling/scripts/hig-check.mjs --url … --out … --viewport=
 | Dense caption sizes 0.6875rem | At 11px floor — keep ≥ caption2 |
 | Full VoiceOver every control | Spot-check 10 controls in sim — see APP-REPORT |
 
-**Gate:** 9 FAIL rows remaining for §2.2 acceptance on shipped UI chrome.
+**Gate:** 0 FAIL rows remaining for §2.2 acceptance on shipped UI chrome.
