@@ -8,5 +8,5 @@ Branch `perfection/v7-hig-stories` · 2026-10-21
 |---|---|
 | HIG scaffold | ✅ |
 | Personas ×3 | ✅ |
-| Capture | ◐ pending |
+| Capture | ✅ live on hub |
 | Stories live | ◐ lab JSON |

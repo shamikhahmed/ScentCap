@@ -9,4 +9,4 @@ Legend: PASS / FAIL / N/A
 | Body default 17 pt | PASS | `src/ios-tokens.css` |
 | prefers-contrast | PASS | ios-tokens `@media (prefers-contrast: more)` |
 | Hit targets 44×44 | PASS | `.hit44` utility |
-| Capture / video | N/A | Pending `capture-story.mjs` |
+| Capture / video | ✅ | Hub stories media + MP4/WebM/VTT |
