@@ -1,0 +1,34 @@
+{
+  "personaId": "scentcap-hira",
+  "baseUrl": "/",
+  "viewport": {
+    "width": 402,
+    "height": 874,
+    "deviceScaleFactor": 3
+  },
+  "prep": [
+    {
+      "action": "goto",
+      "path": "/"
+    },
+    {
+      "action": "wait",
+      "ms": 800
+    }
+  ],
+  "steps": [
+    {
+      "id": "01-home",
+      "title": "Home",
+      "action": "screenshot",
+      "route": "home",
+      "alt": "scentcap-hira home screen with sample data"
+    },
+    {
+      "id": "02-task",
+      "title": "Primary task",
+      "action": "screenshot",
+      "alt": "scentcap-hira primary task view"
+    }
+  ]
+}

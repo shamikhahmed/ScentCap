@@ -1,0 +1,34 @@
+{
+  "id": "scentcap-james",
+  "name": "James Cole",
+  "age": 40,
+  "city": "London, UK",
+  "role": "Collector",
+  "tech": "medium",
+  "accessibility": "standard",
+  "device": "iPhone 15",
+  "goal": "Bottle levels and decant notes",
+  "pain_before": [
+    "Scattered notes",
+    "Forgot to log"
+  ],
+  "how_she_uses_it": [
+    "bottle-catalog",
+    "wear-log"
+  ],
+  "numbers": {
+    "before": {
+      "minutes_lost": 15
+    },
+    "after": {
+      "minutes_lost": 2
+    }
+  },
+  "quote": "I know which bottle is half full.",
+  "seed": "qa/v7/personas/scentcap-james.seed.json",
+  "features_used": [
+    "bottle-catalog",
+    "wear-log"
+  ],
+  "fictional": true
+}
