@@ -1,7 +1,7 @@
 {
   "name": "ScentCap",
-  "version": "2.2.0",
-  "swCache": "scentcap-v220",
-  "updated": "2026-10-14",
-  "notes": "Perfection Loop v3 Phase I — SCN-V3-1/2/3 (CI, brand captions ≥12px, Use my collection 44px)"
+  "version": "2.2.1",
+  "swCache": "scentcap-v221",
+  "updated": "2026-10-21",
+  "notes": "Perfection Loop v3 Phase I \u2014 SCN-V3-1/2/3 (CI, brand captions \u226512px, Use my collection 44px) \u00b7 v7 HIG ios-tokens scaffold"
 }

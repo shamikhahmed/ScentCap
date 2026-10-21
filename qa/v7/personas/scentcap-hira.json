@@ -1,0 +1,34 @@
+{
+  "id": "scentcap-hira",
+  "name": "Hira Qureshi",
+  "age": 28,
+  "city": "Lahore, Pakistan",
+  "role": "Daily wearer",
+  "tech": "medium",
+  "accessibility": "standard",
+  "device": "iPhone 15",
+  "goal": "Today picks matched to weather",
+  "pain_before": [
+    "Scattered notes",
+    "Forgot to log"
+  ],
+  "how_she_uses_it": [
+    "today-picks",
+    "rules-advisor"
+  ],
+  "numbers": {
+    "before": {
+      "minutes_lost": 15
+    },
+    "after": {
+      "minutes_lost": 2
+    }
+  },
+  "quote": "Rainy day? The wardrobe knows.",
+  "seed": "qa/v7/personas/scentcap-hira.seed.json",
+  "features_used": [
+    "today-picks",
+    "rules-advisor"
+  ],
+  "fictional": true
+}

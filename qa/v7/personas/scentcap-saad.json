@@ -1,0 +1,34 @@
+{
+  "id": "scentcap-saad",
+  "name": "Saad Malik",
+  "age": 33,
+  "city": "Dubai, UAE",
+  "role": "Gift planner",
+  "tech": "medium",
+  "accessibility": "standard",
+  "device": "iPhone 15",
+  "goal": "Occasion notes without cloud AI",
+  "pain_before": [
+    "Scattered notes",
+    "Forgot to log"
+  ],
+  "how_she_uses_it": [
+    "wear-log",
+    "rules-advisor"
+  ],
+  "numbers": {
+    "before": {
+      "minutes_lost": 15
+    },
+    "after": {
+      "minutes_lost": 2
+    }
+  },
+  "quote": "Gift ideas stay on my phone.",
+  "seed": "qa/v7/personas/scentcap-saad.seed.json",
+  "features_used": [
+    "wear-log",
+    "rules-advisor"
+  ],
+  "fictional": true
+}

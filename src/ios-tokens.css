@@ -1,0 +1,267 @@
+/* {app} — iOS HIG tokens (v7). Brand accent unchanged; structure follows Apple HIG. */
+/* Loaded after tokens.css; does not replace brand colours — maps semantic aliases. */
+
+:root {
+  /* iOS text-style ramp at default (Large) — rem so --dt-scale / html font-size scales them */
+  --ios-large-title: 2.125rem;   /* 34 */
+  --ios-title1: 1.75rem;         /* 28 */
+  --ios-title2: 1.375rem;        /* 22 */
+  --ios-title3: 1.25rem;         /* 20 */
+  --ios-headline: 1.0625rem;     /* 17 semibold */
+  --ios-body: 1.0625rem;         /* 17 */
+  --ios-callout: 1rem;           /* 16 */
+  --ios-subhead: 0.9375rem;      /* 15 */
+  --ios-footnote: 0.8125rem;     /* 13 */
+  --ios-caption1: 0.75rem;       /* 12 */
+  --ios-caption2: 0.6875rem;     /* 11 — absolute floor */
+
+  /* Map legacy body tokens to HIG 17 pt */
+  --fs-body: var(--ios-body);
+  --text-body: var(--ios-body);
+  --fs-secondary: var(--ios-subhead);
+  --fs-label: var(--ios-footnote);
+  --fs-meta: var(--ios-caption1);
+  --fs-title: var(--ios-title2);
+  --fs-section: var(--ios-title3);
+  --fs-display: var(--ios-large-title);
+
+  /* Semantic surfaces (alias existing brand tokens) */
+  --label: var(--text);
+  --secondary-label: var(--text2);
+  --tertiary-label: var(--text3);
+  --system-background: var(--bg);
+  --secondary-system-background: var(--bg2);
+  --tertiary-system-background: var(--bg3);
+  --grouped-background: var(--bg2);
+  --secondary-grouped-background: var(--steel);
+  --separator: var(--border);
+  --tint: var(--accent);
+
+  /* Spacing 4/8/12/16/20/24/32 */
+  --ios-sp-1: 4px;
+  --ios-sp-2: 8px;
+  --ios-sp-3: 12px;
+  --ios-sp-4: 16px;
+  --ios-sp-5: 20px;
+  --ios-sp-6: 24px;
+  --ios-sp-8: 32px;
+
+  /* Radii 10/12/16/22 */
+  --ios-r-sm: 10px;
+  --ios-r-md: 12px;
+  --ios-r-lg: 16px;
+  --ios-r-xl: 22px;
+
+  --hit-min: 44px;
+  --hit-dense: 28px;
+  --gutter-compact: 16px;
+  --gutter-regular: 20px;
+  --readable-max: 42rem; /* ~672 pt */
+}
+
+html {
+  font-size: calc(16px * var(--dt-scale, 1));
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI", sans-serif;
+  font-size: var(--ios-body);
+  line-height: 1.47059; /* ~25/17 */
+  color: var(--label);
+  background: var(--system-background);
+}
+
+/* Hit target utility */
+.hit44,
+.hit-44 {
+  min-width: var(--hit-min);
+  min-height: var(--hit-min);
+  box-sizing: border-box;
+}
+
+/* Inset-grouped list (settings / forms) */
+.ios-list {
+  margin: var(--ios-sp-4);
+  padding: 0;
+  list-style: none;
+  background: var(--secondary-grouped-background);
+  border-radius: var(--ios-r-lg);
+  overflow: hidden;
+}
+.ios-list__section-header {
+  margin: var(--ios-sp-6) var(--ios-sp-4) var(--ios-sp-2);
+  padding: 0;
+  font-size: var(--ios-footnote);
+  font-weight: 400;
+  color: var(--secondary-label);
+  text-transform: none; /* sentence case */
+  letter-spacing: 0;
+}
+.ios-list__row {
+  display: flex;
+  align-items: center;
+  gap: var(--ios-sp-3);
+  min-height: var(--hit-min);
+  padding: 11px var(--ios-sp-4);
+  border-bottom: 0.5px solid var(--separator);
+  font-size: var(--ios-body);
+  color: var(--label);
+  background: transparent;
+}
+.ios-list__row:last-child { border-bottom: none; }
+.ios-list__row[role="link"],
+.ios-list__row--push { cursor: pointer; }
+.ios-list__chevron {
+  margin-left: auto;
+  color: var(--tertiary-label);
+  font-size: var(--ios-body);
+}
+
+/* Large title + collapsing nav pattern (top-level screens) */
+.ios-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  padding: env(safe-area-inset-top, 0px) var(--gutter-compact) 8px;
+  background: color-mix(in srgb, var(--system-background) 82%, transparent);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+.ios-navbar__large-title {
+  margin: 8px 0 4px;
+  font-size: var(--ios-large-title);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+  color: var(--label);
+  text-wrap: balance;
+}
+.ios-navbar__inline-title {
+  font-size: var(--ios-headline);
+  font-weight: 600;
+  text-align: center;
+}
+.ios-navbar__actions {
+  display: flex;
+  gap: 4px;
+  justify-content: flex-end;
+}
+.ios-navbar__actions > * {
+  min-width: var(--hit-min);
+  min-height: var(--hit-min);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .ios-navbar {
+    background: var(--system-background);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/* Sheet chrome */
+.ios-sheet__grabber {
+  width: 36px;
+  height: 5px;
+  margin: 8px auto 4px;
+  border-radius: 3px;
+  background: var(--separator);
+}
+.ios-sheet__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: var(--hit-min);
+  padding: 4px var(--ios-sp-4);
+}
+.ios-sheet__bar .ios-sheet__done {
+  font-weight: 600;
+  color: var(--tint);
+}
+
+/* Tab bar: navigation only — never actions */
+.ios-tabbar {
+  display: flex;
+  justify-content: space-around;
+  align-items: stretch;
+  min-height: calc(49px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: color-mix(in srgb, var(--system-background) 88%, transparent);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-top: 0.5px solid var(--separator);
+}
+.ios-tabbar__item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: var(--hit-min);
+  padding: 4px 2px;
+  font-size: 10px; /* tab labels may stay fixed per HIG */
+  color: var(--secondary-label);
+  background: none;
+  border: 0;
+}
+.ios-tabbar__item[aria-current="page"],
+.ios-tabbar__item.on,
+.ios-tabbar__item.active {
+  color: var(--tint);
+}
+.ios-tabbar__item:disabled {
+  /* HARD: tabs never disabled — keep interactive; empty sections explain */
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .ios-tabbar {
+    background: var(--system-background);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/* Higher contrast */
+@media (prefers-contrast: more) {
+  :root {
+    --border: rgba(255, 255, 255, 0.35);
+    --text2: #d0d6e0;
+    --text3: #a8b0bc;
+  }
+  html[data-theme="light"],
+  html.theme-light,
+  body.light {
+    --border: rgba(0, 0, 0, 0.35);
+    --text2: #3a4250;
+    --text3: #5a6474;
+  }
+}
+
+/* Reduce motion: fades only */
+@media (prefers-reduced-motion: reduce) {
+  .ios-navbar,
+  .ios-sheet,
+  .page,
+  .sheet {
+    transition: opacity 0.15s linear !important;
+    animation: none !important;
+  }
+}
+
+/* Readable measure for long copy */
+.ios-prose {
+  max-width: var(--readable-max);
+  font-size: var(--ios-body);
+  line-height: 1.5;
+}
+
+/* Ensure chips / dense controls still meet 44pt hit area via padding box */
+.chip {
+  min-height: var(--hit-min);
+  padding-inline: 15px;
+  display: inline-flex;
+  align-items: center;
+}
