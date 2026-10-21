@@ -1,7 +1,6 @@
 # ScentCap — your fragrance collection
 
-**Version:** 2.2.0
-
+**Version:** 2.2.1
 Offline-first PWA for your fragrance wardrobe — weather-aware Today picks, layering, wear journal, and travel kit. All on device.
 
 **Live demo:** [https://shamikhahmed.github.io/ScentCap/](https://shamikhahmed.github.io/ScentCap/)
@@ -63,3 +62,11 @@ Set `base: '/ScentCap/'` in `vite.config.ts` (already configured). Marketing pag
 Your wardrobe stays on your device. See [PRIVACY.md](./PRIVACY.md) and [privacy.html](./public/privacy.html).
 
 Built by [Shamikh Ahmed](https://shamikhahmed.github.io/) — part of the Cap portfolio alongside Capricorn Systems.
+
+## Real stories
+
+Illustrative day-in-the-life stories (fictional personas) with screenshots and captions:
+
+- App stories: https://shamikhahmed.github.io/apps/scentcap/
+- All Cap stories: https://shamikhahmed.github.io/stories/
+

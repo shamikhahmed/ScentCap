@@ -1,3 +1,9 @@
+## [2.2.1] — 2026-10-21
+
+- HIG v7: iOS tokens / native feel; Dynamic Type & hit targets where applicable
+- Real-people stories live on hub (`/apps/<slug>/` + `/stories/`)
+- Pitch/presentation/README synced to 2.2.1
+
 ## [2.2.0] — 2026-10-14
 
 - Perfection Loop v3 Phase I (G-8): SW `scentcap-v220`
