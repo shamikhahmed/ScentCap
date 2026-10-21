@@ -38,3 +38,4 @@ qa/finish-loop/shots/
 
 # v3 evidence screenshots stay local
 qa/perfection/**/*.png
+build/
