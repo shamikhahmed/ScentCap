@@ -23,6 +23,12 @@
       "action": "screenshot",
       "route": "home",
       "alt": "scentcap-james home screen with sample data"
+    },
+    {
+      "id": "02-task",
+      "title": "Primary task",
+      "action": "screenshot",
+      "alt": "scentcap-james primary task view"
     }
   ]
 }
