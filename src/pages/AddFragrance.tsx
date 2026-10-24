@@ -118,6 +118,8 @@ export function AddFragrance() {
 
   const search = (query: string, immediate = false) => {
     setQ(query);
+    // Show the loading state through the debounce window so "No matches" never flashes mid-typing.
+    setSearching(Boolean(query.trim()));
     if (searchTimer.current) clearTimeout(searchTimer.current);
     if (immediate) void runSearch(query);
     else searchTimer.current = setTimeout(() => void runSearch(query), 220);
