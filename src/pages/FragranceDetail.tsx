@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Star, Camera, Sparkles, Share2, Pencil, Trash2 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Camera, Check, CheckCircle2, ChevronLeft, ChevronRight, Layers, Share, Star, Trash2 } from 'lucide-react';
+import { Sheet } from '@/components/kit';
+import { hapticSuccess } from '@/lib/premium/haptics';
 import { WearRatingModal } from '@/components/ui/WearRatingModal';
 import { FragranceThumb } from '@/components/collection/FragranceThumb';
 import {
@@ -12,6 +11,7 @@ import {
   getCollectionByParent,
   getFragrance,
   getPhoto,
+  logWear,
   savePhoto,
   updateCollectionItem,
   updateWearRecord,
@@ -20,12 +20,11 @@ import type { CollectionItem, Fragrance, SignatureRole, WearRecord } from '@/typ
 import { getPreferences, savePreferences } from '@/db';
 import { useApp } from '@/context/AppContext';
 import { FAMILY_COLORS } from '@/lib/stats';
-import { estimateWearsRemaining, formatCurrency } from '@/lib/utils';
+import { estimateWearsRemaining, formatCurrency, uid } from '@/lib/utils';
 import { downloadBlob, exportShareCardPng, fragranceToShareInput, shareWearCard } from '@/lib/shareCard';
-import { scrim, textMuted } from '@/lib/ui-classes';
 import { FragranceWearGuide } from '@/components/fragrance/FragranceWearGuide';
 import { format } from 'date-fns';
-import { fragranceDisplayName } from '@/services/onlineCatalog';
+import { concentrationLabel, fragranceDisplayName } from '@/services/onlineCatalog';
 
 const LEVELS = ['full', '75', '50', '25', '10', 'empty'] as const;
 const SIG_ROLES: { role: SignatureRole; label: string }[] = [
@@ -39,6 +38,8 @@ const SIG_ROLES: { role: SignatureRole; label: string }[] = [
 export function FragranceDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const justAdded = searchParams.get('added') === '1';
   const { history, refresh, profile, prefs, collection } = useApp();
   const fileRef = useRef<HTMLInputElement>(null);
   const [item, setItem] = useState<CollectionItem | null>(null);
@@ -187,6 +188,10 @@ export function FragranceDetail() {
     }
   };
 
+  useEffect(() => {
+    if (fragrance) document.title = `${fragrance.brand} ${fragranceDisplayName(fragrance.name)} — ScentCap`;
+  }, [fragrance]);
+
   const wearHistory = item
     ? history.filter((h) => h.collectionId === item.id).sort((a, b) => b.wornAt.localeCompare(a.wornAt))
     : [];
@@ -198,256 +203,311 @@ export function FragranceDetail() {
     setEditWear(null);
   };
 
-  if (!item || !fragrance) return <p className="atelier-page text-[var(--sc-text-muted)]">Loading…</p>;
+  if (!item || !fragrance) {
+    return (
+      <div className="ui-page" aria-busy="true">
+        <div className="ui-skeleton aspect-square max-w-sm mx-auto mt-6" />
+      </div>
+    );
+  }
 
-  const aura = FAMILY_COLORS[fragrance.family] ?? 'var(--sc-accent)';
+  const aura = FAMILY_COLORS[fragrance.family] ?? 'var(--tint)';
+  const displayName = fragranceDisplayName(fragrance.name);
+  const wornToday = wearHistory.some((w) => new Date(w.wornAt).toDateString() === new Date().toDateString());
 
   const shareBottle = async () => {
     try {
       const outcome = await shareWearCard(fragranceToShareInput(fragrance), aura);
-      const msg = outcome === 'shared' ? 'Shared!' : outcome === 'copied' ? 'Copied to clipboard' : 'Saved as PNG';
-      setShareMsg(msg);
+      setShareMsg(outcome === 'shared' ? 'Shared' : outcome === 'copied' ? 'Copied to clipboard' : 'Saved as image');
     } catch {
       const blob = await exportShareCardPng(fragranceToShareInput(fragrance), aura);
       downloadBlob(blob, `scentcap-${fragrance.brand}-${fragrance.name}.png`.replace(/\s+/g, '-').toLowerCase());
-      setShareMsg('Saved as PNG');
+      setShareMsg('Saved as image');
     }
     setTimeout(() => setShareMsg(null), 2500);
   };
 
+  const wearNow = async () => {
+    const wear: WearRecord = {
+      id: uid(),
+      collectionId: item.id,
+      fragranceId: fragrance.id,
+      wornAt: new Date().toISOString(),
+    };
+    await logWear(wear);
+    await refresh();
+    hapticSuccess();
+    setEditWear(wear);
+  };
+
+  const suitability = [
+    { label: 'Office', v: fragrance.office_score },
+    { label: 'Date night', v: fragrance.date_score },
+    { label: 'Casual', v: fragrance.casual_score },
+    { label: 'Formal', v: fragrance.formal_score },
+    { label: 'Hot weather', v: fragrance.heat_score },
+    { label: 'Cold weather', v: fragrance.cold_score },
+  ];
+  const pyramid = [
+    { label: 'Top', notes: fragrance.top_notes },
+    { label: 'Heart', notes: fragrance.heart_notes },
+    { label: 'Base', notes: fragrance.base_notes },
+  ].filter((r) => r.notes.length);
+
   return (
-    <div className="atelier-page overflow-x-hidden">
-      <div
-        className="atelier-detail-hero"
-        style={{ '--hero-aura': aura } as React.CSSProperties}
-      >
-        {photoUrl ? (
-          <img src={photoUrl} alt="" className="absolute inset-0 w-full h-full object-cover opacity-90" />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center pt-4 pb-20 px-6">
-            <FragranceThumb
-              brand={fragrance.brand}
-              name={fragrance.name}
-              family={fragrance.family}
-              catalogImage={fragrance.image}
-              fragrance={fragrance}
-              size="hero"
-              className="w-full max-w-[11rem] !h-[200px] !bg-transparent"
-            />
-          </div>
-        )}
-        <div className="atelier-detail-scrim" />
-        <button
-          type="button"
-          className="absolute top-4 right-4 w-10 h-10 rounded-xl border border-[var(--sc-border-soft)] bg-[var(--sc-panel)] flex items-center justify-center pressable z-10"
-          onClick={() => fileRef.current?.click()}
-        >
-          <Camera size={18} />
-        </button>
-        <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => {
-          const f = e.target.files?.[0];
-          if (f) onPhoto(f);
-        }} />
-        <div className="absolute bottom-0 inset-x-0 p-6 z-10">
-          <Link to="/collection" className="text-xs font-semibold text-[var(--sc-accent)]">← Collection</Link>
-          <p className={`text-sm ${textMuted} mt-2 font-medium`}>{fragrance.brand}</p>
-          <h1 className="atelier-page__title !mt-0.5">{fragranceDisplayName(fragrance.name)}</h1>
-          {(item.bottleType === 'decant' || item.bottleType === 'travel') && (
-            <span className="inline-block mt-1 text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-[var(--color-accent)]/20 text-[var(--color-accent)]">
-              {item.bottleType === 'decant' ? 'Decant' : 'Travel bottle'}
-            </span>
-          )}
+    <div className="ui-page">
+      <div className="flex items-center justify-between -mx-2 mb-2">
+        <Link to="/collection" className="ui-btn ui-btn--plain !font-normal !px-2">
+          <ChevronLeft size={22} aria-hidden /> Collection
+        </Link>
+        <div className="flex gap-2">
+          <button type="button" className="ui-icon-btn" onClick={toggleFavorite} aria-pressed={item.isFavorite} aria-label={item.isFavorite ? 'Remove from favourites' : 'Add to favourites'}>
+            <Star size={19} fill={item.isFavorite ? 'currentColor' : 'none'} className={item.isFavorite ? 'text-[var(--tint)]' : ''} aria-hidden />
+          </button>
+          <button type="button" className="ui-icon-btn" onClick={shareBottle} aria-label="Share">
+            <Share size={19} aria-hidden />
+          </button>
         </div>
       </div>
 
-      <div className="space-y-5 mt-4">
-        {parentItem && parentFragrance && (
-          <Card className="text-sm">
-            <p className="text-xs uppercase text-[var(--sc-text-muted)] mb-1">Linked to parent bottle</p>
-            <Link to={`/fragrance/${parentItem.id}`} className="text-[var(--color-accent)] font-medium">
-              {parentFragrance.brand} — {parentFragrance.name}
-            </Link>
-          </Card>
-        )}
-        {childDecants.length > 0 && (
-          <Card>
-            <p className="text-xs uppercase text-[var(--sc-text-muted)] mb-2">Decants & travel sizes</p>
-            <div className="space-y-2">
-              {childDecants.map(({ item: child, f }) => (
-                <Link key={child.id} to={`/fragrance/${child.id}`} className="flex justify-between items-center text-sm hover:text-[var(--color-accent)]">
-                  <span>{f?.name ?? '…'} · {child.bottleType === 'travel' ? 'Travel' : 'Decant'}</span>
-                  <span className="text-[var(--sc-text-muted)] text-xs">{child.bottleSizeMl ?? '—'}ml</span>
-                </Link>
-              ))}
-            </div>
-          </Card>
-        )}
-        <div className="flex gap-2 flex-wrap">
-          <Button size="sm" variant={item.isFavorite ? 'default' : 'ghost'} onClick={toggleFavorite}>
-            <Star size={14} fill={item.isFavorite ? 'currentColor' : 'none'} /> Favorite
-          </Button>
-          <Button size="sm" variant="ghost" onClick={shareBottle}>
-            <Share2 size={14} /> Share
-          </Button>
-          <Button size="sm" variant={editing ? 'default' : 'ghost'} onClick={() => setEditing(!editing)}>
-            <Pencil size={14} /> Edit
-          </Button>
-          <Button size="sm" variant="ghost" className="text-[var(--sc-danger)]" onClick={() => { setDeleteCascade(false); setDeleteOpen(true); }}>
-            <Trash2 size={14} /> Delete
-          </Button>
-          {shareMsg && <span className="text-xs text-[var(--color-accent)] self-center">{shareMsg}</span>}
-          {item.purchasePrice != null && !editing && (
-            <span className="text-sm text-[var(--sc-text-muted)] self-center ml-auto">{formatCurrency(item.purchasePrice)}</span>
-          )}
-        </div>
+      {justAdded && (
+        <p className="ui-card !py-3 mb-4 text-[var(--t-subhead)] flex items-center gap-2 ui-rise" role="status">
+          <CheckCircle2 size={18} className="text-[var(--success)]" aria-hidden /> Added to your collection
+        </p>
+      )}
+      {shareMsg && <p className="ui-footnote text-center mb-3" role="status">{shareMsg}</p>}
 
-        {editing && (
-          <Card className="space-y-3">
-            <p className="text-xs uppercase text-[var(--sc-text-muted)]">Bottle details</p>
-            <div className="grid grid-cols-2 gap-2">
-              <input className="atelier-input !py-2" placeholder="Size (ml)" value={editMeta.sizeMl} onChange={(e) => setEditMeta({ ...editMeta, sizeMl: e.target.value })} />
-              <input className="atelier-input !py-2" placeholder="Price $" value={editMeta.price} onChange={(e) => setEditMeta({ ...editMeta, price: e.target.value })} />
-              <input type="date" className="atelier-input !py-2" title="Purchased" value={editMeta.purchase} onChange={(e) => setEditMeta({ ...editMeta, purchase: e.target.value })} />
-              <input type="date" className="atelier-input !py-2" title="Opened" value={editMeta.opened} onChange={(e) => setEditMeta({ ...editMeta, opened: e.target.value })} />
-            </div>
-            <Button className="w-full" onClick={saveEdits}>Save details</Button>
-          </Card>
-        )}
-
-        <Card>
-          <p className="text-xs uppercase text-[var(--sc-text-muted)] mb-2">Pyramid</p>
-          <div className="space-y-2 text-sm">
-            <p><span className="text-[var(--color-accent)]">Top</span> · {fragrance.top_notes.join(', ') || '—'}</p>
-            <p><span className="text-[var(--color-accent)]">Heart</span> · {fragrance.heart_notes.join(', ') || '—'}</p>
-            <p><span className="text-[var(--color-accent)]">Base</span> · {fragrance.base_notes.join(', ') || '—'}</p>
-          </div>
-        </Card>
-
-        {profile && (
-          <FragranceWearGuide
-            fragrance={fragrance}
-            wardrobe={wardrobeFragrances}
-            profile={profile}
-            prefs={prefs}
-          />
-        )}
-
-        <Card>
-          <p className="font-medium mb-1">Bottle level</p>
-          <p className="text-xs text-[var(--sc-text-muted)] mb-3">Tap to update</p>
-          <div className="flex gap-1.5 overflow-x-auto scrollbar-none">
-            {LEVELS.map((l) => (
-              <button
-                key={l}
-                type="button"
-                onClick={() => updateLevel(l)}
-                className={`shrink-0 px-3 py-2 rounded-xl text-xs font-semibold ${
-                  item.bottleLevel === l ? 'bg-[var(--sc-accent)] text-white' : 'bg-[var(--sc-surface)] text-[var(--sc-text-soft)]'
-                }`}
-              >
-                {l === 'full' ? 'Full' : `${l}%`}
-              </button>
-            ))}
-          </div>
-          {item.estimatedWearsRemaining != null && (
-            <p className="text-xs text-[var(--sc-text-muted)] mt-3">~{item.estimatedWearsRemaining} wears remaining</p>
-          )}
-        </Card>
-
-        <Card>
-          <p className="font-medium mb-3">Signature role</p>
-          <div className="flex flex-wrap gap-2">
-            {SIG_ROLES.map(({ role, label }) => (
-              <button
-                key={role}
-                type="button"
-                onClick={() => setSignature(role)}
-                className={`text-xs px-3 py-2 rounded-full border ${
-                  sigRole === role ? 'border-[var(--sc-accent)] bg-[var(--sc-accent-soft)] text-[var(--sc-accent)]' : 'border-[var(--sc-border-soft)]'
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        </Card>
-
-        {wearHistory.length > 0 && (
-          <Card>
-            <p className="font-medium mb-3">Wear history</p>
-            <ul className="space-y-3">
-              {wearHistory.slice(0, 8).map((w) => (
-                <li key={w.id}>
-                  <button
-                    type="button"
-                    className="w-full flex justify-between items-start text-sm gap-3 text-left hover:text-[var(--color-accent)]"
-                    onClick={() => setEditWear(w)}
-                  >
-                    <div>
-                      <span className="block">{format(new Date(w.wornAt), 'MMM d, yyyy')}</span>
-                      {w.compliment && <span className="text-xs text-[var(--color-accent)]">★ compliment</span>}
-                      {w.rating && <span className="text-xs text-[var(--sc-text-muted)]">Rated {w.rating}/5</span>}
-                      {w.notes && <span className="text-xs text-[var(--sc-text-soft)] block mt-0.5 line-clamp-2">{w.notes}</span>}
-                    </div>
-                    <Pencil size={14} className="shrink-0 text-[var(--sc-text-muted)] mt-0.5" />
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </Card>
-        )}
-
-        <Card className="grid grid-cols-3 gap-2 text-center text-sm">
-          <div><p className="text-[var(--sc-text-muted)] text-xs">Office</p><p className="font-semibold">{fragrance.office_score}</p></div>
-          <div><p className="text-[var(--sc-text-muted)] text-xs">Date</p><p className="font-semibold">{fragrance.date_score}</p></div>
-          <div><p className="text-[var(--sc-text-muted)] text-xs">Casual</p><p className="font-semibold">{fragrance.casual_score}</p></div>
-        </Card>
-
-        <Button to="/advisor" className="w-full"><Sparkles size={16} /> Wear today</Button>
-        <Button to="/layering" linkState={{ primaryId: fragrance.id }} variant="ghost" className="w-full">Open in Layer Lab</Button>
-      </div>
-
-      <AnimatePresence>
-        {deleteOpen && (
-          <motion.div
-            className={`fixed inset-0 z-[100] flex items-end md:items-center justify-center ${scrim} p-4`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+      <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-6 lg:gap-10 items-start">
+        <div className="relative lg:sticky lg:top-6">
+          <FragranceThumb fragrance={fragrance} photoUrl={photoUrl} variant="plinth" size="hero" className="!rounded-[var(--r-xl)] max-w-[440px] mx-auto" />
+          <button
+            type="button"
+            className="ui-icon-btn absolute bottom-3 right-3 !bg-[var(--surface)] shadow-[var(--shadow-2)]"
+            onClick={() => fileRef.current?.click()}
+            aria-label={photoUrl ? 'Replace your photo' : 'Add your own photo'}
           >
-            <motion.div
-              className="atelier-panel !rounded-2xl p-6 w-full max-w-md space-y-4"
-              initial={{ y: 40 }}
-              animate={{ y: 0 }}
-            >
-              <p className="font-semibold">Remove from wardrobe?</p>
-              <p className="text-sm text-[var(--sc-text-soft)]">
-                {deleteCascade && childDecants.length > 0
-                  ? `This will also delete ${childDecants.length} linked decant${childDecants.length !== 1 ? 's' : ''}/travel bottle${childDecants.length !== 1 ? 's' : ''}.`
-                  : childDecants.length > 0
-                    ? `This bottle has ${childDecants.length} linked decant${childDecants.length !== 1 ? 's' : ''}/travel size${childDecants.length !== 1 ? 's' : ''}. Delete them too?`
-                    : `${fragrance.brand} ${fragrance.name} will be removed from your collection.`}
-              </p>
-              <div className="flex gap-3">
-                <Button variant="ghost" className="flex-1" onClick={() => setDeleteOpen(false)}>Cancel</Button>
-                {childDecants.length > 0 && !deleteCascade ? (
-                  <Button className="flex-1 bg-red-600 hover:bg-red-700" onClick={() => setDeleteCascade(true)}>
-                    Delete all
-                  </Button>
-                ) : (
-                  <Button className="flex-1 bg-red-600 hover:bg-red-700" onClick={confirmDelete}>
-                    {deleteCascade ? 'Delete all' : 'Delete'}
-                  </Button>
-                )}
+            <Camera size={18} aria-hidden />
+          </button>
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/*"
+            className="sr-only"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) void onPhoto(f);
+            }}
+          />
+        </div>
+
+        <div className="min-w-0">
+          <p className="ui-eyebrow">{fragrance.brand}</p>
+          <h1 className="serif text-[clamp(2rem,7vw,2.75rem)] leading-[1.05] font-medium mt-1">{displayName}</h1>
+          <div className="flex flex-wrap gap-1.5 mt-3">
+            <span className="ui-tag">{concentrationLabel(fragrance.concentration)}</span>
+            <span className="ui-tag">{fragrance.family}</span>
+            {fragrance.subfamily && fragrance.subfamily !== fragrance.family && <span className="ui-tag">{fragrance.subfamily}</span>}
+            {item.bottleType && item.bottleType !== 'full' && <span className="ui-tag ui-tag--tint capitalize">{item.bottleType}</span>}
+            {sigRole && <span className="ui-tag ui-tag--tint">{SIG_ROLES.find((r) => r.role === sigRole)?.label}</span>}
+          </div>
+
+          <div className="flex gap-2.5 mt-5">
+            <button type="button" className="ui-btn ui-btn--primary flex-1" onClick={() => void wearNow()} disabled={wornToday}>
+              {wornToday ? (<><Check size={19} aria-hidden /> Worn today</>) : 'Wear today'}
+            </button>
+            <Link to="/layering" state={{ primaryId: fragrance.id }} className="ui-btn ui-btn--secondary">
+              <Layers size={18} aria-hidden /> Layer
+            </Link>
+          </div>
+
+          <div className="ui-widgets !grid-cols-3 mt-5">
+            <div className="ui-widget !min-h-0">
+              <span className="ui-widget__label">Worn</span>
+              <span className="ui-widget__value !text-[var(--t-title2)]">{wearHistory.length}<span className="ui-widget__unit">×</span></span>
+            </div>
+            <div className="ui-widget !min-h-0">
+              <span className="ui-widget__label">Left</span>
+              <span className="ui-widget__value !text-[var(--t-title2)]">{item.estimatedWearsRemaining != null ? `~${item.estimatedWearsRemaining}` : '—'}</span>
+            </div>
+            <div className="ui-widget !min-h-0">
+              <span className="ui-widget__label">Last</span>
+              <span className="ui-widget__value !text-[var(--t-title2)]">{wearHistory[0] ? format(new Date(wearHistory[0].wornAt), 'd MMM') : '—'}</span>
+            </div>
+          </div>
+
+          {pyramid.length > 0 && (
+            <section className="ui-section !mt-7">
+              <h2 className="ui-section-title mb-3">Notes</h2>
+              <div className="ui-list">
+                {pyramid.map((r) => (
+                  <div key={r.label} className="ui-row !items-start">
+                    <span className="w-14 shrink-0 text-[var(--t-subhead)] font-semibold text-[var(--tint)] pt-0.5">{r.label}</span>
+                    <span className="flex-1 text-[var(--t-subhead)] text-[var(--label-2)]">{r.notes.join(', ')}</span>
+                  </div>
+                ))}
               </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            </section>
+          )}
+
+          <section className="ui-section !mt-7">
+            <h2 className="ui-section-title mb-3">Best for</h2>
+            <div className="ui-card space-y-3">
+              {suitability.map(({ label, v }) => (
+                <div key={label} className="grid grid-cols-[7.5rem_1fr_2rem] items-center gap-3">
+                  <span className="text-[var(--t-subhead)]">{label}</span>
+                  <span className="ui-meter" aria-hidden><span style={{ width: `${v}%` }} /></span>
+                  <span className="text-[var(--t-footnote)] text-[var(--label-3)] tabular-nums text-right">{v}</span>
+                </div>
+              ))}
+              <p className="ui-footnote pt-1">
+                {fragrance.projection[0].toUpperCase() + fragrance.projection.slice(1)} projection · {fragrance.longevity} longevity
+              </p>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      {profile && (
+        <section className="ui-section">
+          <FragranceWearGuide fragrance={fragrance} wardrobe={wardrobeFragrances} profile={profile} prefs={prefs} />
+        </section>
+      )}
+
+      <section className="ui-section">
+        <h2 className="ui-section-title mb-3">Bottle level</h2>
+        <div className="ui-segmented">
+          {LEVELS.map((l) => (
+            <button key={l} type="button" aria-pressed={item.bottleLevel === l} onClick={() => void updateLevel(l)}>
+              {l === 'full' ? 'Full' : l === 'empty' ? 'Empty' : `${l}%`}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="ui-section">
+        <h2 className="ui-section-title mb-3">Signature for</h2>
+        <div className="flex flex-wrap gap-2">
+          {SIG_ROLES.map(({ role, label }) => (
+            <button key={role} type="button" className="ui-chip" aria-pressed={sigRole === role} onClick={() => void setSignature(role)}>
+              {label.replace(' signature', '')}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {(parentItem && parentFragrance) || childDecants.length > 0 ? (
+        <section className="ui-section">
+          <p className="ui-list-header">Linked bottles</p>
+          <div className="ui-list">
+            {parentItem && parentFragrance && (
+              <Link to={`/fragrance/${parentItem.id}`} className="ui-row">
+                <span className="ui-row__main">
+                  <span className="ui-row__sub block">From bottle</span>
+                  <span className="ui-row__title block">{parentFragrance.brand} {fragranceDisplayName(parentFragrance.name)}</span>
+                </span>
+                <ChevronRight size={18} className="ui-chevron" aria-hidden />
+              </Link>
+            )}
+            {childDecants.map(({ item: child, f }) => (
+              <Link key={child.id} to={`/fragrance/${child.id}`} className="ui-row">
+                <span className="ui-row__main ui-row__title">{child.bottleType === 'travel' ? 'Travel bottle' : 'Decant'}{f ? ` · ${fragranceDisplayName(f.name)}` : ''}</span>
+                <span className="ui-row__value">{child.bottleSizeMl ?? '—'} ml</span>
+                <ChevronRight size={18} className="ui-chevron" aria-hidden />
+              </Link>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      <section className="ui-section">
+        <div className="flex items-center justify-between">
+          <p className="ui-list-header">Purchase</p>
+          <button type="button" className="ui-btn ui-btn--plain !min-h-[36px] !text-[var(--t-subhead)] mb-1" onClick={() => (editing ? void saveEdits() : setEditing(true))}>
+            {editing ? 'Done' : 'Edit'}
+          </button>
+        </div>
+        <div className="ui-list">
+          {[
+            { key: 'sizeMl', label: 'Size (ml)', type: 'number', show: item.bottleSizeMl != null ? `${item.bottleSizeMl} ml` : '—' },
+            { key: 'price', label: 'Price paid', type: 'number', show: item.purchasePrice != null ? formatCurrency(item.purchasePrice) : '—' },
+            { key: 'purchase', label: 'Purchased', type: 'date', show: item.purchaseDate ? format(new Date(item.purchaseDate), 'd MMM yyyy') : '—' },
+            { key: 'opened', label: 'Opened', type: 'date', show: item.openedDate ? format(new Date(item.openedDate), 'd MMM yyyy') : '—' },
+          ].map((row) => (
+            <label key={row.key} className="ui-row" htmlFor={`edit-${row.key}`}>
+              <span className="ui-row__main">{row.label}</span>
+              {editing ? (
+                <input
+                  id={`edit-${row.key}`}
+                  type={row.type}
+                  inputMode={row.type === 'number' ? 'decimal' : undefined}
+                  className="ui-field max-w-[50%] !text-[var(--tint)]"
+                  value={editMeta[row.key as keyof typeof editMeta]}
+                  onChange={(e) => setEditMeta({ ...editMeta, [row.key]: e.target.value })}
+                />
+              ) : (
+                <span className="ui-row__value">{row.show}</span>
+              )}
+            </label>
+          ))}
+        </div>
+      </section>
+
+      {wearHistory.length > 0 && (
+        <section className="ui-section">
+          <p className="ui-list-header">Wear history</p>
+          <div className="ui-list">
+            {wearHistory.slice(0, 10).map((w) => (
+              <button key={w.id} type="button" className="ui-row" onClick={() => setEditWear(w)}>
+                <span className="ui-row__main">
+                  <span className="ui-row__title block">{format(new Date(w.wornAt), 'EEEE, d MMM yyyy')}</span>
+                  {(w.rating || w.compliment || w.notes) && (
+                    <span className="ui-row__sub block">
+                      {[w.rating ? `${'★'.repeat(w.rating)}` : null, w.compliment ? 'Got a compliment' : null, w.notes].filter(Boolean).join(' · ')}
+                    </span>
+                  )}
+                </span>
+                <ChevronRight size={18} className="ui-chevron" aria-hidden />
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <section className="ui-section">
+        <div className="ui-list">
+          <button type="button" className="ui-row justify-center !text-[var(--danger)]" onClick={() => { setDeleteCascade(false); setDeleteOpen(true); }}>
+            <Trash2 size={18} aria-hidden /> Remove from collection
+          </button>
+        </div>
+      </section>
+
+      <Sheet open={deleteOpen} title="Remove bottle" onClose={() => setDeleteOpen(false)} labelledBy="delete-title">
+        <p className="text-[var(--t-subhead)] text-[var(--label-2)] text-center px-2">
+          {deleteCascade && childDecants.length > 0
+            ? `This also removes ${childDecants.length} linked decant or travel bottle${childDecants.length !== 1 ? 's' : ''}. This can’t be undone.`
+            : childDecants.length > 0
+              ? `This bottle has ${childDecants.length} linked decant or travel bottle${childDecants.length !== 1 ? 's' : ''}.`
+              : `${fragrance.brand} ${displayName} and its wear history link will be removed. This can’t be undone.`}
+        </p>
+        <div className="space-y-2 mt-5">
+          {childDecants.length > 0 && !deleteCascade ? (
+            <button type="button" className="ui-btn ui-btn--block !bg-[var(--danger)] !text-white" onClick={() => setDeleteCascade(true)}>
+              Remove all linked bottles
+            </button>
+          ) : (
+            <button type="button" className="ui-btn ui-btn--block !bg-[var(--danger)] !text-white" onClick={() => void confirmDelete()}>
+              Remove
+            </button>
+          )}
+          <button type="button" className="ui-btn ui-btn--gray ui-btn--block" onClick={() => setDeleteOpen(false)}>
+            Keep
+          </button>
+        </div>
+      </Sheet>
 
       <WearRatingModal
         open={Boolean(editWear)}
-        fragranceName={`${fragrance.brand} ${fragrance.name}`}
+        fragranceName={`${fragrance.brand} ${displayName}`}
         catalogImage={fragrance.image}
         editMode
         initial={editWear ? { rating: editWear.rating, compliment: editWear.compliment, notes: editWear.notes } : undefined}

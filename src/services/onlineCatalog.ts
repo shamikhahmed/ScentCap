@@ -186,7 +186,7 @@ async function searchFragantyOpen(query: string, limit: number): Promise<OpenHit
   if (!query.trim()) return [];
   try {
     const params = new URLSearchParams({ q: query.trim(), limit: String(limit) });
-    const res = await fetch(`${API_BASE}/search?${params}`);
+    const res = await fetch(`${API_BASE}/search?${params}`, { signal: AbortSignal.timeout(6000) });
     if (!res.ok) return [];
     const data = await res.json() as { perfumes?: OpenHit[] };
     return data.perfumes ?? [];

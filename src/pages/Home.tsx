@@ -1,18 +1,17 @@
 import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Cloud, Droplets, Flame, Layers, Sparkles, Sun, Wind, ChevronRight, MapPin, Briefcase, AlertCircle,
+  AlertCircle, BarChart3, Briefcase, CalendarDays, ChevronRight, Cloud, Flame, Layers, LayoutGrid, Luggage,
+  MapPin, Plus, RefreshCw, Sparkles, Sun, Wind,
 } from 'lucide-react';
 import { PressableLink } from '@/components/ui/PressableScale';
-import { LoadingCard } from '@/components/ui/LoadingCard';
-import { HOME_LOADING_MESSAGES } from '@/components/ui/CyclingShimmerText';
 import { useApp } from '@/context/AppContext';
 import { runAdvisor } from '@/engines/advisor';
 import { getFragrance, getPhoto, logWear, updateWearRecord } from '@/db';
 import type { AdvisorInput, AdvisorResult, Fragrance } from '@/types';
 import { HeroPick } from '@/components/premium/HeroPick';
 import { FragranceThumb } from '@/components/collection/FragranceThumb';
-import { StatPill } from '@/components/premium/StatPill';
+import { BottleCard, PageHeader, Section } from '@/components/kit';
 import { timeGreeting } from '@/lib/greetings';
 import { FAMILY_COLORS, rotationHealth, wearStreak, wearsThisMonth, daysSinceWear } from '@/lib/stats';
 import { weatherUnavailableMessage } from '@/services/weather';
@@ -262,66 +261,67 @@ export function Home() {
   if (!collection.length) {
     return (
       <EmptyState
-        eyebrow="ScentCap"
-        title="Your wardrobe awaits"
-        description="Add the bottles you own. Every morning, ScentCap tells you exactly what to wear."
-        action={{ label: 'Add first bottle', to: '/add' }}
-        secondary={{ label: 'Try demo collection', onClick: tryDemo, loading: loadingDemo }}
+        eyebrow="Welcome to ScentCap"
+        title="Build your fragrance wardrobe"
+        description="Add the bottles you own. Each morning ScentCap picks the right one for the weather, the plan and your mood."
+        action={{ label: 'Add your first bottle', to: '/add' }}
+        secondary={{ label: 'Explore a sample wardrobe', onClick: tryDemo, loading: loadingDemo }}
       />
     );
   }
 
+  const dateLine = new Date().toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' });
+
   return (
-    <div className="home-atelier">
-      <header className="museum-topbar">
-        <div className="min-w-0">
-          <p className="museum-topbar__sub">
-            {greeting.line}
-          </p>
-          {prefs.officeSafeMode && (
-            <span className="inline-flex items-center gap-1.5 mt-2 text-xs font-semibold text-[var(--sc-accent)] bg-[var(--sc-accent-soft)] px-2.5 py-1 rounded-lg">
-              <Briefcase size={12} /> Office Safe
-            </span>
-          )}
-        </div>
-        {weather && (
-          <div className="shrink-0 rounded-xl border border-[var(--sc-border-soft)] bg-[var(--sc-panel)] px-2.5 py-1.5 flex items-center gap-1.5" aria-label={`Weather ${Math.round(weather.tempC)} degrees`}>
-            <WIcon size={14} className="text-[var(--sc-accent)]" strokeWidth={2} />
-            <span className="text-sm font-semibold tabular-nums">{Math.round(weather.tempC)}°</span>
-          </div>
-        )}
-      </header>
+    <div className="ui-page">
+      <PageHeader
+        eyebrow={dateLine}
+        title={greeting.line}
+        trailing={
+          <>
+            {weather && (
+              <span
+                className="ui-chip !cursor-default !bg-[var(--surface)] !shadow-[var(--shadow-1)]"
+                aria-label={`${Math.round(weather.tempC)} degrees, ${weather.condition}`}
+              >
+                <WIcon size={16} className="text-[var(--tint)]" aria-hidden />
+                <span className="tabular-nums font-semibold">{Math.round(weather.tempC)}°</span>
+              </span>
+            )}
+            <PressableLink to="/add" className="ui-icon-btn ui-icon-btn--tint md:!hidden" aria-label="Add fragrance">
+              <Plus size={20} strokeWidth={2.6} aria-hidden />
+            </PressableLink>
+          </>
+        }
+      />
 
-      {history.length === 0 && (
-        <div className="home-atelier__coach">
-          <p className="text-sm font-semibold tracking-tight">Start here</p>
-          <p className="text-xs text-[var(--sc-text-soft)] mt-1 leading-relaxed">
-            Tap <span className="font-semibold text-[var(--sc-accent)]">Wear this today</span> — or open Bottles.
-          </p>
-        </div>
-      )}
+      <div className="ui-segmented mb-4" role="group" aria-label="Occasion">
+        {MOOD_PRESETS.map((p) => (
+          <button key={p.id} type="button" aria-pressed={activePresetId === p.id} onClick={() => applyPreset(p)}>
+            {p.label}
+          </button>
+        ))}
+      </div>
 
-      {rotationLow && (
-        <div className="mt-3 rounded-2xl border border-orange-500/25 bg-orange-500/10 p-3.5 flex items-start gap-3">
-          <AlertCircle size={18} className="text-[var(--sc-warning)] shrink-0 mt-0.5" />
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold">Rotation at {rotation}%</p>
-            <p className="text-xs text-[var(--sc-text-soft)] mt-1 leading-relaxed">
-              Try a neglected bottle.
-            </p>
-          </div>
-          <PressableLink to="/collection" className="text-xs text-[var(--sc-accent)] font-semibold shrink-0">
-            View
-          </PressableLink>
-        </div>
+      {prefs.officeSafeMode && (
+        <p className="ui-footnote mb-3 flex items-center gap-1.5">
+          <Briefcase size={13} aria-hidden /> Office Safe is on — loud scents are held back.
+        </p>
       )}
 
       {loading ? (
-        <LoadingCard messages={HOME_LOADING_MESSAGES} />
+        <div className="ui-card ui-card--lg grid lg:grid-cols-2 gap-5" aria-busy="true" aria-label="Choosing today’s fragrance">
+          <div className="ui-skeleton aspect-square" />
+          <div className="space-y-3 py-2">
+            <div className="ui-skeleton h-4 w-24" />
+            <div className="ui-skeleton h-9 w-3/4" />
+            <div className="ui-skeleton h-4 w-1/2" />
+            <div className="ui-skeleton h-12 w-full mt-8" />
+          </div>
+        </div>
       ) : result ? (
         <HeroPick
           result={result}
-          familyColor={familyColor}
           logged={logged}
           shareMsg={shareMsg}
           photoUrl={heroPhotoUrl}
@@ -330,141 +330,121 @@ export function Home() {
           onShare={shareToday}
         />
       ) : (
-        <div className="rounded-2xl border border-[var(--sc-border-soft)] bg-[var(--sc-panel)] text-center py-10 px-5 mt-4">
-          <p className="font-semibold text-lg" style={{ fontFamily: 'var(--font-display)' }}>No match today</p>
-          <p className="text-sm text-[var(--sc-text-soft)] mt-2 max-w-xs mx-auto">
-            {prefs.officeSafeMode ? 'Office Safe may be limiting picks.' : 'Customize occasion in Advisor.'}
+        <div className="ui-card ui-card--lg text-center py-10">
+          <p className="ui-title2">No match right now</p>
+          <p className="ui-secondary mt-2 max-w-xs mx-auto text-[var(--t-subhead)]">
+            {prefs.officeSafeMode ? 'Office Safe may be filtering your bottles.' : 'Try another occasion or fine-tune in Advisor.'}
           </p>
-          <PressableLink to="/advisor" className="inline-flex mt-6 btn-glow rounded-xl px-8 py-3.5 font-semibold text-sm">
+          <PressableLink to="/advisor" className="ui-btn ui-btn--secondary mt-6">
             Open Advisor
           </PressableLink>
         </div>
       )}
 
-      {result && result.reasoning[0] && (
-        <p className="museum-why mt-5 text-sm text-[var(--sc-text-soft)] leading-relaxed">
-          {result.reasoning[0]}
-        </p>
+      {history.length === 0 && result && (
+        <p className="ui-footnote mt-3 text-center">Tap <strong>Wear today</strong> to start your diary and streak.</p>
       )}
 
-      <p className="home-atelier__section-label">Mood</p>
-      <div className="home-atelier__moods">
-        {MOOD_PRESETS.map((p) => {
-          const Icon = p.Icon;
-          return (
-            <button
-              key={p.id}
-              type="button"
-              onClick={() => applyPreset(p)}
-              className={`rounded-2xl border px-2 py-3 flex flex-col items-center gap-1.5 text-center transition-colors ${
-                activePresetId === p.id
-                  ? 'border-[var(--sc-accent)] bg-[var(--sc-accent-soft)]'
-                  : 'border-[var(--sc-border-soft)] bg-[var(--sc-panel)]'
-              }`}
-            >
-              <Icon size={18} strokeWidth={1.85} className="text-[var(--sc-accent)]" aria-hidden />
-              <span className="text-[11px] font-semibold text-[var(--sc-text-soft)]">{p.label}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      <div className="home-atelier__stats">
-        <StatPill icon={<Droplets size={15} strokeWidth={2} />} label="Bottles" value={String(collection.length)} to="/collection" delay={0.05} />
-        <StatPill icon={<Flame size={15} strokeWidth={2} />} label="Streak" value={`${streak}d`} tone={streak > 0 ? 'hot' : 'default'} to="/calendar" delay={0.1} />
-        <StatPill icon={<Sparkles size={15} strokeWidth={2} />} label="Month" value={String(monthWears)} to="/calendar" delay={0.15} />
-        <StatPill icon={<Layers size={15} strokeWidth={2} />} label="Rotation" value={`${rotation}%`} tone={rotationLow ? 'warn' : rotation >= 70 ? 'good' : 'default'} to="/analytics" delay={0.2} />
-      </div>
+      <Section title="Overview">
+        <div className="ui-widgets">
+          <PressableLink to="/collection" className="ui-widget">
+            <span className="ui-widget__label"><LayoutGrid size={14} aria-hidden /> Bottles</span>
+            <span className="ui-widget__value">{collection.length}</span>
+          </PressableLink>
+          <PressableLink to="/calendar" className="ui-widget">
+            <span className="ui-widget__label"><Flame size={14} aria-hidden className={streak > 0 ? 'text-[var(--warning)]' : ''} /> Streak</span>
+            <span className="ui-widget__value">{streak}<span className="ui-widget__unit">{streak === 1 ? 'day' : 'days'}</span></span>
+          </PressableLink>
+          <PressableLink to="/calendar" className="ui-widget">
+            <span className="ui-widget__label"><CalendarDays size={14} aria-hidden /> This month</span>
+            <span className="ui-widget__value">{monthWears}<span className="ui-widget__unit">wears</span></span>
+          </PressableLink>
+          <PressableLink to="/analytics" className="ui-widget">
+            <span className="ui-widget__label"><RefreshCw size={14} aria-hidden /> Rotation</span>
+            <span className="ui-widget__value">{rotation}<span className="ui-widget__unit">%</span></span>
+            <span className="ui-meter mt-1" aria-hidden><span style={{ width: `${rotation}%`, background: rotationLow ? 'var(--warning)' : undefined }} /></span>
+          </PressableLink>
+        </div>
+        {rotationLow && (
+          <p className="ui-footnote mt-3 flex items-start gap-1.5">
+            <AlertCircle size={14} className="text-[var(--warning)] shrink-0 mt-px" aria-hidden />
+            Rotation is low — a few bottles haven’t been worn in weeks. Try one from “Waiting for you”.
+          </p>
+        )}
+      </Section>
 
       {result && result.backups.length > 0 && (
-        <div className="mt-5">
-          <p className="home-atelier__section-label !mt-0">Backup picks</p>
-          <div className="flex gap-2.5 overflow-x-auto scrollbar-none pb-1">
-            {result.backups.slice(0, 3).map((b) => (
-              <PressableLink key={b.collectionId} to={`/fragrance/${b.collectionId}`} className="shrink-0 min-w-[140px]">
-                <div className="rounded-2xl border border-[var(--sc-border-soft)] bg-[var(--sc-panel)] p-3">
-                  <FragranceThumb
-                    brand={b.fragrance.brand}
-                    name={b.fragrance.name}
-                    family={b.fragrance.family}
-                    catalogImage={b.fragrance.image}
-                    fragrance={b.fragrance}
-                    size="sm"
-                    className="mb-2.5 w-full"
-                  />
-                  <p className="text-xs text-[var(--sc-text-muted)] truncate">{b.fragrance.brand}</p>
-                  <p className="text-sm font-semibold truncate tracking-tight">{fragranceDisplayName(b.fragrance.name)}</p>
-                  <p className="text-xs font-semibold text-[var(--sc-accent)] mt-1">{Math.round(b.score)}%</p>
-                </div>
-              </PressableLink>
+        <Section title="Also great today">
+          <div className="ui-scroller">
+            {result.backups.slice(0, 6).map((b) => (
+              <BottleCard
+                key={b.collectionId}
+                fragrance={b.fragrance}
+                to={`/fragrance/${b.collectionId}`}
+                meta={`${Math.round(b.score)}% match`}
+                className="w-[148px] md:w-[180px]"
+              />
             ))}
           </div>
-        </div>
+        </Section>
       )}
 
       {neglectedDetails.length > 0 && (
-        <section className="mt-2">
-          <div className="flex items-end justify-between">
-            <p className="home-atelier__section-label !mt-4">Needs attention</p>
-            <PressableLink to="/collection" className="text-xs text-[var(--sc-accent)] font-semibold flex items-center gap-0.5 mb-2">
-              All <ChevronRight size={14} />
-            </PressableLink>
-          </div>
-          <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-none">
+        <Section title="Waiting for you" action={{ label: 'All bottles', to: '/collection' }}>
+          <div className="ui-scroller">
             {neglectedDetails.map((n) => (
-              <PressableLink key={n.id} to={`/fragrance/${n.id}`} className="shrink-0 w-[148px]">
-                <div className="rounded-2xl border border-[var(--sc-border-soft)] bg-[var(--sc-panel)] p-3 h-full">
-                  <FragranceThumb
-                    brand={n.f.brand}
-                    name={n.f.name}
-                    family={n.f.family}
-                    catalogImage={n.f.image}
-                    fragrance={n.f}
-                    size="sm"
-                    className="mb-3 w-full"
-                  />
-                  <p className="text-xs text-[var(--sc-text-muted)] truncate">{n.f.brand}</p>
-                  <p className="text-sm font-semibold truncate">{fragranceDisplayName(n.f.name)}</p>
-                  <p className="text-[11px] font-semibold text-[var(--sc-warning)] mt-2">
-                    {n.days === null ? 'Never worn' : `${n.days}d ago`}
-                  </p>
-                </div>
-              </PressableLink>
+              <BottleCard
+                key={n.id}
+                fragrance={n.f}
+                to={`/fragrance/${n.id}`}
+                meta={n.days === null ? 'Never worn' : `Last worn ${n.days} days ago`}
+                className="w-[148px] md:w-[180px]"
+              />
             ))}
           </div>
-        </section>
+        </Section>
       )}
 
       {weatherNotice && !weather && (
-        <div className="mt-6 rounded-2xl border border-[var(--sc-border-soft)] bg-[var(--sc-panel)] p-4 flex items-start gap-3">
-          <MapPin className="text-[var(--sc-text-muted)] shrink-0 mt-0.5" size={18} />
-          <div className="min-w-0">
-            <p className="text-sm font-semibold">Weather unavailable</p>
-            <p className="text-sm text-[var(--sc-text-soft)] mt-1 leading-relaxed">{weatherNotice}</p>
-            <PressableLink to="/settings" className="inline-block text-[var(--sc-accent)] text-sm font-semibold mt-2">
-              Add city in Settings
-            </PressableLink>
-          </div>
-        </div>
+        <Section>
+          <PressableLink to="/settings" className="ui-list ui-row">
+            <MapPin size={20} className="text-[var(--tint)] shrink-0" aria-hidden />
+            <span className="ui-row__main">
+              <span className="ui-row__title block">Add your city for weather picks</span>
+              <span className="ui-row__sub block whitespace-normal">{weatherNotice}</span>
+            </span>
+            <ChevronRight size={18} className="ui-chevron" aria-hidden />
+          </PressableLink>
+        </Section>
       )}
 
       {history.length > 0 && (
-        <section className="mt-2">
-          <p className="home-atelier__section-label">Recent wears</p>
+        <Section title="Recently worn" action={{ label: 'Diary', to: '/calendar' }}>
           <RecentWears history={history.slice(-4).reverse()} collection={collection} />
-        </section>
+        </Section>
       )}
 
-      <section className="mt-6 grid grid-cols-2 gap-3">
-        <PressableLink to="/analytics" className="rounded-2xl border border-[var(--sc-border-soft)] bg-[var(--sc-panel)] p-4">
-          <p className="text-sm font-semibold">Analytics</p>
-          <p className="text-xs text-[var(--sc-text-muted)] mt-1">Value & rotation</p>
-        </PressableLink>
-        <PressableLink to="/layering" className="rounded-2xl border border-[var(--sc-border-soft)] bg-[var(--sc-panel)] p-4">
-          <p className="text-sm font-semibold">Layering</p>
-          <p className="text-xs text-[var(--sc-text-muted)] mt-1">Pair bottles</p>
-        </PressableLink>
-      </section>
+      <Section title="Tools">
+        <div className="ui-list">
+          {[
+            { to: '/advisor', icon: Sparkles, title: 'Advisor', sub: 'Pick for a specific plan' },
+            { to: '/layering', icon: Layers, title: 'Layering lab', sub: 'Pair two bottles' },
+            { to: '/travel', icon: Luggage, title: 'Travel kit', sub: 'Pack the right decants' },
+            { to: '/analytics', icon: BarChart3, title: 'Insights', sub: 'Value, families and habits' },
+          ].map(({ to, icon: Icon, title, sub }) => (
+            <PressableLink key={to} to={to} className="ui-row">
+              <span className="w-8 h-8 rounded-[9px] grid place-items-center bg-[var(--tint-soft)] text-[var(--tint)] shrink-0">
+                <Icon size={17} aria-hidden />
+              </span>
+              <span className="ui-row__main">
+                <span className="ui-row__title block">{title}</span>
+                <span className="ui-row__sub block">{sub}</span>
+              </span>
+              <ChevronRight size={18} className="ui-chevron" aria-hidden />
+            </PressableLink>
+          ))}
+        </div>
+      </Section>
 
       {ratingOpen ? (
         <Suspense fallback={null}>
@@ -520,35 +500,27 @@ function RecentWears({
   }, [history, collection]);
 
   return (
-    <div className="space-y-2" style={{ minHeight: history.length * 64 }}>
+    <div className="ui-list" style={{ minHeight: history.length * 64 }}>
       {rows.map((row) => {
         const inner = (
           <>
-            <FragranceThumb
-              brand={row.f?.brand}
-              name={row.f?.name}
-              family={row.f?.family}
-              catalogImage={row.f?.image}
-              fragrance={row.f}
-              size="sm"
-              className="w-12 shrink-0"
-            />
-            <span className="truncate pr-4 flex-1 text-sm">{row.name}</span>
-            <span className="text-[var(--color-text-tertiary)] shrink-0 text-xs">
-              {new Date(row.wornAt).toLocaleDateString(undefined, { weekday: 'short' })}
+            <div className="w-12 shrink-0">
+              <FragranceThumb fragrance={row.f} variant="plinth" size="sm" className="!rounded-[10px]" />
+            </div>
+            <span className="ui-row__main">
+              <span className="ui-row__title block">{row.name}</span>
+            </span>
+            <span className="ui-row__value text-[var(--t-subhead)]">
+              {new Date(row.wornAt).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric' })}
             </span>
           </>
         );
         return row.collectionId ? (
-          <PressableLink
-            key={row.id}
-            to={`/fragrance/${row.collectionId}`}
-            className="flex items-center gap-3 tile-premium !py-3 !px-4"
-          >
+          <PressableLink key={row.id} to={`/fragrance/${row.collectionId}`} className="ui-row ui-row--media">
             {inner}
           </PressableLink>
         ) : (
-          <div key={row.id} className="flex items-center gap-3 tile-premium !py-3 !px-4 text-sm">
+          <div key={row.id} className="ui-row ui-row--media">
             {inner}
           </div>
         );

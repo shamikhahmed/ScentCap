@@ -1,14 +1,13 @@
-import { Check, Share2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Check, Droplet, Share } from 'lucide-react';
 import { PressableLink } from '@/components/ui/PressableScale';
 import { FragranceThumb } from '@/components/collection/FragranceThumb';
-import { fragranceDisplayName } from '@/lib/fragranceName';
+import { Ring } from '@/components/kit';
+import { fragranceDisplayName, concentrationLabel } from '@/lib/fragranceName';
 import type { AdvisorResult } from '@/types';
 
-/** Museum hero: bottle dominates. Reason / spray / layering live below fold on Home. */
+/** Today's pick — product stage + decision. One primary action (Wear today). */
 export function HeroPick({
   result,
-  familyColor,
   logged,
   shareMsg,
   photoUrl,
@@ -17,71 +16,98 @@ export function HeroPick({
   onShare,
 }: {
   result: AdvisorResult;
-  familyColor: string;
+  familyColor?: string;
   logged: boolean;
-  layerSaved?: boolean;
   shareMsg: string | null;
   photoUrl?: string | null;
   moodLabel?: string;
   onWear: () => void;
   onShare: () => void;
-  onSaveLayer?: () => void;
 }) {
-  const { primary, spray, fragranceScore } = result;
-  const displayName = fragranceDisplayName(primary.fragrance.name);
+  const { primary, spray, fragranceScore, reasoning } = result;
+  const f = primary.fragrance;
+  const displayName = fragranceDisplayName(f.name);
+  const zones = spray.pulsePoints.slice(0, 3).join(', ');
 
   return (
-    <div
-      className="museum-hero"
-      style={{ '--aura': familyColor } as React.CSSProperties}
-    >
-      <div className="museum-hero__stage">
+    <article className="ui-card ui-card--lg !p-0 overflow-hidden ui-rise" aria-labelledby="hero-name">
+      <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
         <PressableLink
           to={`/fragrance/${primary.collectionId}`}
-          className="museum-hero__bottle-link"
-          aria-label={`View ${primary.fragrance.brand} ${displayName}`}
+          className="block bg-[var(--plinth)] p-6 lg:p-10"
+          aria-label={`View ${f.brand} ${displayName}`}
         >
           <FragranceThumb
-            brand={primary.fragrance.brand}
-            name={displayName}
-            family={primary.fragrance.family}
-            catalogImage={primary.fragrance.image}
+            fragrance={f}
             photoUrl={photoUrl}
-            fragrance={primary.fragrance}
             size="hero"
-            className="museum-hero__thumb"
+            variant="plinth"
+            className="mx-auto max-w-[300px] !shadow-none !rounded-none"
           />
         </PressableLink>
-      </div>
 
-      <p className="museum-hero__eyebrow">
-        {occasionLabel ? `${occasionLabel} · ${fragranceScore}% match` : `Today · ${fragranceScore}% match`}
-      </p>
-      <h2 className="museum-hero__brand">{primary.fragrance.brand}</h2>
-      <p className="museum-hero__name">{displayName}</p>
-      <p className="museum-hero__meta">
-        {primary.fragrance.concentration}
-        <span aria-hidden> · </span>
-        {primary.fragrance.family}
-        <span aria-hidden> · </span>
-        {spray.totalSprays} spray{spray.totalSprays !== 1 ? 's' : ''}
-      </p>
+        <div className="p-5 lg:p-8 flex flex-col gap-4">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="ui-eyebrow !text-[var(--tint)]">
+                {occasionLabel && occasionLabel !== 'Today' ? `${occasionLabel} pick` : 'Today’s pick'}
+              </p>
+              <p className="mt-2 text-[var(--t-footnote)] font-semibold uppercase tracking-[0.08em] text-[var(--label-2)]">
+                {f.brand}
+              </p>
+              <h2 id="hero-name" className="serif text-[clamp(1.75rem,6vw,2.4rem)] leading-[1.05] font-medium mt-1">
+                {displayName}
+              </h2>
+            </div>
+            <div className="relative shrink-0 grid place-items-center" title="Match for today">
+              <Ring value={fragranceScore} size={56} stroke={5} label={`${fragranceScore}% match`} />
+              <span className="absolute text-[var(--t-footnote)] font-bold tabular-nums">{fragranceScore}</span>
+            </div>
+          </div>
 
-      <div className="museum-hero__actions">
-        <Button className="flex-1 btn-glow" size="lg" onClick={onWear} disabled={logged} haptic="success">
-          {logged ? (
-            <>
-              <Check size={18} strokeWidth={2.5} /> Logged
-            </>
-          ) : (
-            'Wear this today'
+          <div className="flex flex-wrap gap-1.5">
+            <span className="ui-tag">{concentrationLabel(f.concentration)}</span>
+            <span className="ui-tag">{f.family}</span>
+            <span className="ui-tag ui-tag--tint">
+              <Droplet size={11} className="mr-1" aria-hidden />
+              {spray.totalSprays} spray{spray.totalSprays !== 1 ? 's' : ''}
+            </span>
+          </div>
+
+          {reasoning[0] && <p className="text-[var(--t-subhead)] text-[var(--label-2)] leading-relaxed">{reasoning[0]}</p>}
+          {zones && (
+            <p className="ui-footnote">
+              Apply to {zones}
+              {spray.warnings[0] ? ` · ${spray.warnings[0]}` : ''}
+            </p>
           )}
-        </Button>
-        <Button variant="ghost" size="lg" className="!px-4 border border-[var(--sc-border-soft)]" onClick={onShare} aria-label="Share">
-          <Share2 size={18} />
-        </Button>
+
+          <div className="flex gap-2.5 mt-auto pt-1">
+            <button
+              type="button"
+              className="ui-btn ui-btn--primary flex-1"
+              onClick={onWear}
+              disabled={logged}
+            >
+              {logged ? (
+                <>
+                  <Check size={19} strokeWidth={2.6} aria-hidden /> Logged for today
+                </>
+              ) : (
+                'Wear today'
+              )}
+            </button>
+            <button type="button" className="ui-icon-btn !w-[50px] !h-[50px] !rounded-[var(--r-md)]" onClick={onShare} aria-label="Share today’s pick">
+              <Share size={19} aria-hidden />
+            </button>
+          </div>
+          {shareMsg && (
+            <p className="ui-footnote text-center" role="status">
+              {shareMsg}
+            </p>
+          )}
+        </div>
       </div>
-      {shareMsg && <p className="museum-hero__share-msg">{shareMsg}</p>}
-    </div>
+    </article>
   );
 }

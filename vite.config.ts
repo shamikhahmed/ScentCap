@@ -52,10 +52,18 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,json,woff2}'],
+        globIgnores: ['**/bottles/**', 'data/fragrances.seed.json'],
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
         cacheId: versionManifest.swCache,
         navigateFallback: `${base}index.html`,
         navigateFallbackDenylist: [/^\/api\//, /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/],
         runtimeCaching: [
+          {
+            // Self-hosted bottle photos (public/bottles) — immutable per filename, cache on first view.
+            urlPattern: ({ url }) => url.pathname.includes('/bottles/') && url.pathname.endsWith('.webp'),
+            handler: 'CacheFirst',
+            options: { cacheName: 'bottles-v1', expiration: { maxEntries: 800, maxAgeSeconds: 60 * 60 * 24 * 180 } },
+          },
           {
             urlPattern: /^https:\/\/api\.open-meteo\.com\/.*/i,
             handler: 'NetworkFirst',

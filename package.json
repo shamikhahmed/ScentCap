@@ -23,7 +23,8 @@
     "test:unit": "npx tsx scripts/test-flacon-monogram.mjs",
     "test:matrix": "npm run build && FINISH_MATRIX=1 playwright test e2e/finish-matrix.spec.ts",
     "tier1": "node ../capricorn-tooling/shared/testing/tier1.mjs",
-    "lhci": "node scripts/lhci-mobile.mjs"
+    "lhci": "node scripts/lhci-mobile.mjs",
+    "catalog": "node scripts/build-catalog.mjs"
   },
   "dependencies": {
     "@capacitor/cli": "^8.4.0",

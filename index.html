@@ -6,65 +6,43 @@
     <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
     <link rel="apple-touch-icon" href="%BASE_URL%apple-touch-icon-180.png" sizes="180x180" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#e6eaee" />
+    <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
     <meta name="color-scheme" content="light dark" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="ScentCap" />
-    <meta name="description" content="Offline-first fragrance wardrobe OS — catalog bottles, track wears, layer with confidence. Your collection stays on your device." />
+    <meta name="description" content="Your fragrance wardrobe, beautifully kept. Add real bottles in a tap, get a daily pick for the weather and your plans, and keep a wear diary — private on your device." />
     <link rel="canonical" href="https://shamikhahmed.github.io/ScentCap/" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Capricorn Systems" />
     <meta property="og:title" content="ScentCap — Fragrance Wardrobe" />
-    <meta property="og:description" content="Offline-first fragrance wardrobe OS — catalog bottles, track wears, layer with confidence. Your collection stays on your device." />
+    <meta property="og:description" content="Your fragrance wardrobe, beautifully kept. Add real bottles in a tap, get a daily pick for the weather and your plans, and keep a wear diary — private on your device." />
     <meta property="og:url" content="https://shamikhahmed.github.io/ScentCap/" />
     <meta property="og:image" content="https://shamikhahmed.github.io/assets/screenshots/scentcap.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="ScentCap — Fragrance Wardrobe" />
-    <meta name="twitter:description" content="Offline-first fragrance wardrobe OS — catalog bottles, track wears, layer with confidence. Your collection stays on your device." />
+    <meta name="twitter:description" content="Your fragrance wardrobe, beautifully kept. Add real bottles in a tap, get a daily pick for the weather and your plans, and keep a wear diary — private on your device." />
     <meta name="twitter:image" content="https://shamikhahmed.github.io/assets/screenshots/scentcap.png" />
     <title>ScentCap — Fragrance Wardrobe</title>
     <style>
-      /* Outside #root so React mount does not destroy early FCP/LCP.
-         rgb() (not hex); avoid important overrides — C-29 kill-list. Matches --sc-bg / muted / ink. */
+      /* Boot shell outside #root (keeps FCP stable). Mark only, per HIG launch guidance. Matches system.css --bg. */
+      html, body { margin: 0; background: rgb(242, 242, 247); }
       #sc-boot {
         position: fixed;
         inset: 0;
         z-index: 9999;
-        margin: 0;
-        padding: max(20px, env(safe-area-inset-top)) 20px 24px;
-        box-sizing: border-box;
-        background: rgb(230, 234, 238);
-        color: rgb(12, 16, 21);
-        font-family: Georgia, "Times New Roman", serif;
+        display: grid;
+        place-items: center;
+        background: rgb(242, 242, 247);
       }
-      #sc-boot .sc-boot__brand {
-        margin: 0;
-        font-family: system-ui, sans-serif;
-        font-size: 11px;
-        font-weight: 700;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-        color: rgb(85, 94, 104);
-      }
-      #sc-boot .sc-boot__title {
-        margin: 6px 0 0;
-        font-size: 1.35rem;
-        font-weight: 600;
-        letter-spacing: -0.02em;
-      }
-      #sc-boot .sc-boot__hero {
-        margin: 2.5rem 0 0;
-        font-size: clamp(2.75rem, 14vw, 4rem);
-        font-weight: 600;
-        letter-spacing: -0.03em;
-        line-height: 1.05;
-        max-width: 11ch;
+      #sc-boot img { width: 56px; height: 56px; opacity: 0.92; }
+      @media (prefers-color-scheme: dark) {
+        html, body, #sc-boot { background: rgb(0, 0, 0); }
       }
     </style>
-  <style id="hig-body-17">html,body{font-size:17px!important}</style>
-</head>
+  </head>
   <body data-cap-app="1" class="light">
     <script>
       (function (l) {
@@ -81,12 +59,10 @@
       })(window.location);
     </script>
     <div id="sc-boot" aria-busy="true" aria-label="Loading ScentCap">
-      <p class="sc-boot__brand">ScentCap</p>
-      <h1 class="sc-boot__title">Wardrobe</h1>
-      <p class="sc-boot__hero">Today’s pick</p>
+      <img src="%BASE_URL%mark.svg" alt="" width="56" height="56" />
     </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-<script src="%BASE_URL%hig-dt.js"></script>
+    <script src="/hig-dt.js"></script>
 </body>
 </html>

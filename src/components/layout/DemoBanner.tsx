@@ -1,9 +1,8 @@
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
 import { useApp } from '@/context/AppContext';
 import { exitDemo } from '@/services/demo';
 
-/** Compact strip — never steal first viewport from the bottle. */
+/** Slim status strip — labels sample data (HIG) without stealing the first viewport. */
 export function DemoBanner() {
   const { prefs, refresh } = useApp();
   const navigate = useNavigate();
@@ -18,18 +17,16 @@ export function DemoBanner() {
 
   return (
     <div
-      className="cap-demo-banner sticky top-0 z-40 flex items-center justify-between gap-2 px-4 pb-2 pt-[max(0.5rem,env(safe-area-inset-top))] text-xs font-medium border-b border-[var(--sc-border-soft)] bg-[var(--sc-surface)] text-[var(--sc-text-muted)]"
+      data-testid="demo-banner"
+      className="sticky top-0 z-30 flex items-center justify-between gap-3 px-5 pt-[max(0.25rem,env(safe-area-inset-top))] bg-[var(--glass)] backdrop-blur-xl border-b-[0.5px] border-[var(--separator)]"
       role="status"
     >
-      <span>Sample wardrobe</span>
-      <Button
-        size="sm"
-        variant="ghost"
-        className="!min-h-[44px] !min-w-[44px] !h-11 !px-3 !text-xs shrink-0"
-        onClick={startFresh}
-      >
-        Use my collection
-      </Button>
+      <span className="text-[var(--t-footnote)] text-[var(--label-2)]">
+        You’re viewing a <strong className="font-semibold text-[var(--label)]">sample wardrobe</strong>
+      </span>
+      <button type="button" className="ui-btn ui-btn--plain !min-h-[44px] !text-[var(--t-footnote)]" onClick={startFresh}>
+        Start my own
+      </button>
     </div>
   );
 }

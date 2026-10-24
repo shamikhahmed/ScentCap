@@ -1,10 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Camera, PenLine, Search } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { OptionPill } from '@/components/ui/OptionPill';
-import { useKeyboardInset, scrollInputIntoView } from '@/hooks/useKeyboardInset';
+import { Camera, ChevronRight, PenLine, Search, X } from 'lucide-react';
+import { useKeyboardInset } from '@/hooks/useKeyboardInset';
 import { hapticSelection, hapticSuccess } from '@/lib/premium/haptics';
 import {
   addToCollection,
@@ -16,22 +13,16 @@ import {
   savePhoto,
 } from '@/db';
 import { enrichFragranceOnce } from '@/services/seed';
-import {
-  ensureFragranceCatalogEntry,
-  getRecentAdditionsWithImages,
-  searchCatalogWithImages,
-  type FragranceGroup,
-} from '@/services/catalogSearch';
+import { ensureFragranceCatalogEntry, searchCatalogLocal, searchCatalogWithImages, type FragranceGroup } from '@/services/catalogSearch';
 import { concentrationLabel, parseBaseName } from '@/services/onlineCatalog';
-import { CatalogEditorialCard } from '@/components/catalog/CatalogEditorialCard';
-import { DidYouMeanBanner } from '@/components/catalog/DidYouMeanBanner';
+import { isBundledBottle, popularLocal } from '@/catalog/local';
+import { BottleCard, PageHeader, Sheet } from '@/components/kit';
 import { FragranceThumb } from '@/components/collection/FragranceThumb';
 import { useApp } from '@/context/AppContext';
 import type { BottleType, Concentration, Fragrance, GenderLean, Longevity, Projection, WishlistList } from '@/types';
 import { CONCENTRATIONS } from '@/types';
 import { estimateWearsRemaining, uid } from '@/lib/utils';
 import { MIDDLE_EAST_BRANDS, POPULAR_BRANDS } from '@/catalog/brands';
-import { inputFieldLg, segmentBar, textSubtle } from '@/lib/ui-classes';
 
 const BOTTLE_TYPES: { id: BottleType; label: string }[] = [
   { id: 'full', label: 'Full bottle' },
@@ -40,32 +31,53 @@ const BOTTLE_TYPES: { id: BottleType; label: string }[] = [
   { id: 'sample', label: 'Sample' },
 ];
 
+const FAMILIES = ['Fresh', 'Floral', 'Woody', 'Oriental', 'Gourmand'];
+
+function groupOf(f: Fragrance): FragranceGroup {
+  return { key: `${f.brand}::${parseBaseName(f.name)}`, brand: f.brand, name: parseBaseName(f.name), variants: [f] };
+}
+
 export function AddFragrance() {
   const { collection, refresh } = useApp();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const listTarget = (searchParams.get('list') as WishlistList | null) ?? null;
 
-  const [tab, setTab] = useState<'search' | 'manual'>(listTarget ? 'search' : 'search');
   const [q, setQ] = useState('');
   const [groups, setGroups] = useState<FragranceGroup[]>([]);
-  const [recents, setRecents] = useState<Fragrance[]>([]);
-  const [picked, setPicked] = useState<Fragrance | null>(null);
-  const [activeGroup, setActiveGroup] = useState<FragranceGroup | null>(null);
-  const [pickingImage, setPickingImage] = useState(false);
+  const [popular, setPopular] = useState<Fragrance[]>([]);
+  const [searching, setSearching] = useState(false);
+  const [didYouMean, setDidYouMean] = useState<string | null>(null);
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [photoFile, setPhotoFile] = useState<File | null>(null);
-  const [meta, setMeta] = useState({ sizeMl: '100', price: '', opened: '', purchase: '' });
+  const searchSeq = useRef(0);
+
+  // Confirm sheet
+  const [activeGroup, setActiveGroup] = useState<FragranceGroup | null>(null);
+  const [picked, setPicked] = useState<Fragrance | null>(null);
   const [bottleType, setBottleType] = useState<BottleType>('full');
   const [parentCollectionId, setParentCollectionId] = useState('');
   const [parentOptions, setParentOptions] = useState<{ id: string; label: string }[]>([]);
+  const [meta, setMeta] = useState({ sizeMl: '100', price: '', opened: '', purchase: '' });
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
-  const [searchingOnline, setSearchingOnline] = useState(false);
-  const [didYouMean, setDidYouMean] = useState<string | null>(null);
-  const [searchedAs, setSearchedAs] = useState<string | null>(null);
+
+  // Manual sheet
+  const [manualOpen, setManualOpen] = useState(false);
+  const [manual, setManual] = useState({
+    name: '',
+    brand: '',
+    concentration: 'EDP' as Concentration,
+    family: 'Fresh',
+    projection: 'moderate' as Projection,
+    longevity: 'medium' as Longevity,
+    gender_lean: 'unisex' as GenderLean,
+  });
+
   const keyboardInset = useKeyboardInset();
 
-  const inputClass = `${inputFieldLg} text-sm`;
+  useEffect(() => {
+    void popularLocal(18).then(setPopular);
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -82,67 +94,63 @@ export function AddFragrance() {
     })();
   }, [collection]);
 
-  const loadResults = async (query: string) => {
+  const runSearch = async (query: string) => {
+    const seq = ++searchSeq.current;
     if (!query.trim()) {
       setGroups([]);
       setDidYouMean(null);
-      setSearchedAs(null);
-      setRecents(await getRecentAdditionsWithImages());
+      setSearching(false);
       return;
     }
-    setRecents([]);
-    setSearchingOnline(true);
+    setSearching(true);
     try {
-      const result = await searchCatalogWithImages(query, 20);
+      const local = await searchCatalogLocal(query, 30);
+      if (seq !== searchSeq.current) return;
+      if (local.groups.length) setGroups(local.groups);
+      const result = await searchCatalogWithImages(query, 30);
+      if (seq !== searchSeq.current) return;
       setGroups(result.groups);
       setDidYouMean(result.didYouMean);
-      setSearchedAs(result.searchedAs);
     } finally {
-      setSearchingOnline(false);
+      if (seq === searchSeq.current) setSearching(false);
     }
   };
 
-  useEffect(() => {
-    void loadResults('');
-  }, []);
-
-  const search = (query: string) => {
+  const search = (query: string, immediate = false) => {
     setQ(query);
-    setPicked(null);
-    setActiveGroup(null);
     if (searchTimer.current) clearTimeout(searchTimer.current);
-    searchTimer.current = setTimeout(() => {
-      void loadResults(query);
-    }, 280);
+    if (immediate) void runSearch(query);
+    else searchTimer.current = setTimeout(() => void runSearch(query), 220);
   };
 
-  const applySuggestion = (suggestion: string) => {
-    hapticSelection();
-    setQ(suggestion);
-    setPicked(null);
-    setActiveGroup(null);
-    void loadResults(suggestion);
-  };
-
-  const openGroup = (g: FragranceGroup) => {
+  const openGroup = async (g: FragranceGroup) => {
     hapticSelection();
     setActiveGroup(g);
+    setBottleType('full');
+    setParentCollectionId('');
+    setPhotoFile(null);
+    setMeta({ sizeMl: '100', price: '', opened: '', purchase: '' });
+    await choose(g.variants[0]);
+  };
+
+  const choose = async (f: Fragrance) => {
+    setPicked(f);
+    await putFragrance(f);
+    if (isBundledBottle(f.image)) return; // offline catalog entry is already complete
+    const enriched = await ensureFragranceCatalogEntry(f);
+    setPicked((cur) => (cur?.id === f.id ? enriched : cur));
+  };
+
+  const closeSheet = () => {
+    setActiveGroup(null);
     setPicked(null);
   };
 
-  const pickVariant = async (f: Fragrance) => {
-    hapticSelection();
-    setPickingImage(true);
-    try {
-      const enriched = await ensureFragranceCatalogEntry(f);
-      setPicked(enriched);
-    } finally {
-      setPickingImage(false);
-    }
-  };
+  const needsParent = bottleType === 'decant' || bottleType === 'travel';
+  const canAdd = !needsParent || Boolean(parentCollectionId);
 
   const confirmAdd = async (f: Fragrance) => {
-    if ((bottleType === 'decant' || bottleType === 'travel') && !parentCollectionId) return;
+    if (needsParent && !parentCollectionId) return;
     setSaving(true);
     try {
       await enrichFragranceOnce(f);
@@ -152,14 +160,14 @@ export function AddFragrance() {
         photoBlobId = `photo-${colId}`;
         await savePhoto(photoBlobId, photoFile);
       }
-      const defaultSize = bottleType === 'decant' ? '10' : bottleType === 'travel' ? '30' : meta.sizeMl;
+      const defaultSize = bottleType === 'decant' ? '10' : bottleType === 'travel' ? '30' : bottleType === 'sample' ? '2' : meta.sizeMl;
       await addToCollection({
         id: colId,
         fragranceId: f.id,
         bottleLevel: 'full',
         bottleType,
-        parentCollectionId: bottleType === 'full' ? undefined : parentCollectionId,
-        bottleSizeMl: Number(defaultSize) || (bottleType === 'decant' ? 10 : 100),
+        parentCollectionId: bottleType === 'full' || bottleType === 'sample' ? undefined : parentCollectionId,
+        bottleSizeMl: Number(defaultSize) || 100,
         purchasePrice: meta.price ? Number(meta.price) : undefined,
         purchaseDate: meta.purchase || undefined,
         openedDate: meta.opened || undefined,
@@ -171,7 +179,7 @@ export function AddFragrance() {
       });
       await refresh();
       hapticSuccess();
-      navigate('/collection');
+      navigate(`/fragrance/${colId}?added=1`);
     } finally {
       setSaving(false);
     }
@@ -183,12 +191,7 @@ export function AddFragrance() {
       await enrichFragranceOnce(f);
       const existing = await getWishlistByFragrance(f.id, list);
       if (!existing) {
-        await addToWishlist({
-          id: uid(),
-          fragranceId: f.id,
-          list,
-          addedAt: new Date().toISOString(),
-        });
+        await addToWishlist({ id: uid(), fragranceId: f.id, list, addedAt: new Date().toISOString() });
       }
       await refresh();
       hapticSuccess();
@@ -198,357 +201,335 @@ export function AddFragrance() {
     }
   };
 
-  const [manual, setManual] = useState({
-    name: '', brand: '', concentration: 'EDP' as Concentration,
-    family: 'Fresh', projection: 'moderate' as Projection, longevity: 'medium' as Longevity,
-    gender_lean: 'unisex' as GenderLean,
-  });
-
   const addManual = async () => {
     const id = `${manual.brand}-${manual.name}-${manual.concentration}`.toLowerCase().replace(/[^a-z0-9]+/g, '-');
     const f: Fragrance = {
-      id, name: manual.name, brand: manual.brand, concentration: manual.concentration,
-      family: manual.family, subfamily: manual.family, projection: manual.projection,
-      longevity: manual.longevity, seasonality: ['spring', 'summer'], day_night: 'versatile',
-      gender_lean: manual.gender_lean, top_notes: [], heart_notes: [], base_notes: [],
-      office_score: 60, heat_score: 70, cold_score: 60, date_score: 70, formal_score: 60,
-      casual_score: 75, layering_tags: ['fresh'],
+      id,
+      name: manual.name.trim(),
+      brand: manual.brand.trim(),
+      concentration: manual.concentration,
+      family: manual.family,
+      subfamily: manual.family,
+      projection: manual.projection,
+      longevity: manual.longevity,
+      seasonality: ['spring', 'summer', 'fall', 'winter'],
+      day_night: 'versatile',
+      gender_lean: manual.gender_lean,
+      top_notes: [],
+      heart_notes: [],
+      base_notes: [],
+      office_score: 60,
+      heat_score: 65,
+      cold_score: 65,
+      date_score: 70,
+      formal_score: 60,
+      casual_score: 75,
+      layering_tags: ['fresh'],
     };
     await putFragrance(f);
     const enriched = await enrichFragranceOnce(f);
-    if (listTarget === 'want' || listTarget === 'tested') {
+    setManualOpen(false);
+    if (listTarget) {
       await addToList(enriched, listTarget);
       return;
     }
-    setPicked(enriched);
     await confirmAdd(enriched);
   };
 
-  const needsParent = bottleType === 'decant' || bottleType === 'travel';
-  const canAdd = !needsParent || Boolean(parentCollectionId);
+  const listName = listTarget === 'want' ? 'Wishlist' : listTarget === 'tested' ? 'Tested' : null;
+  const variants = activeGroup?.variants ?? [];
 
   return (
-    <div
-      className="atelier-page space-y-6"
-      style={{ paddingBottom: keyboardInset > 0 ? keyboardInset + 24 : undefined }}
-    >
-      <div>
-        <p className="atelier-page__brand">Catalog</p>
-        <h1 className="atelier-page__title">Add fragrance</h1>
-        {listTarget && (
-          <p className="text-sm text-[var(--color-accent)] mt-1">
-            Adding to {listTarget === 'want' ? 'Want list' : 'Tested list'}
-          </p>
+    <div className="ui-page" style={{ paddingBottom: keyboardInset > 0 ? keyboardInset + 24 : undefined }}>
+      <PageHeader eyebrow={listName ? `Adding to ${listName}` : undefined} title="Add fragrance" />
+
+      <label className="ui-search !min-h-[48px] sticky top-[max(8px,env(safe-area-inset-top))] z-20 shadow-[var(--shadow-2)] !bg-[var(--surface)]">
+        <Search size={18} aria-hidden />
+        <span className="sr-only">Search by brand or name</span>
+        <input
+          id="catalog-search"
+          type="search"
+          role="searchbox"
+          enterKeyHint="search"
+          placeholder="Brand or fragrance name"
+          autoComplete="off"
+          autoCorrect="off"
+          spellCheck={false}
+          value={q}
+          onChange={(e) => search(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && search(q, true)}
+        />
+        {q && (
+          <button type="button" className="p-1 text-[var(--label-3)]" onClick={() => search('', true)} aria-label="Clear search">
+            <X size={17} aria-hidden />
+          </button>
         )}
-      </div>
+      </label>
 
-      <div className={segmentBar} role="group" aria-label="Add method">
-        <Button
-          aria-pressed={tab === 'search'}
-          variant={tab === 'search' ? 'default' : 'ghost'}
-          className="flex-1 gap-2 min-h-[44px]"
-          onClick={() => setTab('search')}
-        >
-          <Search size={16} />
-          Search catalog
-        </Button>
-        <Button
-          aria-pressed={tab === 'manual'}
-          variant={tab === 'manual' ? 'default' : 'ghost'}
-          className="flex-1 gap-2 min-h-[44px]"
-          onClick={() => setTab('manual')}
-        >
-          <PenLine size={16} />
-          Add manually
-        </Button>
-      </div>
-
-      {!listTarget && (
-        <Card className="space-y-3">
-          <p className="text-xs uppercase text-[var(--sc-text-muted)]">Bottle type</p>
-          <div className="flex gap-2 flex-wrap">
-            {BOTTLE_TYPES.map((t) => (
-              <OptionPill
-                key={t.id}
-                label={t.label}
-                selected={bottleType === t.id}
-                onSelect={() => {
-                  setBottleType(t.id);
-                  if (t.id === 'full') setParentCollectionId('');
-                }}
-              />
-            ))}
-          </div>
-          {needsParent && (
-            <div className="space-y-1">
-              <label htmlFor="parent-bottle" className="text-xs text-[var(--sc-text-muted)]">Link to parent bottle</label>
-              <select
-                id="parent-bottle"
-                className={`${inputClass} py-2`}
-                value={parentCollectionId}
-                onChange={(e) => setParentCollectionId(e.target.value)}
-                aria-invalid={needsParent && !parentCollectionId}
-                aria-describedby={!parentOptions.length ? 'parent-hint' : undefined}
-              >
-                <option value="">Select parent bottle…</option>
-                {parentOptions.map((p) => (
-                  <option key={p.id} value={p.id}>{p.label}</option>
-                ))}
-              </select>
-              {!parentOptions.length && (
-                <p id="parent-hint" className="text-xs text-[var(--sc-warning)]">Add a full bottle first to link decants or travel sizes.</p>
-              )}
-              {needsParent && parentOptions.length > 0 && !parentCollectionId && (
-                <p className="text-xs text-[var(--sc-danger)]" role="alert">Choose a parent bottle to continue.</p>
-              )}
-            </div>
-          )}
-        </Card>
-      )}
-
-      {!listTarget && (
-        <Card className="space-y-3">
-          <p className="text-xs uppercase text-[var(--sc-text-muted)]">Bottle details (optional)</p>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <label htmlFor="meta-size" className="text-xs text-[var(--sc-text-muted)]">Size (ml)</label>
-              <input id="meta-size" className={inputClass} type="number" inputMode="decimal" autoComplete="off" placeholder="50" value={meta.sizeMl} onChange={(e) => setMeta({ ...meta, sizeMl: e.target.value })} onFocus={(e) => scrollInputIntoView(e.currentTarget)} />
-            </div>
-            <div className="space-y-1">
-              <label htmlFor="meta-price" className="text-xs text-[var(--sc-text-muted)]">Price</label>
-              <input id="meta-price" className={inputClass} type="number" inputMode="decimal" autoComplete="off" placeholder="0" value={meta.price} onChange={(e) => setMeta({ ...meta, price: e.target.value })} onFocus={(e) => scrollInputIntoView(e.currentTarget)} />
-            </div>
-            <div className="space-y-1">
-              <label htmlFor="meta-purchase" className="text-xs text-[var(--sc-text-muted)]">Purchased</label>
-              <input id="meta-purchase" type="date" className={inputClass} autoComplete="off" value={meta.purchase} onChange={(e) => setMeta({ ...meta, purchase: e.target.value })} onFocus={(e) => scrollInputIntoView(e.currentTarget)} />
-            </div>
-            <div className="space-y-1">
-              <label htmlFor="meta-opened" className="text-xs text-[var(--sc-text-muted)]">Opened</label>
-              <input id="meta-opened" type="date" className={inputClass} autoComplete="off" value={meta.opened} onChange={(e) => setMeta({ ...meta, opened: e.target.value })} onFocus={(e) => scrollInputIntoView(e.currentTarget)} />
-            </div>
-          </div>
-          <label className="flex flex-col gap-1 text-sm text-[var(--sc-text-soft)] cursor-pointer min-h-[44px]">
-            <span className="flex items-center gap-2">
-              <Camera size={16} aria-hidden />
-              <span>Photo (optional)</span>
-              <input type="file" accept="image/*" className="hidden" aria-label="Choose bottle photo" onChange={(e) => setPhotoFile(e.target.files?.[0] ?? null)} />
-              <span className="text-[var(--sc-accent)] font-semibold">{photoFile ? photoFile.name : 'Choose file'}</span>
-            </span>
-            <span className="text-xs text-[var(--sc-text-muted)] pl-6">
-              Photos stay on this device. If camera or Photos access is denied, you can still add bottles without a photo.
-            </span>
-          </label>
-        </Card>
-      )}
-
-      {tab === 'search' ? (
+      {!q.trim() ? (
         <>
-          <div className="relative">
-            <Search size={16} className={`absolute left-4 top-1/2 -translate-y-1/2 ${textSubtle}`} aria-hidden />
-            <label htmlFor="catalog-search" className="sr-only">Search catalog by brand or name</label>
-            <input
-              id="catalog-search"
-              role="searchbox"
-              className={`${inputClass} rounded-2xl py-3 pl-11 min-h-[48px]`}
-              placeholder="Search by brand or name…"
-              autoComplete="off"
-              value={q}
-              onChange={(e) => search(e.target.value)}
-              onFocus={(e) => scrollInputIntoView(e.currentTarget)}
-            />
-          </div>
-
-          {!q.trim() && (
-            <div className="space-y-2" data-testid="brand-browse">
-              <p className="text-xs uppercase tracking-wider text-[var(--sc-text-muted)]">Popular</p>
-              <div className="flex flex-wrap gap-2">
-                {POPULAR_BRANDS.slice(0, 6).map((b) => (
-                  <button key={b} type="button" className="text-xs px-3 py-1.5 rounded-full border border-[var(--sc-border-soft)] text-[var(--sc-text-soft)]" onClick={() => search(b)}>{b}</button>
-                ))}
-              </div>
-              <p className="text-xs uppercase tracking-wider text-[var(--sc-text-muted)] pt-1">Middle East</p>
-              <div className="flex flex-wrap gap-2">
-                {MIDDLE_EAST_BRANDS.slice(0, 6).map((b) => (
-                  <button key={b} type="button" className="text-xs px-3 py-1.5 rounded-full border border-[var(--sc-border-soft)] text-[var(--sc-text-soft)]" onClick={() => search(b)}>{b}</button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {didYouMean && q.trim() && (
-            <DidYouMeanBanner
-              suggestion={didYouMean}
-              searchedAs={searchedAs}
-              originalQuery={q}
-              onSelect={applySuggestion}
-            />
-          )}
-
-          {picked ? (
-            <Card className="catalog-confirm-card space-y-3">
-              <p className="text-caption text-[var(--color-accent)]">Confirm your bottle</p>
-              <div className="catalog-confirm-hero">
-                <FragranceThumb
-                  brand={picked.brand}
-                  name={picked.name}
-                  family={picked.family}
-                  catalogImage={picked.image}
-                  fragrance={picked}
-                  size="hero"
-                  className="catalog-confirm-bottle !h-[160px] mx-auto w-full max-w-[200px]"
-                />
-              </div>
-              <div className="text-center">
-                <p className="text-xs text-[var(--sc-text-muted)]">{picked.brand}</p>
-                <p className="text-title mt-0.5">{parseBaseName(picked.name)}</p>
-                <p className="text-sm text-[var(--color-accent)] font-medium mt-1">
-                  {concentrationLabel(picked.concentration)}
-                </p>
-              </div>
-              {picked.top_notes.length > 0 && (
-                <div className="rounded-xl bg-[var(--sc-surface)] border border-[var(--sc-border-soft)] px-3 py-2.5">
-                  <p className="text-[10px] uppercase tracking-wider text-[var(--color-text-tertiary)] mb-1">Notes</p>
-                  <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
-                    {[...picked.top_notes.slice(0, 2), ...picked.heart_notes.slice(0, 2), ...picked.base_notes.slice(0, 2)].join(' · ')}
-                  </p>
-                </div>
-              )}
-              {listTarget ? (
-                <Button className="w-full" onClick={() => addToList(picked, listTarget)} disabled={saving}>
-                  Add to {listTarget === 'want' ? 'Want list' : 'Tested list'}
-                </Button>
-              ) : (
-                <>
-                  <Button className="w-full" onClick={() => confirmAdd(picked)} disabled={!canAdd || saving} haptic="success">
-                    Add to wardrobe
-                  </Button>
-                  <div className="flex gap-2">
-                    <Button variant="outline" className="flex-1" onClick={() => addToList(picked, 'want')} disabled={saving}>
-                      Want list
-                    </Button>
-                    <Button variant="outline" className="flex-1" onClick={() => addToList(picked, 'tested')} disabled={saving}>
-                      Tested
-                    </Button>
-                  </div>
-                </>
-              )}
-              <Button variant="ghost" className="w-full" onClick={() => { setPicked(null); setActiveGroup(null); }}>Back</Button>
-            </Card>
-          ) : (
-            <div className="catalog-results space-y-4 max-h-[55vh] overflow-y-auto pb-2">
-              {!q && recents.length > 0 && (
-                <>
-                  <p className="text-caption text-[var(--color-text-tertiary)] px-1">Recently added</p>
-                  {recents.map((f, i) => (
-                    <CatalogEditorialCard
-                      key={`${f.brand}::${f.name}`}
-                      group={{
-                        key: `${f.brand}::${f.name}`,
-                        brand: f.brand,
-                        name: f.name,
-                        variants: [f],
-                      }}
-                      isOpen={activeGroup?.key === `${f.brand}::${f.name}`}
-                      picked={picked}
-                      pickingImage={pickingImage}
-                      onOpen={() => openGroup({
-                        key: `${f.brand}::${f.name}`,
-                        brand: f.brand,
-                        name: f.name,
-                        variants: [f],
-                      })}
-                      onPickVariant={pickVariant}
-                      index={i}
-                    />
-                  ))}
-                </>
-              )}
-              {!q && !recents.length && (
-                <div className="catalog-empty-state text-center py-10 px-4">
-                  <p className="text-caption text-[var(--color-accent)] mb-2">Live catalog</p>
-                  <p className={`text-subhead ${textSubtle}`}>
-                    Search thousands of fragrances — real bottle photos, concentrations, and notes.
-                  </p>
-                </div>
-              )}
-              {q && searchingOnline && (
-                <p className={`text-sm ${textSubtle} text-center py-6`}>Searching catalog…</p>
-              )}
-              {q && !groups.length && !searchingOnline && !didYouMean && (
-                <p className="text-sm text-[var(--sc-text-muted)] text-center py-6">
-                  No matches — check spelling or add manually
-                </p>
-              )}
-              {groups.map((g, i) => (
-                <CatalogEditorialCard
-                  key={g.key}
-                  group={g}
-                  isOpen={activeGroup?.key === g.key}
-                  picked={picked}
-                  pickingImage={pickingImage}
-                  onOpen={() => openGroup(g)}
-                  onPickVariant={pickVariant}
-                  index={i}
-                />
+          <div className="mt-5" data-testid="brand-browse">
+            <p className="ui-list-header !px-0">Popular houses</p>
+            <div className="flex flex-wrap gap-2 mt-1">
+              {[...POPULAR_BRANDS.slice(0, 6), ...MIDDLE_EAST_BRANDS.slice(0, 4)].map((b) => (
+                <button key={b} type="button" className="ui-chip" onClick={() => search(b, true)}>
+                  {b}
+                </button>
               ))}
             </div>
+          </div>
+
+          {popular.length > 0 && (
+            <section className="ui-section !mt-7">
+              <div className="ui-section-head">
+                <h2 className="ui-section-title">Popular right now</h2>
+              </div>
+              <div className="ui-grid">
+                {popular.map((f) => (
+                  <BottleCard key={f.id} fragrance={f} meta={concentrationLabel(f.concentration)} onClick={() => void openGroup(groupOf(f))} />
+                ))}
+              </div>
+            </section>
           )}
         </>
       ) : (
-        <Card className="space-y-4">
-          <p className="text-sm text-[var(--sc-text-soft)]">Can&apos;t find it? Enter brand and name — we&apos;ll save it locally.</p>
-          <div className="space-y-1">
-            <label htmlFor="manual-name" className="text-xs text-[var(--sc-text-muted)]">Fragrance name</label>
-            <input
-              id="manual-name"
-              className={`${inputClass} capitalize`}
-              placeholder="e.g. Aventus"
-              autoComplete="off"
-              required
-              aria-invalid={!manual.name}
-              value={manual.name}
-              onChange={(e) => setManual({ ...manual, name: e.target.value })}
-              onFocus={(e) => scrollInputIntoView(e.currentTarget)}
-            />
-          </div>
-          <div className="space-y-1">
-            <label htmlFor="manual-brand" className="text-xs text-[var(--sc-text-muted)]">Brand</label>
-            <input
-              id="manual-brand"
-              className={`${inputClass} capitalize`}
-              placeholder="e.g. Creed"
-              autoComplete="organization"
-              required
-              aria-invalid={!manual.brand}
-              value={manual.brand}
-              onChange={(e) => setManual({ ...manual, brand: e.target.value })}
-              onFocus={(e) => scrollInputIntoView(e.currentTarget)}
-            />
-          </div>
-          <div className="space-y-1">
-            <label htmlFor="manual-concentration" className="text-xs text-[var(--sc-text-muted)]">Concentration</label>
-            <select
-              id="manual-concentration"
-              className={inputClass}
-              value={manual.concentration}
-              onChange={(e) => setManual({ ...manual, concentration: e.target.value as Concentration })}
-            >
-              {CONCENTRATIONS.map((c) => <option key={c} value={c}>{c}</option>)}
-            </select>
-          </div>
-          {(!manual.name || !manual.brand) && (
-            <p className="text-xs text-[var(--sc-danger)]" role="alert">Enter both name and brand to save.</p>
+        <div className="mt-5" aria-live="polite">
+          {didYouMean && (
+            <button type="button" className="ui-row ui-list mb-4" onClick={() => search(didYouMean, true)}>
+              <span className="ui-row__main">
+                <span className="ui-row__sub block">Did you mean</span>
+                <span className="ui-row__title block text-[var(--tint)]">{didYouMean}</span>
+              </span>
+              <ChevronRight size={18} className="ui-chevron" aria-hidden />
+            </button>
           )}
-          <Button
-            className="w-full"
-            onClick={addManual}
-            disabled={!manual.name || !manual.brand || (!listTarget && !canAdd) || saving}
-            haptic="success"
-          >
-            {listTarget === 'want' ? 'Save to Want list' : listTarget === 'tested' ? 'Save to Tested' : 'Save to wardrobe'}
-          </Button>
-        </Card>
+          {searching && !groups.length ? (
+            <div className="ui-grid" aria-label="Searching">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="space-y-2">
+                  <div className="ui-skeleton aspect-square" />
+                  <div className="ui-skeleton h-3 w-1/2" />
+                  <div className="ui-skeleton h-4 w-3/4" />
+                </div>
+              ))}
+            </div>
+          ) : groups.length ? (
+            <div className="ui-grid">
+              {groups.map((g) => (
+                <BottleCard
+                  key={g.key}
+                  fragrance={g.variants[0]}
+                  meta={
+                    g.variants.length > 1
+                      ? `${g.variants.length} concentrations`
+                      : concentrationLabel(g.variants[0].concentration)
+                  }
+                  onClick={() => void openGroup(g)}
+                />
+              ))}
+            </div>
+          ) : !searching ? (
+            <p className="ui-secondary text-center py-12">No matches for “{q}”.</p>
+          ) : null}
+        </div>
       )}
+
+      <div className="ui-list mt-8">
+        <button type="button" className="ui-row" onClick={() => setManualOpen(true)}>
+          <span className="w-8 h-8 rounded-[9px] grid place-items-center bg-[var(--fill)] shrink-0">
+            <PenLine size={16} aria-hidden />
+          </span>
+          <span className="ui-row__main">
+            <span className="ui-row__title block">Can’t find it? Add manually</span>
+            <span className="ui-row__sub block">Brand, name and concentration</span>
+          </span>
+          <ChevronRight size={18} className="ui-chevron" aria-hidden />
+        </button>
+      </div>
+      <p className="ui-footnote mt-3 px-1">Bottle images © their respective brands, via Parfumo.</p>
+
+      {/* Confirm sheet */}
+      <Sheet open={Boolean(activeGroup)} title={listName ? `Add to ${listName}` : 'Add to collection'} onClose={closeSheet}>
+        {picked && (
+          <div className="space-y-5 pb-2">
+            <div className="flex gap-4 items-center">
+              <div className="w-28 shrink-0">
+                <FragranceThumb fragrance={picked} variant="plinth" size="lg" />
+              </div>
+              <div className="min-w-0">
+                <p className="ui-bottle__brand">{picked.brand}</p>
+                <p className="serif text-[var(--t-title2)] leading-tight mt-0.5">{parseBaseName(picked.name)}</p>
+                <p className="ui-footnote mt-1">{picked.family}{picked.top_notes[0] ? ` · ${picked.top_notes.slice(0, 2).join(', ')}` : ''}</p>
+              </div>
+            </div>
+
+            {variants.length > 1 && (
+              <div>
+                <p className="ui-list-header !px-0">Concentration</p>
+                <div className="flex flex-wrap gap-2">
+                  {variants.map((v) => (
+                    <button
+                      key={v.id}
+                      type="button"
+                      className="ui-chip"
+                      aria-pressed={picked.id === v.id}
+                      onClick={() => {
+                        hapticSelection();
+                        void choose(v);
+                      }}
+                    >
+                      {concentrationLabel(v.concentration)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {!listTarget && (
+              <>
+                <div>
+                  <p className="ui-list-header !px-0">Bottle</p>
+                  <div className="ui-segmented">
+                    {BOTTLE_TYPES.map((t) => (
+                      <button
+                        key={t.id}
+                        type="button"
+                        aria-pressed={bottleType === t.id}
+                        onClick={() => {
+                          setBottleType(t.id);
+                          if (t.id === 'full' || t.id === 'sample') setParentCollectionId('');
+                        }}
+                      >
+                        {t.label}
+                      </button>
+                    ))}
+                  </div>
+                  {needsParent && (
+                    <div className="ui-list mt-3">
+                      <label className="ui-row" htmlFor="parent-bottle">
+                        <span className="ui-row__main">From bottle</span>
+                        <select
+                          id="parent-bottle"
+                          className="ui-field max-w-[60%]"
+                          value={parentCollectionId}
+                          onChange={(e) => setParentCollectionId(e.target.value)}
+                          aria-invalid={!parentCollectionId}
+                        >
+                          <option value="">{parentOptions.length ? 'Choose…' : 'No full bottles yet'}</option>
+                          {parentOptions.map((p) => (
+                            <option key={p.id} value={p.id}>
+                              {p.label}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    </div>
+                  )}
+                </div>
+
+                <details className="group">
+                  <summary className="ui-list ui-row cursor-pointer list-none">
+                    <span className="ui-row__main">Details <span className="ui-footnote">— optional</span></span>
+                    <ChevronRight size={18} className="ui-chevron transition-transform group-open:rotate-90" aria-hidden />
+                  </summary>
+                  <div className="ui-list mt-2">
+                    {bottleType === 'full' && (
+                      <label className="ui-row" htmlFor="meta-size">
+                        <span className="ui-row__main">Size (ml)</span>
+                        <input id="meta-size" className="ui-field max-w-[40%]" type="number" inputMode="decimal" value={meta.sizeMl} onChange={(e) => setMeta({ ...meta, sizeMl: e.target.value })} />
+                      </label>
+                    )}
+                    <label className="ui-row" htmlFor="meta-price">
+                      <span className="ui-row__main">Price paid</span>
+                      <input id="meta-price" className="ui-field max-w-[40%]" type="number" inputMode="decimal" placeholder="—" value={meta.price} onChange={(e) => setMeta({ ...meta, price: e.target.value })} />
+                    </label>
+                    <label className="ui-row" htmlFor="meta-purchase">
+                      <span className="ui-row__main">Purchased</span>
+                      <input id="meta-purchase" className="ui-field max-w-[50%]" type="date" value={meta.purchase} onChange={(e) => setMeta({ ...meta, purchase: e.target.value })} />
+                    </label>
+                    <label className="ui-row" htmlFor="meta-opened">
+                      <span className="ui-row__main">Opened</span>
+                      <input id="meta-opened" className="ui-field max-w-[50%]" type="date" value={meta.opened} onChange={(e) => setMeta({ ...meta, opened: e.target.value })} />
+                    </label>
+                    <label className="ui-row cursor-pointer">
+                      <Camera size={18} className="text-[var(--tint)]" aria-hidden />
+                      <span className="ui-row__main">Your own photo</span>
+                      <span className="ui-row__value truncate max-w-[45%]">{photoFile ? photoFile.name : 'Choose'}</span>
+                      <input type="file" accept="image/*" className="sr-only" onChange={(e) => setPhotoFile(e.target.files?.[0] ?? null)} />
+                    </label>
+                  </div>
+                  <p className="ui-list-footer">Photos stay on this device.</p>
+                </details>
+              </>
+            )}
+
+            <div className="space-y-2 pt-1">
+              {listTarget ? (
+                <button type="button" className="ui-btn ui-btn--primary ui-btn--block" disabled={saving} onClick={() => void addToList(picked, listTarget)}>
+                  Add to {listName}
+                </button>
+              ) : (
+                <>
+                  <button type="button" className="ui-btn ui-btn--primary ui-btn--block" disabled={!canAdd || saving} onClick={() => void confirmAdd(picked)}>
+                    {saving ? 'Adding…' : 'Add to collection'}
+                  </button>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button type="button" className="ui-btn ui-btn--gray" disabled={saving} onClick={() => void addToList(picked, 'want')}>
+                      Wishlist
+                    </button>
+                    <button type="button" className="ui-btn ui-btn--gray" disabled={saving} onClick={() => void addToList(picked, 'tested')}>
+                      Tested
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+      </Sheet>
+
+      {/* Manual sheet */}
+      <Sheet
+        open={manualOpen}
+        title="Add manually"
+        onClose={() => setManualOpen(false)}
+        labelledBy="manual-title"
+        done={{
+          label: 'Save',
+          onClick: () => void addManual(),
+          disabled: !manual.name.trim() || !manual.brand.trim() || saving,
+        }}
+      >
+        <div className="ui-list">
+          <label className="ui-row" htmlFor="manual-brand">
+            <span className="w-28 shrink-0">Brand</span>
+            <input id="manual-brand" className="ui-field ui-field--left" placeholder="e.g. Creed" autoComplete="off" value={manual.brand} onChange={(e) => setManual({ ...manual, brand: e.target.value })} />
+          </label>
+          <label className="ui-row" htmlFor="manual-name">
+            <span className="w-28 shrink-0">Name</span>
+            <input id="manual-name" className="ui-field ui-field--left" placeholder="e.g. Aventus" autoComplete="off" value={manual.name} onChange={(e) => setManual({ ...manual, name: e.target.value })} />
+          </label>
+          <label className="ui-row" htmlFor="manual-concentration">
+            <span className="ui-row__main">Concentration</span>
+            <select id="manual-concentration" className="ui-field max-w-[50%]" value={manual.concentration} onChange={(e) => setManual({ ...manual, concentration: e.target.value as Concentration })}>
+              {CONCENTRATIONS.map((c) => (
+                <option key={c} value={c}>
+                  {concentrationLabel(c)}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="ui-row" htmlFor="manual-family">
+            <span className="ui-row__main">Family</span>
+            <select id="manual-family" className="ui-field max-w-[50%]" value={manual.family} onChange={(e) => setManual({ ...manual, family: e.target.value })}>
+              {FAMILIES.map((f) => (
+                <option key={f}>{f}</option>
+              ))}
+            </select>
+          </label>
+        </div>
+        <p className="ui-list-footer">Saved on this device. You can add a photo from the bottle page.</p>
+      </Sheet>
     </div>
   );
 }

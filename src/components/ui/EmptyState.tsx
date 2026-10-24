@@ -1,10 +1,7 @@
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { AmbientBackground } from '@/components/premium/AmbientBackground';
-import { BrandMark } from '@/components/premium/BrandMark';
-import { CyclingShimmerText, DEMO_LOADING_MESSAGES } from '@/components/ui/CyclingShimmerText';
-import { HowToGuide } from '@/components/ui/HowToGuide';
-import { FlaconPlaceholder } from '@/components/bottle/FlaconPlaceholder';
+import { popularLocal, type LocalFragrance } from '@/catalog/local';
+import { FragranceThumb } from '@/components/collection/FragranceThumb';
 
 interface EmptyStateProps {
   eyebrow?: string;
@@ -12,52 +9,41 @@ interface EmptyStateProps {
   description: string;
   action?: { label: string; to: string };
   secondary?: { label: string; onClick: () => void; loading?: boolean };
+  /** @deprecated kept for call-site compatibility */
   showGuide?: boolean;
 }
 
-export function EmptyState({
-  eyebrow,
-  title,
-  description,
-  action,
-  secondary,
-  showGuide = true,
-}: EmptyStateProps) {
+/** First-run / empty screen: real bottle trio, one clear action. */
+export function EmptyState({ eyebrow, title, description, action, secondary }: EmptyStateProps) {
   const navigate = useNavigate();
+  const [trio, setTrio] = useState<LocalFragrance[]>([]);
+
+  useEffect(() => {
+    void popularLocal(3).then(setTrio);
+  }, []);
 
   return (
-    <div className="relative min-h-[70dvh] flex flex-col items-center justify-center safe-pt safe-pb px-5 py-10 text-center overflow-x-hidden">
-      <AmbientBackground />
-      <div className="relative z-10 w-full max-w-sm">
-        <div className="mx-auto mb-6 w-24 h-36">
-          <FlaconPlaceholder brand="Scent" name="Cap" family="Fresh" />
-        </div>
-        <BrandMark className="mx-auto mb-6" />
-        {eyebrow && <p className="onboarding-brand">{eyebrow}</p>}
-        <h2 className="onboarding-title mt-3 px-1 break-words text-[clamp(1.65rem,6vw,2.2rem)]">{title}</h2>
-        <p className="text-[0.95rem] text-[var(--sc-text-soft)] mt-4 leading-relaxed max-w-[18rem] mx-auto px-1 tracking-tight">
-          {description}
-        </p>
-        <div className="flex flex-col gap-3 mt-8">
-          {action && (
-            <Button size="lg" className="w-full min-w-0 btn-glow" haptic="medium" onClick={() => navigate(action.to)}>
-              {action.label}
-            </Button>
-          )}
-          {secondary && (
-            secondary.loading ? (
-              <CyclingShimmerText messages={DEMO_LOADING_MESSAGES} className="text-center py-3" />
-            ) : (
-              <Button variant="glass" size="lg" className="w-full min-w-0" onClick={secondary.onClick} haptic="light">
-                {secondary.label}
-              </Button>
-            )
-          )}
-        </div>
-        {showGuide && (
-          <div className="mt-10 rounded-2xl border border-[var(--color-border-subtle)] bg-[var(--color-surface)]/80 p-4 text-left">
-            <HowToGuide />
+    <div className="ui-page min-h-[80dvh] flex flex-col items-center justify-center text-center">
+      <div className="flex items-end justify-center gap-3 mb-8 h-40" aria-hidden>
+        {trio.map((f, i) => (
+          <div key={f.id} className={i === 1 ? 'w-32' : 'w-24 opacity-90'}>
+            <FragranceThumb fragrance={f} variant="plinth" size="md" className="!rounded-[20px] shadow-[var(--shadow-2)]" />
           </div>
+        ))}
+      </div>
+      {eyebrow && <p className="ui-eyebrow">{eyebrow}</p>}
+      <h1 className="ui-largetitle mt-1 max-w-md">{title}</h1>
+      <p className="ui-secondary mt-3 max-w-sm leading-relaxed">{description}</p>
+      <div className="w-full max-w-sm mt-8 space-y-2.5">
+        {action && (
+          <button type="button" className="ui-btn ui-btn--primary ui-btn--block" onClick={() => navigate(action.to)}>
+            {action.label}
+          </button>
+        )}
+        {secondary && (
+          <button type="button" className="ui-btn ui-btn--gray ui-btn--block" onClick={secondary.onClick} disabled={secondary.loading}>
+            {secondary.loading ? 'Preparing…' : secondary.label}
+          </button>
         )}
       </div>
     </div>

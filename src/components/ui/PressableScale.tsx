@@ -6,7 +6,8 @@ export function PressableLink({ className, onClick, children, ...props }: LinkPr
   return (
     <Link
       {...props}
-      className={cn('pressable pressable-link block', className)}
+      // 3.0 primitives (ui-*) own their display; legacy callers still get block.
+      className={cn('pressable pressable-link', !/\bui-/.test(String(className ?? '')) && 'block', className)}
       onClick={(e) => {
         hapticLight();
         onClick?.(e);

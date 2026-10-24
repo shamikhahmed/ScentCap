@@ -1,111 +1,12 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Check } from 'lucide-react';
-import { Button } from './button';
+import { useEffect, useState } from 'react';
+import { Star } from 'lucide-react';
+import { Sheet } from '@/components/kit';
 import { FragranceThumb } from '@/components/collection/FragranceThumb';
-import { hapticSelection } from '@/lib/premium/haptics';
-import { MODAL_SPRING, SPRING_PRESS } from '@/lib/premium/motion';
-import { scrollInputIntoView } from '@/hooks/useKeyboardInset';
+import { hapticSelection, hapticSuccess } from '@/lib/premium/haptics';
 
-function WearRatingForm({
-  fragranceName,
-  catalogImage,
-  onSubmit,
-  onSkip,
-  initial,
-  editMode,
-}: {
-  fragranceName: string;
-  catalogImage?: string | null;
-  onSubmit: (rating: number, compliment: boolean, notes?: string) => void;
-  onSkip: () => void;
-  initial?: { rating?: number; compliment?: boolean; notes?: string };
-  editMode?: boolean;
-}) {
-  const [rating, setRating] = useState(initial?.rating ?? 4);
-  const [compliment, setCompliment] = useState(initial?.compliment ?? false);
-  const [notes, setNotes] = useState(initial?.notes ?? '');
+const RATING_WORDS = ['', 'Not for me', 'It was okay', 'Nice', 'Loved it', 'Perfect'];
 
-  return (
-    <>
-      {catalogImage && (
-        <div className="flex justify-center">
-          <FragranceThumb name={fragranceName} catalogImage={catalogImage} size="md" className="w-24" />
-        </div>
-      )}
-      <p className="font-semibold text-center">{editMode ? `Edit wear — ${fragranceName}` : `How was ${fragranceName}?`}</p>
-      <div className="flex gap-2 justify-center">
-        {[1, 2, 3, 4, 5].map((n) => (
-          <motion.button
-            key={n}
-            type="button"
-            whileTap={{ scale: 0.9 }}
-            transition={SPRING_PRESS}
-            onClick={() => {
-              hapticSelection();
-              setRating(n);
-            }}
-            className={`text-2xl min-w-[44px] min-h-[44px] ${n <= rating ? 'opacity-100' : 'opacity-30'}`}
-            aria-label={`Rate ${n} stars`}
-          >
-            ★
-          </motion.button>
-        ))}
-      </div>
-      <motion.button
-        type="button"
-        aria-pressed={compliment}
-        whileTap={{ scale: 0.98 }}
-        transition={SPRING_PRESS}
-        onClick={() => {
-          hapticSelection();
-          setCompliment(!compliment);
-        }}
-        className={`w-full rounded-2xl py-3 text-sm font-medium border transition-colors min-h-[44px] ${
-          compliment ? 'border-[var(--color-accent)] bg-[var(--color-accent)]/15' : 'border-[var(--sc-border-soft)]'
-        }`}
-      >
-        <span className="inline-flex items-center justify-center gap-2">
-          <AnimatePresence mode="wait" initial={false}>
-            {compliment && (
-              <motion.span
-                key="c"
-                initial={{ opacity: 0, scale: 0.6 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.6 }}
-                transition={{ duration: 0.15 }}
-              >
-                <Check size={16} className="text-[var(--color-accent)]" />
-              </motion.span>
-            )}
-          </AnimatePresence>
-          {compliment ? 'Got a compliment' : 'Got a compliment?'}
-        </span>
-      </motion.button>
-      <label htmlFor="wear-notes" className="sr-only">Notes (optional)</label>
-      <textarea
-        id="wear-notes"
-        value={notes}
-        onChange={(e) => setNotes(e.target.value)}
-        onFocus={(e) => scrollInputIntoView(e.currentTarget)}
-        placeholder="Notes (optional)"
-        rows={3}
-        className="atelier-input rounded-2xl resize-none"
-      />
-      <div className="flex gap-3">
-        <Button variant="ghost" className="flex-1" onClick={onSkip}>{editMode ? 'Cancel' : 'Skip'}</Button>
-        <Button
-          className="flex-1"
-          haptic="success"
-          onClick={() => onSubmit(rating, compliment, notes.trim() || undefined)}
-        >
-          {editMode ? 'Update' : 'Save'}
-        </Button>
-      </div>
-    </>
-  );
-}
-
+/** Post-wear check-in: stars, compliment, optional note. */
 export function WearRatingModal({
   open,
   fragranceName,
@@ -123,33 +24,82 @@ export function WearRatingModal({
   initial?: { rating?: number; compliment?: boolean; notes?: string };
   editMode?: boolean;
 }) {
-  if (!open) return null;
+  const [rating, setRating] = useState(initial?.rating ?? 4);
+  const [compliment, setCompliment] = useState(initial?.compliment ?? false);
+  const [notes, setNotes] = useState(initial?.notes ?? '');
+
+  useEffect(() => {
+    if (!open) return;
+    setRating(initial?.rating ?? 4);
+    setCompliment(initial?.compliment ?? false);
+    setNotes(initial?.notes ?? '');
+  }, [open, initial?.rating, initial?.compliment, initial?.notes]);
+
+  const save = () => {
+    hapticSuccess();
+    onSubmit(rating, compliment, notes.trim() || undefined);
+  };
 
   return (
-    <AnimatePresence>
-      <motion.div
-        className="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-black/60 p-4 pb-[max(1rem,env(safe-area-inset-bottom))]"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={onSkip}
-      >
-        <motion.div
-          className="glass-premium rounded-3xl p-6 w-full max-w-md space-y-4 border border-[var(--glass-border)]"
-          {...MODAL_SPRING}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <WearRatingForm
-            key={`${fragranceName}-${editMode ? 'edit' : 'rate'}-${initial?.rating ?? ''}`}
-            fragranceName={fragranceName}
-            catalogImage={catalogImage}
-            onSubmit={onSubmit}
-            onSkip={onSkip}
-            initial={initial}
-            editMode={editMode}
+    <Sheet
+      open={open}
+      title={editMode ? 'Edit wear' : 'How did it wear?'}
+      onClose={onSkip}
+      labelledBy="wear-rating-title"
+      done={{ label: editMode ? 'Update' : 'Save', onClick: save }}
+    >
+      <div className="flex items-center gap-4 mb-5">
+        {catalogImage && (
+          <div className="w-16 shrink-0">
+            <FragranceThumb catalogImage={catalogImage} name={fragranceName} variant="plinth" size="sm" className="!rounded-[12px]" />
+          </div>
+        )}
+        <p className="serif text-[var(--t-title3)] leading-tight">{fragranceName}</p>
+      </div>
+
+      <div className="ui-card text-center">
+        <div className="flex justify-center gap-1" role="radiogroup" aria-label="Rating">
+          {[1, 2, 3, 4, 5].map((n) => (
+            <button
+              key={n}
+              type="button"
+              role="radio"
+              aria-checked={rating === n}
+              aria-label={`${n} star${n > 1 ? 's' : ''}`}
+              className="w-11 h-11 grid place-items-center"
+              onClick={() => {
+                hapticSelection();
+                setRating(n);
+              }}
+            >
+              <Star size={30} className={n <= rating ? 'text-[var(--tint)]' : 'text-[var(--label-4)]'} fill={n <= rating ? 'currentColor' : 'none'} aria-hidden />
+            </button>
+          ))}
+        </div>
+        <p className="ui-footnote mt-1">{RATING_WORDS[rating]}</p>
+      </div>
+
+      <div className="ui-list mt-4">
+        <label className="ui-row cursor-pointer">
+          <span className="ui-row__main">Someone complimented it</span>
+          <input type="checkbox" className="ui-switch" checked={compliment} onChange={(e) => setCompliment(e.target.checked)} />
+        </label>
+        <label className="ui-row" htmlFor="wear-notes">
+          <span className="sr-only">Notes</span>
+          <textarea
+            id="wear-notes"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Add a note — occasion, how long it lasted…"
+            rows={3}
+            className="ui-field ui-field--left resize-none py-1"
           />
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
+        </label>
+      </div>
+
+      <button type="button" className="ui-btn ui-btn--primary ui-btn--block mt-5" onClick={save}>
+        {editMode ? 'Update' : 'Save to diary'}
+      </button>
+    </Sheet>
   );
 }

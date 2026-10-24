@@ -1,4 +1,5 @@
 import type { AdvisorResult, Fragrance } from '@/types';
+import { bottleUrl } from '@/catalog/local';
 import { SC_SHEET_LIGHT, SC_SHEET_DARK, SC_INK_LIGHT, SC_INK_DARK, SC_MUTED_LIGHT, SC_MUTED_DARK, SC_TERTIARY_LIGHT, SC_TERTIARY_DARK } from '@/design/tokens';
 
 export interface ShareCardInput {
@@ -117,7 +118,7 @@ export async function exportShareCardPng(
   let centerY = format === 'story' ? h * 0.38 : h * 0.42;
 
   if (input.imageUrl) {
-    const img = await loadShareImage(input.imageUrl);
+    const img = await loadShareImage(bottleUrl(input.imageUrl));
     if (img) {
       const maxH = format === 'square' ? 300 : 340;
       const maxW = w - 200;

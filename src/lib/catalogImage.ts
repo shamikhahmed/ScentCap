@@ -1,6 +1,7 @@
 /** Catalog art that should be replaced by live Fraganty product photos. */
 export function isPlaceholderCatalogImage(image?: string | null): boolean {
   if (!image) return true;
+  if (image.startsWith('bottles/')) return false;
   if (image.includes('perfume-nobg')) return true;
   if (image.startsWith('data:image/svg')) return true;
   if (image.startsWith('data:image/') && image.length < 80) return true;

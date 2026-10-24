@@ -76,12 +76,12 @@ function Guard({ children }: { children: React.ReactNode }) {
 }
 
 const PAGE_TITLES: Record<string, string> = {
-  '/': 'Home',
+  '/': 'Today',
   '/collection': 'Collection',
   '/add': 'Add Fragrance',
   '/advisor': 'Advisor',
-  '/calendar': 'Calendar',
-  '/analytics': 'Analytics',
+  '/calendar': 'Diary',
+  '/analytics': 'Insights',
   '/settings': 'Settings',
   '/layering': 'Layering Lab',
   '/travel': 'Travel Kit',
@@ -91,6 +91,8 @@ const PAGE_TITLES: Record<string, string> = {
 function TitleSync() {
   const { pathname } = useLocation();
   useEffect(() => {
+    // Detail pages set their own title (fragrance name) once loaded.
+    if (pathname.startsWith('/fragrance/')) return;
     const label =
       PAGE_TITLES[pathname] ??
       (pathname

@@ -112,8 +112,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const isLight =
         prefs.theme === 'light' ? true : prefs.theme === 'dark' ? false : mq.matches;
       document.body.classList.toggle('light', isLight);
-      const meta = document.querySelector('meta[name="theme-color"]');
-      if (meta) meta.setAttribute('content', isLight ? SC_META_LIGHT : SC_META_DARK);
+      document.querySelectorAll('meta[name="theme-color"]').forEach((meta) =>
+        meta.setAttribute('content', isLight ? SC_META_LIGHT : SC_META_DARK),
+      );
     };
     apply();
     mq.addEventListener('change', apply);

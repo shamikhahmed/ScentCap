@@ -9,6 +9,7 @@ import {
 } from '@/db';
 import { DEMO_BOTTLE_META, DEMO_FRAGRANCES } from '@/data/demoFragrances';
 import { markDemoSession } from '@/lib/demoMode';
+import { withLocalBottle } from '@/catalog/local';
 import { todayKey, uid } from '@/lib/utils';
 import type { CollectionItem, Preferences, UserProfile, WearRecord } from '@/types';
 
@@ -52,7 +53,8 @@ export async function loadDemoData(): Promise<void> {
   markDemoSession();
 
   const bySlug = new Map(DEMO_FRAGRANCES.map((f) => [f.catalogSlug!, f]));
-  await Promise.all(DEMO_FRAGRANCES.map((f) => putFragrance(f)));
+  // Attach bundled bottle photos (offline catalog) — falls back to baked SVG art if unavailable.
+  await Promise.all(DEMO_FRAGRANCES.map(async (f) => putFragrance(await withLocalBottle(f))));
 
   const now = new Date().toISOString();
   const collection: CollectionItem[] = [];
@@ -117,7 +119,7 @@ export async function loadDemoData(): Promise<void> {
   });
 
   await Promise.all(buildWearHistory(collection).map((record) => logWear(record)));
-  // No Fraganty enrich on demo — baked SVG art is intentional offline wardrobe.
+  // No Fraganty enrich on demo — bundled catalog photos only (offline).
 }
 
 export async function exitDemo(): Promise<void> {

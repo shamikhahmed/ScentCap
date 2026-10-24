@@ -14,8 +14,8 @@ export const SC_SHEET_LIGHT = '#ffffff';
 export const SC_SHEET_DARK = '#1c1c1e';
 export const SC_ACCENT = '#0a5f52';
 export const SC_ACCENT_BRIGHT = '#45c4ad';
-export const SC_META_LIGHT = '#e6eaee';
-export const SC_META_DARK = '#0b0e12';
+export const SC_META_LIGHT = '#f2f2f7';
+export const SC_META_DARK = '#000000';
 
 export const FAMILY_COLORS: Record<string, string> = {
   Fresh: '#5eead4',

@@ -1,24 +1,25 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Briefcase, MapPin, Navigation } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { ChevronLeft, LayoutGrid, Lock, MapPin, Navigation, Sparkles } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 import { loadDemoData } from '@/services/demo';
 import { geocodeCity, requestLocationDetailed, weatherUnavailableMessage, type CityLocation } from '@/services/weather';
+import { loadLocalCatalog, popularLocal, type LocalFragrance } from '@/catalog/local';
+import { FragranceThumb } from '@/components/collection/FragranceThumb';
 import type { UserProfile } from '@/types';
-import { AmbientBackground } from '@/components/premium/AmbientBackground';
-import { CyclingShimmerText, DEMO_LOADING_MESSAGES } from '@/components/ui/CyclingShimmerText';
-import { HowToGuide } from '@/components/ui/HowToGuide';
 import { hapticSelection, hapticSuccess } from '@/lib/premium/haptics';
 
-const STEPS = [
-  { key: 'workContext', title: 'Where do you spend most days?', options: [
-    { v: 'office', l: 'Office daily' }, { v: 'hybrid', l: 'Hybrid' }, { v: 'wfh', l: 'Work from home' }, { v: 'student', l: 'Student' }, { v: 'other', l: 'Other' },
-  ]},
-  { key: 'projectionComfort', title: 'How bold should scents be?', options: [
-    { v: 'skin_scent', l: 'Skin scent only' }, { v: 'moderate', l: 'Moderate' }, { v: 'bold', l: 'I like being noticed' },
-  ]},
+const WORK = [
+  { v: 'office', l: 'Office' },
+  { v: 'hybrid', l: 'Hybrid' },
+  { v: 'wfh', l: 'Home' },
+  { v: 'student', l: 'Campus' },
+] as const;
+
+const BOLDNESS = [
+  { v: 'skin_scent', l: 'Close to skin', d: 'Only people near you notice' },
+  { v: 'moderate', l: 'Balanced', d: 'Noticeable, never loud' },
+  { v: 'bold', l: 'Make an entrance', d: 'Projection is welcome' },
 ] as const;
 
 const DEFAULT_PROFILE: Omit<UserProfile, 'lat' | 'lon' | 'cityLabel'> = {
@@ -36,80 +37,66 @@ const DEFAULT_PROFILE: Omit<UserProfile, 'lat' | 'lon' | 'cityLabel'> = {
 export function Onboarding() {
   const { setProfile, setPrefs, prefs, refresh } = useApp();
   const navigate = useNavigate();
-  const [welcome, setWelcome] = useState(true);
-  const [step, setStep] = useState(0);
-  const [data, setData] = useState<Partial<UserProfile>>({});
+  const [step, setStep] = useState<0 | 1 | 2>(0);
+  const [data, setData] = useState<Partial<UserProfile>>({ workContext: 'office', projectionComfort: 'moderate' });
   const [officeSafe, setOfficeSafe] = useState(true);
-  const [showOfficeSafe, setShowOfficeSafe] = useState(false);
-  const [showLocation, setShowLocation] = useState(false);
   const [cityQuery, setCityQuery] = useState('');
   const [locationError, setLocationError] = useState<string | null>(null);
   const [pendingLocation, setPendingLocation] = useState<CityLocation | null>(null);
   const [loadingDemo, setLoadingDemo] = useState(false);
   const [demoError, setDemoError] = useState<string | null>(null);
   const [finishing, setFinishing] = useState(false);
+  const [locating, setLocating] = useState(false);
+  const [hero, setHero] = useState<LocalFragrance[]>([]);
 
-  const current = STEPS[step];
+  const [catalogSize, setCatalogSize] = useState(0);
 
-  const finishOnboarding = async (
-    overrides: Partial<UserProfile> = {},
-    enableOfficeSafe?: boolean,
-    location?: CityLocation | null,
-  ) => {
+  useEffect(() => {
+    void popularLocal(5).then(setHero);
+    void loadLocalCatalog().then((idx) => setCatalogSize(idx.list.length));
+  }, []);
+
+  const finish = async (location?: CityLocation | null) => {
     setFinishing(true);
     try {
-      const profile: UserProfile = {
+      await setProfile({
         ...DEFAULT_PROFILE,
         ...data,
-        ...overrides,
         lat: location?.lat,
         lon: location?.lon,
         cityLabel: location?.label,
         onboardingComplete: true,
-      };
-      await setProfile(profile);
-      if (enableOfficeSafe != null) {
-        await setPrefs({ ...prefs, officeSafeMode: enableOfficeSafe });
-      }
+      });
+      await setPrefs({ ...prefs, officeSafeMode: officeSafe });
       hapticSuccess();
-      navigate('/');
+      navigate('/add', { replace: true });
     } finally {
       setFinishing(false);
     }
   };
 
-  const resolveCity = async (): Promise<CityLocation | null> => {
-    if (pendingLocation) return pendingLocation;
-    if (!cityQuery.trim()) return null;
-    const loc = await geocodeCity(cityQuery);
+  const continueFromCity = async () => {
+    if (!cityQuery.trim()) return finish(pendingLocation);
+    const loc = pendingLocation ?? (await geocodeCity(cityQuery));
     if (!loc) {
-      setLocationError('City not found — try “Paris, France” or “Austin, TX”.');
-      return null;
+      setLocationError('We couldn’t find that city. Try “Paris, France” or “Austin, TX”.');
+      return;
     }
     setPendingLocation(loc);
-    setLocationError(null);
-    return loc;
+    await finish(loc);
   };
 
-  const continueFromLocation = async () => {
-    const loc = cityQuery.trim() ? await resolveCity() : pendingLocation;
-    if (cityQuery.trim() && !loc) return;
-    if (loc) setPendingLocation(loc);
-    setShowLocation(false);
-    setShowOfficeSafe(true);
-  };
-
-  const useGpsOnboarding = async () => {
+  const locateMe = async () => {
     setLocationError(null);
+    setLocating(true);
     const result = await requestLocationDetailed();
+    setLocating(false);
     if (!result.ok) {
       setLocationError(weatherUnavailableMessage(result.reason) ?? 'Enter your city instead.');
       return;
     }
     setPendingLocation(result.location);
-    setCityQuery('');
-    setShowLocation(false);
-    setShowOfficeSafe(true);
+    setCityQuery(result.location.label);
   };
 
   const tryDemo = async () => {
@@ -121,201 +108,201 @@ export function Onboarding() {
       navigate('/', { replace: true });
     } catch (err) {
       console.error('[ScentCap] Demo load failed', err);
-      setDemoError('Could not load demo collection. Try again or add ?demo=1 to the URL.');
+      setDemoError('The sample wardrobe didn’t load. Please try again.');
     } finally {
       setLoadingDemo(false);
     }
   };
 
-  const pick = async (value: string) => {
-    const key = current.key;
-    const next = { ...data, [key]: value };
-    setData(next);
-    if (step < STEPS.length - 1) {
-      setStep(step + 1);
-      return;
-    }
-    setShowLocation(true);
-  };
-
-  const shell = (children: React.ReactNode) => (
-    <div className="relative min-h-dvh flex flex-col safe-pt safe-pb px-6">
-      <AmbientBackground />
-      <div className="flex-1 flex flex-col justify-center max-w-md mx-auto w-full relative z-10">
-        {children}
+  const progress = (
+    <div className="flex items-center justify-between mb-6">
+      <button
+        type="button"
+        className="ui-btn ui-btn--plain !font-normal !px-1"
+        onClick={() => setStep((s) => (s > 0 ? ((s - 1) as 0 | 1) : 0))}
+      >
+        <ChevronLeft size={22} aria-hidden /> Back
+      </button>
+      <div className="flex gap-1.5" aria-label={`Step ${step} of 2`}>
+        {[1, 2].map((i) => (
+          <span key={i} className={`h-1.5 rounded-full transition-all ${i <= step ? 'w-6 bg-[var(--tint)]' : 'w-1.5 bg-[var(--label-4)]'}`} />
+        ))}
       </div>
+      <button type="button" className="ui-btn ui-btn--plain !font-normal !px-1" onClick={() => void finish(pendingLocation)} disabled={finishing}>
+        Skip
+      </button>
     </div>
   );
 
-  if (welcome) {
-    return shell(
-      <motion.div
-        className="text-center onboarding-splash"
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-      >
-        <div className="onboarding-mist" aria-hidden />
-        <div className="relative z-10">
-          <div className="onboarding-flacon" aria-hidden>
-            <div className="onboarding-flacon-mist" />
-            <div className="onboarding-flacon-neck" />
-            <div className="onboarding-flacon-body" />
-          </div>
-          <p className="onboarding-brand">ScentCap</p>
-          <h1 className="onboarding-title mt-3">Your scent wardrobe</h1>
-          <p className="text-[0.95rem] text-[var(--sc-text-soft)] mt-4 max-w-[18rem] mx-auto leading-relaxed tracking-tight">
-            Add bottles. Get a daily wear pick. Private on this device.
-          </p>
-          <div className="mt-8 rounded-[18px] border border-[var(--sc-border-soft)] bg-[var(--sc-panel)] p-4 text-left shadow-[var(--sc-shadow-sm)]">
-            <HowToGuide />
-          </div>
-          <div className="flex flex-col gap-3 mt-8">
-            <Button size="lg" className="w-full btn-glow" onClick={tryDemo} disabled={loadingDemo} haptic="medium">
-              {loadingDemo ? 'Loading…' : 'Try demo collection'}
-            </Button>
-            {loadingDemo && <CyclingShimmerText messages={DEMO_LOADING_MESSAGES} className="text-center" />}
-            {demoError && <p className="text-xs text-[var(--color-accent)] mt-2 text-center">{demoError}</p>}
-            <Button size="lg" variant="glass" className="w-full" onClick={() => setWelcome(false)}>
-              Quick setup
-            </Button>
-            <button
-              type="button"
-              className="text-sm text-[var(--color-text-tertiary)] py-2 hover:text-[var(--color-accent)] transition-colors"
-              onClick={() => finishOnboarding()}
-              disabled={finishing}
-            >
-              {finishing ? 'Starting…' : 'Skip — use defaults'}
-            </button>
-          </div>
-          <p className="text-xs text-[var(--color-text-tertiary)] mt-6 leading-relaxed">
-            Free · No account · Offline wardrobe
-          </p>
-        </div>
-      </motion.div>,
-    );
-  }
+  return (
+    <div className="min-h-dvh bg-[var(--bg)] flex flex-col">
+      <div className="flex-1 w-full max-w-md mx-auto px-5 pt-[max(16px,env(safe-area-inset-top))] pb-[max(24px,env(safe-area-inset-bottom))] flex flex-col">
+        {step === 0 && (
+          <div className="flex-1 flex flex-col ui-rise">
+            <div className="relative h-[300px] mt-4 mb-8" aria-hidden>
+              {hero.slice(0, 5).map((f, i) => {
+                const pos = [
+                  'left-1/2 -translate-x-1/2 top-4 w-[46%] z-30',
+                  'left-[2%] top-16 w-[34%] z-20 -rotate-6',
+                  'right-[2%] top-16 w-[34%] z-20 rotate-6',
+                  'left-[16%] top-[150px] w-[26%] z-10 -rotate-3 opacity-90',
+                  'right-[16%] top-[150px] w-[26%] z-10 rotate-3 opacity-90',
+                ][i];
+                return (
+                  <div key={f.id} className={`absolute ${pos} drop-shadow-[0_18px_30px_rgba(0,0,0,0.12)]`}>
+                    <FragranceThumb fragrance={f} variant="plinth" size={i === 0 ? 'hero' : 'md'} className="!rounded-[22px]" />
+                  </div>
+                );
+              })}
+            </div>
 
-  if (showOfficeSafe) {
-    return shell(
-      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
-        <div className="h-1 bg-[var(--color-border-subtle)] rounded-full mb-10 overflow-hidden">
-          <div className="h-full w-full bg-[var(--color-accent)] rounded-full" />
-        </div>
-        <div className="flex items-center gap-3 mb-5">
-          <div className="w-12 h-12 rounded-2xl bg-[var(--color-accent-muted)] flex items-center justify-center">
-            <Briefcase size={22} className="text-[var(--color-accent)]" />
-          </div>
-          <h2 className="text-title">Office Safe</h2>
-        </div>
-        <p className="text-subhead text-[var(--color-text-secondary)] leading-relaxed mb-6">
-          Work-day picks stay low-projection and desk-friendly — no surprises in the conference room.
-        </p>
-        <button
-          type="button"
-          onClick={() => { hapticSelection(); setOfficeSafe((v) => !v); }}
-          className={`w-full rounded-2xl p-5 text-left transition-all pressable ${
-            officeSafe ? 'glass-premium border-[var(--color-accent)]/40' : 'glass-premium-subtle'
-          }`}
-        >
-          <p className="font-semibold">{officeSafe ? 'Office Safe is on' : 'Office Safe is off'}</p>
-          <p className="text-sm text-[var(--color-text-secondary)] mt-1">
-            {officeSafe ? 'Filtering to office-friendly scents' : 'All scents eligible for work'}
-          </p>
-        </button>
-        <Button className="w-full mt-6 btn-glow" size="lg" onClick={() => finishOnboarding(data, officeSafe, pendingLocation)} disabled={finishing}>
-          {finishing ? 'Starting…' : 'Get started'}
-        </Button>
-        <Button variant="ghost" className="w-full mt-2" onClick={() => { setShowOfficeSafe(false); setShowLocation(true); }}>Back</Button>
-      </motion.div>,
-    );
-  }
+            <h1 className="ui-largetitle text-center">Your fragrance wardrobe, beautifully kept.</h1>
+            <div className="ui-list mt-7">
+              {[
+                { icon: Sparkles, t: 'A pick for every day', d: 'Matched to the weather, your plans and your mood.' },
+                { icon: LayoutGrid, t: catalogSize > 100 ? `${(Math.floor(catalogSize / 100) * 100).toLocaleString()}+ real bottles` : 'Real bottle photos', d: 'Search and add what you own in a tap.' },
+                { icon: Lock, t: 'Private by design', d: 'No account. Everything stays on this device.' },
+              ].map(({ icon: Icon, t, d }) => (
+                <div key={t} className="ui-row !items-start !py-3">
+                  <Icon size={22} className="text-[var(--tint)] shrink-0 mt-0.5" aria-hidden />
+                  <div className="min-w-0">
+                    <p className="font-semibold">{t}</p>
+                    <p className="text-[var(--t-subhead)] text-[var(--label-2)]">{d}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
 
-  if (showLocation) {
-    return shell(
-      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
-        <div className="h-1 bg-[var(--color-border-subtle)] rounded-full mb-10 overflow-hidden">
-          <div className="h-full w-2/3 bg-[var(--color-accent)] rounded-full" />
-        </div>
-        <div className="flex items-center gap-3 mb-5">
-          <div className="w-12 h-12 rounded-2xl bg-[var(--color-accent-muted)] flex items-center justify-center">
-            <MapPin size={22} className="text-[var(--color-accent)]" />
+            <div className="mt-auto pt-8 space-y-2.5">
+              <button type="button" className="ui-btn ui-btn--primary ui-btn--block" onClick={() => setStep(1)}>
+                Get started
+              </button>
+              <button type="button" className="ui-btn ui-btn--gray ui-btn--block" onClick={() => void tryDemo()} disabled={loadingDemo}>
+                {loadingDemo ? 'Preparing sample…' : 'Explore a sample wardrobe'}
+              </button>
+              {demoError && (
+                <p className="ui-footnote text-center !text-[var(--danger)]" role="alert">
+                  {demoError}
+                </p>
+              )}
+              <p className="ui-footnote text-center pt-2">Free · No account · Works offline</p>
+            </div>
           </div>
-          <h2 className="text-title">Your city</h2>
-        </div>
-        <p className="text-subhead text-[var(--color-text-secondary)] leading-relaxed mb-6">
-          Weather-aware picks without sharing GPS. Enter a city and we&apos;ll fetch live weather automatically.
-        </p>
-        <div className="relative">
-          <MapPin size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-text-tertiary)]" />
-          <input
-            className="atelier-input rounded-2xl !pl-11 pr-4 py-3.5"
-            placeholder="e.g. London, Tokyo, Austin TX"
-            value={cityQuery}
-            onChange={(e) => {
-              setCityQuery(e.target.value);
-              setLocationError(null);
-              setPendingLocation(null);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') void continueFromLocation();
-            }}
-            autoComplete="address-level2"
-          />
-        </div>
-        {pendingLocation && (
-          <p className="text-xs text-[var(--color-accent)] mt-2">Found: {pendingLocation.label}</p>
         )}
-        {locationError && <p className="text-xs text-[var(--sc-warning)] mt-2" role="alert">{locationError}</p>}
-        <Button variant="ghost" className="w-full mt-4 gap-2" onClick={useGpsOnboarding}>
-          <Navigation size={16} />
-          Use my location
-        </Button>
-        <Button className="w-full mt-4 btn-glow" size="lg" onClick={() => void continueFromLocation()} disabled={finishing}>
-          Continue
-        </Button>
-        <Button variant="ghost" className="w-full mt-2" onClick={() => { setShowLocation(false); setShowOfficeSafe(true); }}>
-          Skip for now
-        </Button>
-        <Button variant="ghost" className="w-full mt-2" onClick={() => setShowLocation(false)}>Back</Button>
-      </motion.div>,
-    );
-  }
 
-  return shell(
-    <>
-      <p className="text-caption text-[var(--color-text-tertiary)] text-center mb-3">Setup</p>
-      <div className="h-1 bg-[var(--color-border-subtle)] rounded-full mb-10 overflow-hidden">
-        <motion.div
-          className="h-full bg-[var(--color-accent)] rounded-full"
-          animate={{ width: `${((step + 1) / (STEPS.length + 1)) * 100}%` }}
-          transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
-        />
-      </div>
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={step}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -20 }}
-          transition={{ duration: 0.3 }}
-        >
-          <h2 className="text-title mb-6">{current.title}</h2>
-          <div className="flex flex-col gap-2.5">
-            {current.options.map((o) => (
-              <Button key={o.v} variant="glass" className="w-full justify-start text-left !rounded-2xl" onClick={() => pick(o.v)} haptic="selection">
-                {o.l}
-              </Button>
-            ))}
+        {step === 1 && (
+          <div className="flex-1 flex flex-col ui-rise">
+            {progress}
+            <h1 className="ui-largetitle">About your days</h1>
+            <p className="ui-secondary mt-2">So picks fit where you’ll be wearing them.</p>
+
+            <p className="ui-list-header mt-7">Most days I’m at</p>
+            <div className="ui-segmented">
+              {WORK.map((o) => (
+                <button
+                  key={o.v}
+                  type="button"
+                  aria-pressed={data.workContext === o.v}
+                  onClick={() => {
+                    hapticSelection();
+                    setData({ ...data, workContext: o.v });
+                    setOfficeSafe(o.v === 'office' || o.v === 'hybrid');
+                  }}
+                >
+                  {o.l}
+                </button>
+              ))}
+            </div>
+
+            <p className="ui-list-header mt-7">I like my scent</p>
+            <div className="ui-list" role="radiogroup" aria-label="Projection preference">
+              {BOLDNESS.map((o) => (
+                <button
+                  key={o.v}
+                  type="button"
+                  role="radio"
+                  aria-checked={data.projectionComfort === o.v}
+                  className="ui-row"
+                  onClick={() => {
+                    hapticSelection();
+                    setData({ ...data, projectionComfort: o.v });
+                  }}
+                >
+                  <span className="ui-row__main">
+                    <span className="ui-row__title block">{o.l}</span>
+                    <span className="ui-row__sub block">{o.d}</span>
+                  </span>
+                  <span
+                    className={`w-[22px] h-[22px] rounded-full grid place-items-center shrink-0 ${data.projectionComfort === o.v ? 'bg-[var(--tint)]' : 'border-2 border-[var(--label-4)]'}`}
+                    aria-hidden
+                  >
+                    {data.projectionComfort === o.v && <span className="w-2 h-2 rounded-full bg-[var(--on-tint)]" />}
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            <div className="ui-list mt-7">
+              <label className="ui-row cursor-pointer">
+                <span className="ui-row__main">
+                  <span className="ui-row__title block">Office Safe</span>
+                  <span className="ui-row__sub block whitespace-normal">Keep work-day picks quiet and desk-friendly.</span>
+                </span>
+                <input type="checkbox" className="ui-switch" checked={officeSafe} onChange={(e) => setOfficeSafe(e.target.checked)} />
+              </label>
+            </div>
+
+            <div className="mt-auto pt-8">
+              <button type="button" className="ui-btn ui-btn--primary ui-btn--block" onClick={() => setStep(2)}>
+                Continue
+              </button>
+            </div>
           </div>
-        </motion.div>
-      </AnimatePresence>
-      <div className="flex gap-3 mt-10">
-        <Button variant="ghost" className="flex-1" onClick={() => (step > 0 ? setStep(step - 1) : setWelcome(true))}>Back</Button>
-        <Button variant="glass" className="flex-1" onClick={() => { setShowLocation(true); }} disabled={finishing}>
-          Skip
-        </Button>
+        )}
+
+        {step === 2 && (
+          <div className="flex-1 flex flex-col ui-rise">
+            {progress}
+            <h1 className="ui-largetitle">Your weather</h1>
+            <p className="ui-secondary mt-2">
+              Hot afternoons and cold evenings call for different scents. We only use your city to look up the forecast.
+            </p>
+
+            <label className="ui-search !bg-[var(--surface)] !min-h-[50px] mt-7 shadow-[var(--shadow-1)]">
+              <MapPin size={18} aria-hidden />
+              <span className="sr-only">City</span>
+              <input
+                placeholder="City, e.g. London or Austin, TX"
+                value={cityQuery}
+                autoComplete="address-level2"
+                enterKeyHint="go"
+                onChange={(e) => {
+                  setCityQuery(e.target.value);
+                  setLocationError(null);
+                  setPendingLocation(null);
+                }}
+                onKeyDown={(e) => e.key === 'Enter' && void continueFromCity()}
+              />
+            </label>
+            {pendingLocation && <p className="ui-footnote mt-2 px-1 !text-[var(--success)]">Found {pendingLocation.label}</p>}
+            {locationError && (
+              <p className="ui-footnote mt-2 px-1 !text-[var(--warning)]" role="alert">
+                {locationError}
+              </p>
+            )}
+            <button type="button" className="ui-btn ui-btn--plain self-start mt-2 !px-1" onClick={() => void locateMe()} disabled={locating}>
+              <Navigation size={17} aria-hidden /> {locating ? 'Locating…' : 'Use my current location'}
+            </button>
+
+            <div className="mt-auto pt-8 space-y-2.5">
+              <button type="button" className="ui-btn ui-btn--primary ui-btn--block" onClick={() => void continueFromCity()} disabled={finishing}>
+                {finishing ? 'Setting up…' : 'Add my first bottles'}
+              </button>
+              <p className="ui-footnote text-center">You can change this any time in Settings.</p>
+            </div>
+          </div>
+        )}
       </div>
-    </>,
+    </div>
   );
 }
