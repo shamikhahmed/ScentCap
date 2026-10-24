@@ -45,32 +45,6 @@
       "h": 1640
     },
     {
-      "id": "insights-analytics-demo",
-      "group": "Insights",
-      "screen": "Analytics",
-      "state": "demo",
-      "theme": "dark",
-      "device": "ipad",
-      "file": "dark/ipad/insights--analytics--demo.webp",
-      "route": "/analytics?demo=1",
-      "caption": "Rotation and spend insights.",
-      "w": 2360,
-      "h": 1640
-    },
-    {
-      "id": "insights-calendar-demo",
-      "group": "Insights",
-      "screen": "Calendar",
-      "state": "demo",
-      "theme": "dark",
-      "device": "ipad",
-      "file": "dark/ipad/insights--calendar--demo.webp",
-      "route": "/calendar?demo=1",
-      "caption": "Wear history on a calendar.",
-      "w": 2360,
-      "h": 1640
-    },
-    {
       "id": "insights-diary-demo",
       "group": "Insights",
       "screen": "Diary",
@@ -197,32 +171,6 @@
       "file": "dark/iphone/insights--advisor--demo.webp",
       "route": "/advisor?demo=1",
       "caption": "Fine-tune a pick for any occasion.",
-      "w": 1170,
-      "h": 2532
-    },
-    {
-      "id": "insights-analytics-demo",
-      "group": "Insights",
-      "screen": "Analytics",
-      "state": "demo",
-      "theme": "dark",
-      "device": "iphone",
-      "file": "dark/iphone/insights--analytics--demo.webp",
-      "route": "/analytics?demo=1",
-      "caption": "Rotation and spend insights.",
-      "w": 1170,
-      "h": 2532
-    },
-    {
-      "id": "insights-calendar-demo",
-      "group": "Insights",
-      "screen": "Calendar",
-      "state": "demo",
-      "theme": "dark",
-      "device": "iphone",
-      "file": "dark/iphone/insights--calendar--demo.webp",
-      "route": "/calendar?demo=1",
-      "caption": "Wear history on a calendar.",
       "w": 1170,
       "h": 2532
     },
@@ -357,32 +305,6 @@
       "h": 1800
     },
     {
-      "id": "insights-analytics-demo",
-      "group": "Insights",
-      "screen": "Analytics",
-      "state": "demo",
-      "theme": "dark",
-      "device": "mac",
-      "file": "dark/mac/insights--analytics--demo.webp",
-      "route": "/analytics?demo=1",
-      "caption": "Rotation and spend insights.",
-      "w": 2880,
-      "h": 1800
-    },
-    {
-      "id": "insights-calendar-demo",
-      "group": "Insights",
-      "screen": "Calendar",
-      "state": "demo",
-      "theme": "dark",
-      "device": "mac",
-      "file": "dark/mac/insights--calendar--demo.webp",
-      "route": "/calendar?demo=1",
-      "caption": "Wear history on a calendar.",
-      "w": 2880,
-      "h": 1800
-    },
-    {
       "id": "insights-diary-demo",
       "group": "Insights",
       "screen": "Diary",
@@ -509,32 +431,6 @@
       "file": "light/ipad/insights--advisor--demo.webp",
       "route": "/advisor?demo=1",
       "caption": "Fine-tune a pick for any occasion.",
-      "w": 2360,
-      "h": 1640
-    },
-    {
-      "id": "insights-analytics-demo",
-      "group": "Insights",
-      "screen": "Analytics",
-      "state": "demo",
-      "theme": "light",
-      "device": "ipad",
-      "file": "light/ipad/insights--analytics--demo.webp",
-      "route": "/analytics?demo=1",
-      "caption": "Rotation and spend insights.",
-      "w": 2360,
-      "h": 1640
-    },
-    {
-      "id": "insights-calendar-demo",
-      "group": "Insights",
-      "screen": "Calendar",
-      "state": "demo",
-      "theme": "light",
-      "device": "ipad",
-      "file": "light/ipad/insights--calendar--demo.webp",
-      "route": "/calendar?demo=1",
-      "caption": "Wear history on a calendar.",
       "w": 2360,
       "h": 1640
     },
@@ -669,32 +565,6 @@
       "h": 2532
     },
     {
-      "id": "insights-analytics-demo",
-      "group": "Insights",
-      "screen": "Analytics",
-      "state": "demo",
-      "theme": "light",
-      "device": "iphone",
-      "file": "light/iphone/insights--analytics--demo.webp",
-      "route": "/analytics?demo=1",
-      "caption": "Rotation and spend insights.",
-      "w": 1170,
-      "h": 2532
-    },
-    {
-      "id": "insights-calendar-demo",
-      "group": "Insights",
-      "screen": "Calendar",
-      "state": "demo",
-      "theme": "light",
-      "device": "iphone",
-      "file": "light/iphone/insights--calendar--demo.webp",
-      "route": "/calendar?demo=1",
-      "caption": "Wear history on a calendar.",
-      "w": 1170,
-      "h": 2532
-    },
-    {
       "id": "insights-diary-demo",
       "group": "Insights",
       "screen": "Diary",
@@ -821,32 +691,6 @@
       "file": "light/mac/insights--advisor--demo.webp",
       "route": "/advisor?demo=1",
       "caption": "Fine-tune a pick for any occasion.",
-      "w": 2880,
-      "h": 1800
-    },
-    {
-      "id": "insights-analytics-demo",
-      "group": "Insights",
-      "screen": "Analytics",
-      "state": "demo",
-      "theme": "light",
-      "device": "mac",
-      "file": "light/mac/insights--analytics--demo.webp",
-      "route": "/analytics?demo=1",
-      "caption": "Rotation and spend insights.",
-      "w": 2880,
-      "h": 1800
-    },
-    {
-      "id": "insights-calendar-demo",
-      "group": "Insights",
-      "screen": "Calendar",
-      "state": "demo",
-      "theme": "light",
-      "device": "mac",
-      "file": "light/mac/insights--calendar--demo.webp",
-      "route": "/calendar?demo=1",
-      "caption": "Wear history on a calendar.",
       "w": 2880,
       "h": 1800
     },

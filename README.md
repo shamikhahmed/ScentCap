@@ -1,25 +1,24 @@
-# ScentCap — your fragrance collection
+# ScentCap — your fragrance wardrobe, beautifully kept
 
-**Version:** 2.2.1
-Offline-first PWA for your fragrance wardrobe — weather-aware Today picks, layering, wear journal, and travel kit. All on device.
+**Version:** 3.0.0
+Add the bottles you own in a tap from 1,325 real fragrances, get a daily pick for the weather and your plans, and keep a wear diary. Apple HIG design, private, works offline.
 
-**Live demo:** [https://shamikhahmed.github.io/ScentCap/](https://shamikhahmed.github.io/ScentCap/)
+**Live:** [shamikhahmed.github.io/ScentCap](https://shamikhahmed.github.io/ScentCap/) · [Sample wardrobe](https://shamikhahmed.github.io/ScentCap/?demo=1)
 
-**Marketing:** [Landing](https://shamikhahmed.github.io/ScentCap/landing.html) · [Pitch](https://shamikhahmed.github.io/ScentCap/pitch.html) · [Presentation](https://shamikhahmed.github.io/ScentCap/presentation.html) · [Privacy](https://shamikhahmed.github.io/ScentCap/privacy.html) · [Terms](https://shamikhahmed.github.io/ScentCap/terms.html) · [Support](https://shamikhahmed.github.io/ScentCap/support.html)
+**Site:** [Landing](https://shamikhahmed.github.io/ScentCap/landing.html) · [About](https://shamikhahmed.github.io/ScentCap/pitch.html) · [Presentation](https://shamikhahmed.github.io/ScentCap/presentation.html) · [Privacy](https://shamikhahmed.github.io/ScentCap/privacy.html) · [Terms](https://shamikhahmed.github.io/ScentCap/terms.html) · [Support](https://shamikhahmed.github.io/ScentCap/support.html)
 
-**Pre-launch:** See [docs/PRE-LAUNCH.md](docs/PRE-LAUNCH.md) for App Store day-1 checklist.
+![Today](docs/store/screenshots/iphone-6.5/01-today.png)
 
 ## Features
 
-- **Today dashboard** — weather context, daily advisor pick, wear logging, occasion presets
-- **Wardrobe** — bottle catalog with concentration, level tracking, favorites, signature scent
-- **Smart Advisor** — rules-based recommendations (office, date, weekend, gala) — no external API
-- **Layering Lab** — experiment with base + top fragrance combos
-- **Calendar & Analytics** — wear heatmap, rotation health, family breakdown charts
-- **Travel Kit** — pack decants and travel-friendly bottles for trips
-- **Demo mode** — 12 sample bottles and 30 days of wear history to explore instantly
-- **IndexedDB** persistence via `idb`
-- **PWA** with offline support; optional Open-Meteo weather when location is granted
+- **Today** — one pick scored on occasion, weather, dress, mood and rotation, with a plain-language reason and spray guidance; Office / Date / Weekend / Gala in one tap
+- **Add** — instant offline search across 1,325 real fragrances with real bottle photos; manual add fallback
+- **Collection & detail** — product grid, notes pyramid, best-for meters, bottle level, signature roles, purchase details, wear history
+- **Diary & Insights** — one-tap wear check-ins, compliments, streaks, cost per wear, rotation health
+- **Layering lab & Travel kit** — best partner from your own wardrobe; pack the right bottles
+- **Private** — no account, IndexedDB on device; optional Open-Meteo weather if you add a city
+
+Design system: [DESIGN.md](DESIGN.md). Media: [docs/video](docs/video) · [docs/store](docs/store) · [stories](qa/v7/STORIES.md).
 
 ## Quick start
 
@@ -30,7 +29,8 @@ npm run build
 npm run preview    # production preview
 npm run generate-icons
 npm run test:e2e   # Playwright tests
-npm run verify     # lint + build + full e2e (CI gate)
+npm run verify     # lint + unit (incl. catalog integrity) + full e2e (CI gate)
+npm run catalog    # rebuild bundled catalog + bottle photos (polite crawler, cached)
 ```
 
 ## Screen gallery
@@ -54,7 +54,7 @@ Set `base: '/ScentCap/'` in `vite.config.ts` (already configured). Marketing pag
 
 - React 19 + TypeScript + Vite 8
 - Tailwind CSS v4
-- React Router · Framer Motion · Lucide React · Recharts
+- React Router · Lucide React · Recharts · sharp (catalog build)
 - IndexedDB (`idb`) · vite-plugin-pwa · Playwright
 
 ## Privacy

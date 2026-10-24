@@ -1,13 +1,13 @@
 # ScentCap — Handover
 
-> Read this + `ROADMAP.md` + `~/Capricorn-Brain/01 Projects/ScentCap.md` before working here.
+> Read this + `DESIGN.md` + `ROADMAP.md` + `~/Capricorn-Brain/01 Projects/ScentCap.md` before working here.
 > Last updated: 2026-10-14 · Fleet-wide standard: `capricorn-tooling/shared/CAP-STANDARD.md`
 
 ## What this is
 Fragrance wardrobe — Atelier chalk/forest UI, weather-aware picks, layering lab, analytics. Cap Standard pilot.
 
 ## Facts
-**Version:** 2.2.0 · tag `v2.2.0` · SW `scentcap-v220`
+**Version:** 3.0.0 · tag `v3.0.0` · SW `scentcap-v300`
 **Live:** https://shamikhahmed.github.io/ScentCap/
 **Repo:** https://github.com/shamikhahmed/ScentCap
 **Stack:** React 19 + TypeScript + Vite 8 + Tailwind v4. IndexedDB (idb). vite-plugin-pwa. Capacitor iOS shell. Playwright.
@@ -43,6 +43,11 @@ npm run gallery:view # http://127.0.0.1:8771/screen-gallery.html
 | Demo mode | ✅ |
 
 Gaps are tracked as tasks in `ROADMAP.md`.
+
+## 3.0 notes
+- UI: use `src/design/system.css` primitives + `src/components/kit` only (see DESIGN.md). Legacy CSS lives in the `legacy` layer; delete once unused.
+- Catalog: `npm run catalog` rebuilds `public/data/catalog.json` + `public/bottles/` (cache in `scripts/.cache/`, gitignored). `node scripts/test-catalog.mjs` guards integrity.
+- Media: `CAPTURE_GALLERY=1 npm run gallery`, `CAPTURE_STORE=1 npx playwright test e2e/store.spec.ts`, `CAPTURE_VIDEO=1 npx playwright test e2e/video.spec.ts && scripts/encode-videos.sh`.
 
 ## Gotchas — read before coding
 - Completely free: no Stripe, IAP, Pro gates, or bottle limits. All routes open.

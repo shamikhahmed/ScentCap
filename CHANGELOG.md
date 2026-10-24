@@ -1,3 +1,16 @@
+## [3.0.0] — 2026-10-24
+
+**Redesign + real bottles.**
+
+- **Apple HIG redesign** — new design system (`src/design/system.css`, `DESIGN.md`, kit in `src/components/kit`): SF + New York type, semantic light/dark/increased-contrast tokens, glass tab bar (phone) and sidebar (≥700px), inset-grouped lists, segmented controls, sheets, white product plinths. Legacy 2.x CSS demoted to a `legacy` cascade layer.
+- **Every screen rebuilt** — Today dashboard (pick card with match ring + plain-language reason, overview widgets, “Also great today”, “Waiting for you”, tools), Collection, Add (instant search + confirm sheet + manual sheet), Fragrance detail, 3-step skippable onboarding, wear check-in sheet; Advisor, Diary, Insights, Settings, Layering lab and Travel kit (Cursor, Phase 2).
+- **Bundled offline catalog** — 1,325 real fragrances from ~70 houses with notes, accords and wear profiles derived from community longevity/sillage (`public/data/catalog.json`, `npm run catalog`). Replaces the synthetic seed as the product source. Fraganty stays an optional long-tail supplement (6 s timeout).
+- **Self-hosted bottle photos** — WebP 512 + 256 px, trimmed and padded, ~12 KB per pair, service-worker CacheFirst; dimmed in dark mode per HIG. Credit: “Bottle images © their respective brands, via Parfumo.”
+- **Fixes** — live site no longer depends on Fraganty (search API was returning 500); “No matches” no longer flashes while typing; detail page title shows the fragrance name; boot screen is mark-only.
+- **Release assets** — 60-shot screen gallery, App Store sets (6.9", 6.5", iPad 13"), walkthrough videos + App Store preview, rebuilt landing/about/presentation pages, 3.0 stories.
+- iOS: App Store readiness (PrivacyInfo, usage strings, icons, version 3.0.0) — Cursor, Phase 1.
+- SW `scentcap-v300`; tag `v3.0.0`.
+
 ## [2.2.1] — 2026-10-21
 
 - HIG v7: iOS tokens / native feel; Dynamic Type & hit targets where applicable
