@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, PieChart, Pie, Cell } from 'recharts';
-import { Card } from '@/components/ui/card';
+import { PageHeader, Ring, Section } from '@/components/kit';
 import { ChartFrame } from '@/components/ui/ChartFrame';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { useApp } from '@/context/AppContext';
@@ -20,7 +20,6 @@ import {
   wearStreak,
   wearsThisMonth,
 } from '@/lib/stats';
-
 import { ANALYTICS_COLORS as COLORS } from '@/design/tokens';
 
 export function AnalyticsPage() {
@@ -28,8 +27,9 @@ export function AnalyticsPage() {
   const [fragrances, setFragrances] = useState<Map<string, Awaited<ReturnType<typeof getFragrance>>>>(new Map());
 
   useEffect(() => {
-    Promise.all(collection.map(async (c) => [c.fragranceId, await getFragrance(c.fragranceId)] as const))
-      .then((pairs) => setFragrances(new Map(pairs)));
+    Promise.all(collection.map(async (c) => [c.fragranceId, await getFragrance(c.fragranceId)] as const)).then((pairs) =>
+      setFragrances(new Map(pairs)),
+    );
   }, [collection]);
 
   const allFragrances = useMemo(
@@ -42,8 +42,11 @@ export function AnalyticsPage() {
     for (const h of history) wearCount[h.fragranceId] = (wearCount[h.fragranceId] ?? 0) + 1;
 
     const familyDist: Record<string, number> = {};
-    let designer = 0, niche = 0, me = 0;
-    let totalValue = 0, totalMl = 0;
+    let designer = 0,
+      niche = 0,
+      me = 0;
+    let totalValue = 0,
+      totalMl = 0;
 
     for (const c of collection) {
       const f = fragrances.get(c.fragranceId);
@@ -56,7 +59,9 @@ export function AnalyticsPage() {
       totalMl += c.bottleSizeMl ?? 100;
     }
 
-    const mostWorn = Object.entries(wearCount).sort((a, b) => b[1] - a[1]).slice(0, 5)
+    const mostWorn = Object.entries(wearCount)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
       .map(([id, count]) => {
         const f = fragrances.get(id);
         return { name: f ? f.name.slice(0, 12) : id, count };
@@ -78,8 +83,16 @@ export function AnalyticsPage() {
     const blindSpots = blindSpotBottles(collection, history, nameById);
 
     return {
-      designer, niche, me, totalValue, totalMl,
-      mostWorn, leastWorn, pie, costRows, blindSpots,
+      designer,
+      niche,
+      me,
+      totalValue,
+      totalMl,
+      mostWorn,
+      leastWorn,
+      pie,
+      costRows,
+      blindSpots,
       rotation: rotationHealth(collection, history),
       streak: wearStreak(history),
       monthWears: wearsThisMonth(history),
@@ -92,127 +105,145 @@ export function AnalyticsPage() {
 
   if (!collection.length) {
     return (
-      <div className="atelier-page">
-        <EmptyState
-          eyebrow="Analytics"
-          title="Nothing to analyze yet"
-          description="Add bottles to your wardrobe and log a few wears. Rotation health, family breakdown, and value insights appear here."
-          action={{ label: 'Add a bottle', to: '/add' }}
-        />
-      </div>
+      <EmptyState
+        eyebrow="Analytics"
+        title="Nothing to analyze yet"
+        description="Add bottles to your wardrobe and log a few wears. Rotation health, family breakdown, and value insights appear here."
+        action={{ label: 'Add a bottle', to: '/add' }}
+      />
     );
   }
 
-  return (
-    <div className="atelier-page space-y-6">
-      <header>
-        <p className="atelier-page__brand">Insights</p>
-        <h1 className="atelier-page__title">Analytics</h1>
-        <p className="atelier-page__sub">Wardrobe health, value, and wear patterns.</p>
-      </header>
+  const widgets: { label: string; value: string; unit?: string }[] = [
+    { label: 'Value', value: formatCurrency(stats.totalValue) },
+    { label: 'Volume', value: String(stats.totalMl), unit: 'ml' },
+    { label: 'This month', value: String(stats.monthWears) },
+    { label: 'Wear streak', value: String(stats.streak), unit: 'd' },
+    { label: 'Compliments', value: String(stats.compliments) },
+    { label: 'Versatile', value: String(stats.versatile) },
+    { label: 'Avg projection', value: stats.avgProjection },
+    { label: 'Avg longevity', value: stats.avgLongevity },
+  ];
 
-      <div className="grid grid-cols-2 gap-4">
-        <Card><p className="text-xs text-[var(--sc-text-muted)]">Value</p><p className="text-2xl font-semibold">{formatCurrency(stats.totalValue)}</p></Card>
-        <Card><p className="text-xs text-[var(--sc-text-muted)]">Volume</p><p className="text-2xl font-semibold">{stats.totalMl} ml</p></Card>
-        <Card><p className="text-xs text-[var(--sc-text-muted)]">Rotation health</p><p className="text-2xl font-semibold">{stats.rotation}%</p>
-          <p className="text-[11px] text-[var(--sc-text-muted)] mt-1">Share of wardrobe worn at least once — a fragrance journal, not a streak score.</p>
-        </Card>
-        <Card><p className="text-xs text-[var(--sc-text-muted)]">Designer / Niche / ME</p><p className="text-lg font-semibold">{stats.designer} / {stats.niche} / {stats.me}</p></Card>
-        <Card><p className="text-xs text-[var(--sc-text-muted)]">Wear streak</p><p className="text-2xl font-semibold">{stats.streak}d</p></Card>
-        <Card><p className="text-xs text-[var(--sc-text-muted)]">This month</p><p className="text-2xl font-semibold">{stats.monthWears}</p></Card>
-        <Card><p className="text-xs text-[var(--sc-text-muted)]">Compliments</p><p className="text-2xl font-semibold">{stats.compliments}</p></Card>
-        <Card><p className="text-xs text-[var(--sc-text-muted)]">Versatile scents</p><p className="text-2xl font-semibold">{stats.versatile}</p></Card>
-        <Card><p className="text-xs text-[var(--sc-text-muted)]">Avg projection</p><p className="text-lg font-semibold">{stats.avgProjection}</p></Card>
-        <Card><p className="text-xs text-[var(--sc-text-muted)]">Avg longevity</p><p className="text-lg font-semibold">{stats.avgLongevity}</p></Card>
+  return (
+    <div className="ui-page">
+      <PageHeader eyebrow="Insights" title="Analytics" subtitle="Wardrobe health, value, and wear patterns." />
+
+      <div className="ui-card flex items-center gap-4 mb-4">
+        <Ring value={stats.rotation} size={64} label={`Rotation ${stats.rotation}%`} />
+        <div>
+          <p className="font-semibold">Rotation health</p>
+          <p className="ui-footnote mt-1">Share of wardrobe worn at least once.</p>
+          <p className="ui-footnote mt-2">
+            Designer {stats.designer} · Niche {stats.niche} · ME {stats.me}
+          </p>
+        </div>
+      </div>
+
+      <div className="ui-widgets">
+        {widgets.map((w) => (
+          <div key={w.label} className="ui-widget">
+            <p className="ui-widget__label">{w.label}</p>
+            <p className="ui-widget__value">
+              {w.value}
+              {w.unit ? <span className="ui-widget__unit">{w.unit}</span> : null}
+            </p>
+          </div>
+        ))}
       </div>
 
       {stats.costRows.length > 0 && (
-        <Card>
-          <p className="font-medium mb-1">Cost per wear</p>
-          <p className="text-xs text-[var(--color-text-tertiary)] mb-4">Bottles with a logged price — higher means under-worn spend.</p>
-          <ul className="space-y-3">
+        <Section title="Cost per wear" className="mt-2">
+          <p className="ui-list-footer !mt-0 !mb-2">Bottles with a logged price — higher means under-worn spend.</p>
+          <div className="ui-list">
             {stats.costRows.map((row) => (
-              <li key={row.collectionId}>
-                <Link to={`/fragrance/${row.collectionId}`} className="flex justify-between items-center gap-3 text-sm hover:text-[var(--color-accent)]">
-                  <span className="truncate">{row.name}</span>
-                  <span className="shrink-0 text-right">
-                    {row.costPerWear != null ? (
-                      <span className="font-semibold">{formatCurrency(row.costPerWear)}<span className="text-[var(--color-text-tertiary)] font-normal">/wear</span></span>
-                    ) : (
-                      <span className="text-[var(--color-text-tertiary)]">No wears yet</span>
-                    )}
-                  </span>
-                </Link>
-              </li>
+              <Link key={row.collectionId} to={`/fragrance/${row.collectionId}`} className="ui-row">
+                <div className="ui-row__main">
+                  <p className="ui-row__title truncate">{row.name}</p>
+                </div>
+                <span className="ui-row__value">
+                  {row.costPerWear != null ? `${formatCurrency(row.costPerWear)}/wear` : 'No wears yet'}
+                </span>
+              </Link>
             ))}
-          </ul>
-        </Card>
+          </div>
+        </Section>
       )}
 
       {stats.blindSpots.length > 0 && (
-        <Card className="border-orange-500/20">
-          <p className="font-medium mb-1">Blind spots</p>
-          <p className="text-xs text-[var(--color-text-tertiary)] mb-4">Pricier bottles not worn in 30+ days — money on the shelf.</p>
-          <ul className="space-y-3">
+        <Section title="Blind spots">
+          <p className="ui-list-footer !mt-0 !mb-2">Pricier bottles not worn in 30+ days.</p>
+          <div className="ui-list">
             {stats.blindSpots.map((row) => (
-              <li key={row.collectionId}>
-                <Link to={`/fragrance/${row.collectionId}`} className="flex justify-between items-center gap-3 text-sm hover:text-[var(--color-accent)]">
-                  <span className="truncate">{row.name}</span>
-                  <span className="shrink-0 text-orange-400 text-xs font-semibold">
-                    {row.daysSince == null ? 'Never worn' : `${row.daysSince}d idle`}
-                  </span>
-                </Link>
-              </li>
+              <Link key={row.collectionId} to={`/fragrance/${row.collectionId}`} className="ui-row">
+                <div className="ui-row__main">
+                  <p className="ui-row__title truncate">{row.name}</p>
+                </div>
+                <span className="ui-row__value text-[var(--warning)]">
+                  {row.daysSince == null ? 'Never worn' : `${row.daysSince}d idle`}
+                </span>
+              </Link>
             ))}
-          </ul>
-        </Card>
+          </div>
+        </Section>
       )}
 
       {stats.mostWorn.length > 0 && (
-        <Card>
-          <p className="font-medium mb-4">Most worn</p>
-          <ChartFrame height={192}>
-            {(w, h) => (
-              <BarChart width={w} height={h} data={stats.mostWorn}>
-                <XAxis dataKey="name" tick={{ fill: 'var(--color-text-tertiary)', fontSize: 10 }} />
-                <YAxis tick={{ fill: 'var(--color-text-tertiary)', fontSize: 10 }} />
-                <Bar dataKey="count" fill="var(--color-accent)" radius={[6, 6, 0, 0]} />
-              </BarChart>
-            )}
-          </ChartFrame>
-        </Card>
+        <Section title="Most worn">
+          <div className="ui-card">
+            <ChartFrame height={192}>
+              {(w, h) => (
+                <BarChart width={w} height={h} data={stats.mostWorn}>
+                  <XAxis dataKey="name" tick={{ fill: 'var(--label-3)', fontSize: 10 }} />
+                  <YAxis tick={{ fill: 'var(--label-3)', fontSize: 10 }} />
+                  <Bar dataKey="count" fill="var(--tint)" radius={[6, 6, 0, 0]} />
+                </BarChart>
+              )}
+            </ChartFrame>
+          </div>
+        </Section>
       )}
 
       {stats.leastWorn.length > 0 && (
-        <Card>
-          <p className="font-medium mb-4">Least worn</p>
-          <ChartFrame height={192}>
-            {(w, h) => (
-              <BarChart width={w} height={h} data={stats.leastWorn}>
-                <XAxis dataKey="name" tick={{ fill: 'var(--color-text-tertiary)', fontSize: 10 }} />
-                <YAxis tick={{ fill: 'var(--color-text-tertiary)', fontSize: 10 }} />
-                <Bar dataKey="count" fill="var(--color-text-secondary)" radius={[6, 6, 0, 0]} />
-              </BarChart>
-            )}
-          </ChartFrame>
-        </Card>
+        <Section title="Least worn">
+          <div className="ui-card">
+            <ChartFrame height={192}>
+              {(w, h) => (
+                <BarChart width={w} height={h} data={stats.leastWorn}>
+                  <XAxis dataKey="name" tick={{ fill: 'var(--label-3)', fontSize: 10 }} />
+                  <YAxis tick={{ fill: 'var(--label-3)', fontSize: 10 }} />
+                  <Bar dataKey="count" fill="var(--label-3)" radius={[6, 6, 0, 0]} />
+                </BarChart>
+              )}
+            </ChartFrame>
+          </div>
+        </Section>
       )}
 
       {stats.pie.length > 0 && (
-        <Card>
-          <p className="font-medium mb-4">Family breakdown</p>
-          <ChartFrame height={192}>
-            {(w, h) => (
-              <PieChart width={w} height={h}>
-                <Pie data={stats.pie} dataKey="value" nameKey="name" cx={w / 2} cy={h / 2} outerRadius={70} label={({ name, value }) => `${name} (${value})`}>
-                  {stats.pie.map((entry, i) => (
-                    <Cell key={entry.name} fill={FAMILY_COLORS[entry.name] ?? COLORS[i % COLORS.length]} />
-                  ))}
-                </Pie>
-              </PieChart>
-            )}
-          </ChartFrame>
-        </Card>
+        <Section title="Family breakdown">
+          <div className="ui-card">
+            <ChartFrame height={192}>
+              {(w, h) => (
+                <PieChart width={w} height={h}>
+                  <Pie
+                    data={stats.pie}
+                    dataKey="value"
+                    nameKey="name"
+                    cx={w / 2}
+                    cy={h / 2}
+                    outerRadius={70}
+                    label={({ name, value }) => `${name} (${value})`}
+                  >
+                    {stats.pie.map((entry, i) => (
+                      <Cell key={entry.name} fill={FAMILY_COLORS[entry.name] ?? COLORS[i % COLORS.length]} />
+                    ))}
+                  </Pie>
+                </PieChart>
+              )}
+            </ChartFrame>
+          </div>
+        </Section>
       )}
     </div>
   );

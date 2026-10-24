@@ -2,14 +2,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, addMonths, subMonths, isToday } from 'date-fns';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Pencil, Plus } from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { PageHeader, Sheet } from '@/components/kit';
 import { FragranceThumb } from '@/components/collection/FragranceThumb';
 import { WearRatingModal } from '@/components/ui/WearRatingModal';
 import { useApp } from '@/context/AppContext';
 import { getFragrance, logWear, updateWearRecord } from '@/db';
-import { FAMILY_COLORS, wearStreak, wearsThisMonth } from '@/lib/stats';
-import { SC_ACCENT } from '@/design/tokens';
+import { wearStreak, wearsThisMonth } from '@/lib/stats';
 import { uid } from '@/lib/utils';
 import { hapticSuccess } from '@/lib/premium/haptics';
 import type { WearRecord } from '@/types';
@@ -38,10 +36,12 @@ export function CalendarPage() {
 
   useEffect(() => {
     const ids = [...new Set([...history.map((h) => h.fragranceId), ...collection.map((c) => c.fragranceId)])];
-    Promise.all(ids.map(async (id) => {
-      const f = await getFragrance(id);
-      return [id, { name: f ? `${f.brand} ${f.name}` : id, family: f?.family ?? 'Fresh', image: f?.image }] as const;
-    })).then((pairs) => setLabels(Object.fromEntries(pairs)));
+    Promise.all(
+      ids.map(async (id) => {
+        const f = await getFragrance(id);
+        return [id, { name: f ? `${f.brand} ${f.name}` : id, family: f?.family ?? 'Fresh', image: f?.image }] as const;
+      }),
+    ).then((pairs) => setLabels(Object.fromEntries(pairs)));
   }, [history, collection]);
 
   const monthInsights = useMemo(() => {
@@ -86,64 +86,75 @@ export function CalendarPage() {
   const padStart = startOfMonth(month).getDay();
 
   return (
-    <div className="atelier-page space-y-6">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="atelier-page__brand">Journal</p>
-          <h1 className="atelier-page__title">Wear calendar</h1>
-          <p className="atelier-page__sub">
-            {wearStreak(history)}d streak · {wearsThisMonth(history)} this month
-          </p>
-        </div>
-        {!loggedToday && collection.length > 0 && (
-          <Button size="sm" className="btn-glow shrink-0" onClick={() => setQuickLogOpen(true)}>
-            <Plus size={16} /> Log today
-          </Button>
-        )}
-      </div>
+    <div className="ui-page">
+      <PageHeader
+        eyebrow="Journal"
+        title="Wear calendar"
+        subtitle={`${wearStreak(history)}d streak · ${wearsThisMonth(history)} this month`}
+        trailing={
+          !loggedToday && collection.length > 0 ? (
+            <button type="button" className="ui-btn ui-btn--primary ui-btn--sm" onClick={() => setQuickLogOpen(true)}>
+              <Plus size={16} aria-hidden /> Log today
+            </button>
+          ) : undefined
+        }
+      />
 
       {monthInsights && (
-        <Card className="border-[var(--color-accent)]/20 bg-[var(--color-accent-muted)]/20">
-          <p className="text-xs uppercase text-[var(--color-text-tertiary)]">{format(month, 'MMMM')} MVP</p>
+        <div className="ui-card mb-4">
+          <p className="ui-eyebrow">{format(month, 'MMMM')} MVP</p>
           <p className="font-semibold mt-1">{monthInsights.name}</p>
-          <p className="text-sm text-[var(--color-text-secondary)]">{monthInsights.count} wears</p>
-        </Card>
+          <p className="ui-secondary text-[var(--t-subhead)]">{monthInsights.count} wears</p>
+        </div>
       )}
 
-      <Card>
+      <div className="ui-card">
         <div className="flex items-center justify-between mb-4">
-          <Button size="sm" variant="ghost" aria-label="Previous month" onClick={() => setMonth((m) => subMonths(m, 1))}>
-            <ChevronLeft size={18} />
-          </Button>
+          <button
+            type="button"
+            className="ui-icon-btn"
+            aria-label="Previous month"
+            onClick={() => setMonth((m) => subMonths(m, 1))}
+          >
+            <ChevronLeft size={18} aria-hidden />
+          </button>
           <p className="text-sm font-medium">{format(month, 'MMMM yyyy')}</p>
-          <Button size="sm" variant="ghost" aria-label="Next month" onClick={() => setMonth((m) => addMonths(m, 1))}>
-            <ChevronRight size={18} />
-          </Button>
+          <button
+            type="button"
+            className="ui-icon-btn"
+            aria-label="Next month"
+            onClick={() => setMonth((m) => addMonths(m, 1))}
+          >
+            <ChevronRight size={18} aria-hidden />
+          </button>
         </div>
-        <div className="grid grid-cols-7 gap-1.5 text-center text-xs">
-          {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => <span key={i} className="text-[var(--color-text-tertiary)] py-1 font-medium">{d}</span>)}
-          {Array.from({ length: padStart }).map((_, i) => <span key={`pad-${i}`} />)}
+        <div className="grid grid-cols-7 gap-1.5 text-center text-[var(--t-caption)]">
+          {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+            <span key={i} className="text-[var(--label-3)] py-1 font-medium">
+              {d}
+            </span>
+          ))}
+          {Array.from({ length: padStart }).map((_, i) => (
+            <span key={`pad-${i}`} />
+          ))}
           {days.map((day) => {
             const key = format(day, 'yyyy-MM-dd');
             const worn = byDay[key] ?? [];
             const primary = worn[0];
-            // Hex only — style appends alpha (`${color}22` / `${color}44`).
-            const color = primary ? FAMILY_COLORS[labels[primary]?.family ?? ''] ?? SC_ACCENT : undefined;
             const today = isToday(day);
             return (
               <div
                 key={key}
-                className={`min-h-[56px] rounded-xl flex flex-col items-center justify-start pt-1.5 text-[11px] border ${
-                  today ? 'ring-1 ring-[var(--color-accent)]/50' : 'border-transparent'
-                }`}
-                style={color ? { background: `${color}22`, borderColor: `${color}44` } : { background: 'var(--sc-surface)', borderColor: 'var(--sc-border-soft)' }}
+                className={`min-h-[56px] rounded-[var(--r-md)] flex flex-col items-center justify-start pt-1.5 border ${
+                  today ? 'border-[var(--tint)]' : 'border-transparent'
+                } ${worn.length ? 'bg-[var(--tint-soft)]' : 'bg-[var(--fill)]'}`}
                 title={primary ? labels[primary]?.name : undefined}
               >
-                <span className={`${worn.length || today ? 'font-semibold' : 'text-[var(--color-text-tertiary)]'}`}>
+                <span className={worn.length || today ? 'font-semibold' : 'text-[var(--label-3)]'}>
                   {format(day, 'd')}
                 </span>
                 {primary && (
-                  <span className="text-[8px] leading-tight px-0.5 mt-0.5 line-clamp-2 text-[var(--color-text-secondary)] max-w-full">
+                  <span className="text-[var(--t-caption2)] leading-tight px-0.5 mt-0.5 line-clamp-2 text-[var(--label-2)] max-w-full">
                     {labels[primary]?.name.split(' ').slice(-1)[0]}
                   </span>
                 )}
@@ -151,77 +162,67 @@ export function CalendarPage() {
             );
           })}
         </div>
-      </Card>
+      </div>
 
-      <Card>
-        <p className="font-medium mb-3">Timeline</p>
-        <ul className="space-y-3">
-          {monthTimeline.map((h) => (
-            <li key={h.id}>
-              <button
-                type="button"
-                className="w-full flex justify-between items-center text-sm gap-3 text-left hover:text-[var(--color-accent)] pressable"
-                onClick={() => setEditWear(h)}
-              >
-                <FragranceThumb
-                  name={labels[h.fragranceId]?.name}
-                  family={labels[h.fragranceId]?.family}
-                  catalogImage={labels[h.fragranceId]?.image}
-                  size="sm"
-                  className="w-11 shrink-0"
-                />
-                <div className="flex-1 min-w-0">
-                  <span className="block">{labels[h.fragranceId]?.name ?? '…'}</span>
-                  {h.compliment && <span className="text-xs text-[var(--color-accent)]">★ compliment</span>}
-                  {h.rating && <span className="text-xs text-[var(--color-text-secondary)]">Rated {h.rating}/5</span>}
-                  {h.notes && <span className="text-xs text-[var(--color-text-tertiary)] block mt-0.5 line-clamp-2">{h.notes}</span>}
-                </div>
-                <span className="text-[var(--color-text-tertiary)] shrink-0 text-xs flex items-center gap-1">
-                  {format(new Date(h.wornAt), 'MMM d')}
-                  <Pencil size={12} />
-                </span>
-              </button>
-            </li>
-          ))}
-        </ul>
+      <p className="ui-list-header mt-6">Timeline</p>
+      <div className="ui-list">
+        {monthTimeline.map((h) => (
+          <button key={h.id} type="button" className="ui-row ui-row--media w-full text-left" onClick={() => setEditWear(h)}>
+            <FragranceThumb
+              name={labels[h.fragranceId]?.name}
+              family={labels[h.fragranceId]?.family}
+              catalogImage={labels[h.fragranceId]?.image}
+              size="sm"
+              className="w-11 shrink-0"
+            />
+            <div className="ui-row__main">
+              <p className="ui-row__title">{labels[h.fragranceId]?.name ?? '…'}</p>
+              {h.compliment && <p className="ui-row__sub text-[var(--tint)]">Compliment</p>}
+              {h.rating && <p className="ui-row__sub">Rated {h.rating}/5</p>}
+              {h.notes && <p className="ui-row__sub line-clamp-2">{h.notes}</p>}
+            </div>
+            <span className="ui-row__value flex items-center gap-1">
+              {format(new Date(h.wornAt), 'MMM d')}
+              <Pencil size={12} aria-hidden />
+            </span>
+          </button>
+        ))}
         {!monthTimeline.length && (
-          <p className="text-[var(--color-text-secondary)] text-sm">
-            No wears logged in {format(month, 'MMMM yyyy')}. Use &quot;Log today&quot; or wear from Today.
-          </p>
-        )}
-      </Card>
-      <Link to="/analytics" className="text-sm text-[var(--color-accent)] font-semibold">View full analytics →</Link>
-
-      {quickLogOpen && (
-        <div className="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-black/60 p-4">
-          <div className="glass-card rounded-3xl p-5 w-full max-w-md max-h-[70vh] overflow-y-auto space-y-3">
-            <p className="font-semibold">Log wear for today</p>
-            <p className="text-sm text-[var(--color-text-secondary)]">Pick a bottle from your wardrobe.</p>
-            <ul className="space-y-2">
-              {collection.map((c) => (
-                <li key={c.id}>
-                  <button
-                    type="button"
-                    disabled={logging}
-                    className="w-full flex items-center gap-3 tile-premium !py-3 !px-4 text-left pressable disabled:opacity-50"
-                    onClick={() => void quickLog(c.id, c.fragranceId)}
-                  >
-                    <FragranceThumb
-                      name={labels[c.fragranceId]?.name}
-                      family={labels[c.fragranceId]?.family}
-                      catalogImage={labels[c.fragranceId]?.image}
-                      size="sm"
-                      className="w-11 shrink-0"
-                    />
-                    <span className="text-sm truncate">{labels[c.fragranceId]?.name ?? '…'}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-            <Button variant="ghost" className="w-full" onClick={() => setQuickLogOpen(false)}>Cancel</Button>
+          <div className="ui-row !items-start !py-3">
+            <p className="ui-row__sub">
+              No wears logged in {format(month, 'MMMM yyyy')}. Use “Log today” or wear from Today.
+            </p>
           </div>
+        )}
+      </div>
+
+      <Link to="/analytics" className="ui-section-link mt-4">
+        View full analytics
+      </Link>
+
+      <Sheet open={quickLogOpen} title="Log wear for today" onClose={() => setQuickLogOpen(false)}>
+        <p className="ui-secondary text-[var(--t-subhead)] mb-3 px-1">Pick a bottle from your wardrobe.</p>
+        <div className="ui-list">
+          {collection.map((c) => (
+            <button
+              key={c.id}
+              type="button"
+              disabled={logging}
+              className="ui-row ui-row--media w-full text-left disabled:opacity-50"
+              onClick={() => void quickLog(c.id, c.fragranceId)}
+            >
+              <FragranceThumb
+                name={labels[c.fragranceId]?.name}
+                family={labels[c.fragranceId]?.family}
+                catalogImage={labels[c.fragranceId]?.image}
+                size="sm"
+                className="w-11 shrink-0"
+              />
+              <span className="ui-row__title truncate">{labels[c.fragranceId]?.name ?? '…'}</span>
+            </button>
+          ))}
         </div>
-      )}
+      </Sheet>
 
       <WearRatingModal
         open={Boolean(editWear)}
