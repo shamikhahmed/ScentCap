@@ -44,16 +44,16 @@ const HOUSES = {
   'Narciso Rodriguez': ['Narciso_Rodriguez'], 'Marc Jacobs': ['Marc_Jacobs'], 'Jo Malone': ['Jo_Malone'],
   Creed: ['Creed'], 'Maison Francis Kurkdjian': ['Maison_Francis_Kurkdjian'], Xerjoff: ['Xerjoff'],
   'Parfums de Marly': ['Parfums_de_Marly'], Amouage: ['Amouage'], Byredo: ['Byredo'], 'Le Labo': ['Le_Labo'],
-  Diptyque: ['Diptyque'], 'Frédéric Malle': ['Editions_de_Parfums_Frederic_Malle', 'Frederic_Malle'],
+  Diptyque: ['Diptyque'],
   Nasomatto: ['Nasomatto'], Nishane: ['Nishane'], 'Roja Parfums': ['Roja_Parfums', 'Roja_Dove'],
   "Penhaligon's": ['Penhaligon_s'], Initio: ['Initio_Parfums_Prives', 'Initio'], Kilian: ['By_Kilian', 'Kilian'],
   'Memo Paris': ['Memo', 'Memo_Paris'], 'Maison Margiela': ['Maison_Margiela'], 'Serge Lutens': ['Serge_Lutens'],
   Mancera: ['Mancera'], Montale: ['Montale'], 'Acqua di Parma': ['Acqua_di_Parma'], 'Louis Vuitton': ['Louis_Vuitton'],
-  'Juliette Has a Gun': ['Juliette_Has_A_Gun'], 'Kayali': ['Kayali'], 'Zadig & Voltaire': ['Zadig_Voltaire'],
+  'Juliette Has a Gun': ['Juliette_Has_A_Gun'], 'Kayali': ['Kayali'],
   Lattafa: ['Lattafa'], Rasasi: ['Rasasi'], Armaf: ['Armaf'], 'Swiss Arabian': ['Swiss_Arabian'], Ajmal: ['Ajmal'],
   'Al Haramain': ['Al_Haramain'], 'Arabian Oud': ['Arabian_Oud'], 'Abdul Samad Al Qurashi': ['Abdul_Samad_Al_Qurashi'],
-  Afnan: ['Afnan'], 'Fragrance World': ['Fragrance_World'], 'Maison Alhambra': ['Maison_Alhambra', 'Alhambra'],
-  'French Avenue': ['French_Avenue'], 'Al Rehab': ['Al_Rehab'], 'Paris Corner': ['Paris_Corner'], Rave: ['Rave'],
+  Afnan: ['Afnan_Perfumes', 'Afnan'],
+  'Al Rehab': ['Al_Rehab'], Rave: ['Rave'],
   Nabeel: ['Nabeel'], Khadlaj: ['Khadlaj'], 'Al Wataniah': ['Al_Wataniah'], Rihanah: ['Rihanah'],
 };
 
@@ -90,9 +90,17 @@ async function exists(p) {
 
 async function cachedGet(url, file) {
   if (await exists(file)) return fs.readFile(file, 'utf8');
-  const res = await fetch(url, { headers: { 'User-Agent': UA, Accept: 'text/html' } });
+  let res;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      res = await fetch(url, { headers: { 'User-Agent': UA, Accept: 'text/html' } });
+      break;
+    } catch {
+      await sleep(3000 * (attempt + 1));
+    }
+  }
   await sleep(DELAY_MS);
-  if (!res.ok) return null;
+  if (!res?.ok) return null;
   const html = await res.text();
   await fs.writeFile(file, html);
   return html;
@@ -295,9 +303,9 @@ async function main() {
         let buf;
         if (await exists(rawPath)) buf = await fs.readFile(rawPath);
         else {
-          const res = await fetch(it.image, { headers: { 'User-Agent': UA } });
+          const res = await fetch(it.image, { headers: { 'User-Agent': UA } }).catch(() => null);
           await sleep(250);
-          if (!res.ok) continue;
+          if (!res?.ok) continue;
           buf = Buffer.from(await res.arrayBuffer());
           await fs.writeFile(rawPath, buf);
         }

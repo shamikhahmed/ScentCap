@@ -1,7 +1,7 @@
 {
   "name": "ScentCap",
-  "version": "2.2.1",
-  "swCache": "scentcap-v222",
-  "updated": "2026-10-21",
-  "notes": "Perfection Loop v3 Phase I \u2014 SCN-V3-1/2/3 (CI, brand captions \u226512px, Use my collection 44px) \u00b7 v7 HIG ios-tokens scaffold"
+  "version": "3.0.0",
+  "swCache": "scentcap-v300",
+  "updated": "2026-10-24",
+  "notes": "ScentCap 3.0 \u2014 Apple HIG redesign, offline catalog of real fragrances with bundled bottle photos"
 }

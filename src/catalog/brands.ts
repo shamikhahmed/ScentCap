@@ -7,7 +7,7 @@ export const POPULAR_BRANDS = [
   'Initio',
   'Parfums de Marly',
   'Amouage',
-  'Roja',
+  'Roja Parfums',
   'Xerjoff',
 ] as const;
 
@@ -18,7 +18,5 @@ export const MIDDLE_EAST_BRANDS = [
   'Rasasi',
   'Swiss Arabian',
   'Ajmal',
-  'Fragrance World',
-  'Maison Alhambra',
   'Al Haramain',
 ] as const;
