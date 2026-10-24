@@ -1,34 +1,40 @@
 {
   "id": "scentcap-james",
   "name": "James Cole",
-  "age": 40,
-  "city": "London, UK",
-  "role": "Collector",
+  "age": 41,
+  "city": "Manchester, UK",
+  "role": "Collector with 60+ bottles",
   "tech": "medium",
   "accessibility": "standard",
-  "device": "iPhone 15",
-  "goal": "Bottle levels and decant notes",
+  "device": "iPad Air",
+  "goal": "Catalogue a large collection quickly with proper photos, and see what it is worth",
   "pain_before": [
-    "Scattered notes",
-    "Forgot to log"
+    "Spreadsheet with no images",
+    "Blind buys he already owned",
+    "No idea of collection value"
   ],
-  "how_she_uses_it": [
-    "bottle-catalog",
-    "wear-log"
+  "how_they_use_it": [
+    "add-search",
+    "collection-grid",
+    "detail",
+    "insights"
   ],
   "numbers": {
     "before": {
-      "minutes_lost": 15
+      "minutes_per_bottle_logged": 4
     },
     "after": {
-      "minutes_lost": 2
+      "minutes_per_bottle_logged": 0.3
     }
   },
-  "quote": "I know which bottle is half full.",
+  "quote": "Type three letters, tap the bottle, done. And it actually looks like my shelf.",
   "seed": "qa/v7/personas/scentcap-james.seed.json",
   "features_used": [
-    "bottle-catalog",
-    "wear-log"
+    "add-search",
+    "collection-grid",
+    "detail",
+    "insights"
   ],
-  "fictional": true
+  "fictional": true,
+  "version": "3.0.0"
 }

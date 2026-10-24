@@ -3,32 +3,40 @@
   "name": "Hira Qureshi",
   "age": 28,
   "city": "Lahore, Pakistan",
-  "role": "Daily wearer",
+  "role": "Marketing lead, wears scent daily",
   "tech": "medium",
   "accessibility": "standard",
   "device": "iPhone 15",
-  "goal": "Today picks matched to weather",
+  "goal": "Stop guessing which bottle suits a 38\u00b0 office day vs. a cool evening dinner",
   "pain_before": [
-    "Scattered notes",
-    "Forgot to log"
+    "Reaches for the same two bottles every day",
+    "Heavy ouds feel wrong in Lahore summer heat",
+    "Forgets which scents got compliments"
   ],
-  "how_she_uses_it": [
-    "today-picks",
-    "rules-advisor"
+  "how_they_use_it": [
+    "onboarding",
+    "today-pick",
+    "occasion-switch",
+    "wear-diary"
   ],
   "numbers": {
     "before": {
-      "minutes_lost": 15
+      "minutes_deciding": 6,
+      "bottles_in_rotation": 2
     },
     "after": {
-      "minutes_lost": 2
+      "minutes_deciding": 1,
+      "bottles_in_rotation": 7
     }
   },
-  "quote": "Rainy day? The wardrobe knows.",
+  "quote": "It knows a 38\u00b0 Tuesday at work is not the day for oud.",
   "seed": "qa/v7/personas/scentcap-hira.seed.json",
   "features_used": [
-    "today-picks",
-    "rules-advisor"
+    "onboarding",
+    "today-pick",
+    "occasion-switch",
+    "wear-diary"
   ],
-  "fictional": true
+  "fictional": true,
+  "version": "3.0.0"
 }

@@ -1,34 +1,38 @@
 {
   "id": "scentcap-saad",
   "name": "Saad Malik",
-  "age": 33,
+  "age": 24,
   "city": "Dubai, UAE",
-  "role": "Gift planner",
+  "role": "Frequent traveller, Middle Eastern houses fan",
   "tech": "medium",
   "accessibility": "standard",
-  "device": "iPhone 15",
-  "goal": "Occasion notes without cloud AI",
+  "device": "iPhone 16 Pro",
+  "goal": "Pack the right decants for trips and layer Arabian scents confidently",
   "pain_before": [
-    "Scattered notes",
-    "Forgot to log"
+    "Over-packs full bottles",
+    "Unsure which ouds pair well",
+    "Airline liquid limits"
   ],
-  "how_she_uses_it": [
-    "wear-log",
-    "rules-advisor"
+  "how_they_use_it": [
+    "layering-lab",
+    "travel-kit",
+    "advisor"
   ],
   "numbers": {
     "before": {
-      "minutes_lost": 15
+      "bottles_packed": 5
     },
     "after": {
-      "minutes_lost": 2
+      "bottles_packed": 2
     }
   },
-  "quote": "Gift ideas stay on my phone.",
+  "quote": "Two decants, a layering plan, and I am out the door.",
   "seed": "qa/v7/personas/scentcap-saad.seed.json",
   "features_used": [
-    "wear-log",
-    "rules-advisor"
+    "layering-lab",
+    "travel-kit",
+    "advisor"
   ],
-  "fictional": true
+  "fictional": true,
+  "version": "3.0.0"
 }

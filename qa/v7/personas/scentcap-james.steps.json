@@ -1,6 +1,6 @@
 {
   "personaId": "scentcap-james",
-  "baseUrl": "/",
+  "baseUrl": "/ScentCap",
   "viewport": {
     "width": 402,
     "height": 874,
@@ -9,26 +9,37 @@
   "prep": [
     {
       "action": "goto",
-      "path": "/"
+      "path": "/?demo=1"
     },
     {
       "action": "wait",
-      "ms": 800
+      "ms": 1200
     }
   ],
   "steps": [
     {
-      "id": "01-home",
-      "title": "Home",
-      "action": "screenshot",
-      "route": "home",
-      "alt": "scentcap-james home screen with sample data"
+      "id": "01-add",
+      "title": "Add by search",
+      "action": "goto",
+      "path": "/add?demo=1",
+      "screenshot": true,
+      "alt": "Add screen with popular real bottles"
     },
     {
-      "id": "02-task",
-      "title": "Primary task",
-      "action": "screenshot",
-      "alt": "scentcap-james primary task view"
+      "id": "02-collection",
+      "title": "Collection",
+      "action": "goto",
+      "path": "/collection?demo=1",
+      "screenshot": true,
+      "alt": "Collection grid of bottle photos"
+    },
+    {
+      "id": "03-insights",
+      "title": "Value",
+      "action": "goto",
+      "path": "/analytics?demo=1",
+      "screenshot": true,
+      "alt": "Insights with collection value and cost per wear"
     }
   ]
 }

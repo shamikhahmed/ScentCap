@@ -1,6 +1,6 @@
 {
   "personaId": "scentcap-saad",
-  "mode": "sample-overlay",
-  "note": "Fictional sample data for v7 story capture.",
+  "mode": "demo-wardrobe",
+  "note": "Fictional sample data \u2014 uses the built-in ?demo=1 sample wardrobe (real catalog bottles).",
   "fictional": true
 }

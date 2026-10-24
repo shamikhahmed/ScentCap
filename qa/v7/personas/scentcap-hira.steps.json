@@ -1,6 +1,6 @@
 {
   "personaId": "scentcap-hira",
-  "baseUrl": "/",
+  "baseUrl": "/ScentCap",
   "viewport": {
     "width": 402,
     "height": 874,
@@ -9,26 +9,45 @@
   "prep": [
     {
       "action": "goto",
-      "path": "/"
+      "path": "/?demo=1"
     },
     {
       "action": "wait",
-      "ms": 800
+      "ms": 1200
     }
   ],
   "steps": [
     {
-      "id": "01-home",
-      "title": "Home",
-      "action": "screenshot",
-      "route": "home",
-      "alt": "scentcap-hira home screen with sample data"
+      "id": "01-welcome",
+      "title": "Welcome",
+      "action": "goto",
+      "path": "/onboarding",
+      "screenshot": true,
+      "alt": "Onboarding welcome with real bottle collage"
     },
     {
-      "id": "02-task",
-      "title": "Primary task",
-      "action": "screenshot",
-      "alt": "scentcap-hira primary task view"
+      "id": "02-today",
+      "title": "Today pick",
+      "action": "goto",
+      "path": "/?demo=1",
+      "screenshot": true,
+      "alt": "Today dashboard with an office pick for warm weather"
+    },
+    {
+      "id": "03-diary",
+      "title": "Wear diary",
+      "action": "goto",
+      "path": "/calendar?demo=1",
+      "screenshot": true,
+      "alt": "Diary month view with worn days marked"
+    },
+    {
+      "id": "04-insights",
+      "title": "Rotation",
+      "action": "goto",
+      "path": "/analytics?demo=1",
+      "screenshot": true,
+      "alt": "Insights showing rotation and compliments"
     }
   ]
 }
