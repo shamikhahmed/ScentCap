@@ -22,9 +22,9 @@ export function DemoBanner() {
       role="status"
     >
       <span className="text-[var(--t-footnote)] text-[var(--label-2)]">
-        You’re viewing a <strong className="font-semibold text-[var(--label)]">sample wardrobe</strong>
+        <strong className="font-semibold text-[var(--label)]">Sample wardrobe</strong>
       </span>
-      <button type="button" className="ui-btn ui-btn--plain !min-h-[44px] !text-[var(--t-footnote)]" onClick={startFresh}>
+      <button type="button" className="ui-btn ui-btn--plain !min-h-[44px] !text-[var(--t-footnote)] whitespace-nowrap" onClick={startFresh}>
         Start my own
       </button>
     </div>

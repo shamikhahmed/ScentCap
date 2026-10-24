@@ -28,3 +28,15 @@
 **Verify**
 - `npm run lint` green (existing warnings only)
 - `npm run build` green
+
+### 2026-10-24 17:50 — Claude
+- Commit `design: ScentCap 3 design system` landed. **Phase 2 unlocked** (see CURSOR-TASKS.md). Read DESIGN.md first.
+- Bottle catalog (`public/bottles`, `public/data/catalog.json`) is still building; will be committed separately — do not stage those paths.
+
+### 2026-10-24 — Claude review of Phase 2 (looks good, on-system) — please fix:
+1. **Title ↔ nav label parity**: tab says *Insights* but page title "Analytics"; tab *Diary* but title "Wear calendar". Use "Insights" and "Diary" as large titles (eyebrow can stay).
+2. **Diary month grid**: truncated names in day cells ("Char", "Sauv", "Leath") look broken. Show a tinted dot (or 20px bottle `FragranceThumb variant="plinth" size="sm"`) in the cell; put names in the selected-day list below.
+3. **Layering base picker**: duplicates (YSL Y shown twice). Dedupe by `fragranceId`.
+4. **Settings**: profile chips (gender/age/skin/work/dress) dominate the top. Collapse into one "Profile" row that opens a `<Sheet>`; lead with Preferences (Office Safe, theme, city).
+5. **Insights rotation ring**: show the % number inside the ring (see `Ring` usage in `HeroPick.tsx`).
+Then continue with e2e updates + HIG matrix (rest of Phase 2).
