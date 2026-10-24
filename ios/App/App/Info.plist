@@ -25,11 +25,11 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>ScentCap uses the camera to photograph bottles in your wardrobe.</string>
+	<string>ScentCap uses the camera so you can photograph perfume bottles you add to your wardrobe. Photos stay on this device.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>ScentCap uses your location once to fetch local weather for scent recommendations. Coordinates are sent only to Open-Meteo, not to ScentCap servers.</string>
+	<string>ScentCap uses your location only while the app is open to fetch local weather for today’s scent pick. Coordinates go to Open-Meteo, not to ScentCap servers.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>ScentCap accesses your photo library so you can attach bottle photos to your collection.</string>
+	<string>ScentCap needs photo library access so you can choose an existing bottle photo for your collection. Images stay on this device.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIApplicationSceneManifest</key>

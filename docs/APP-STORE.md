@@ -1,6 +1,6 @@
 # ScentCap — App Store Listing Draft
 
-> Version 1.0.8 · Cap Neutral · Local-first PWA + Capacitor iOS scaffold
+> Version **3.0.0** (build 300) · Local-first PWA + Capacitor iOS · App Privacy: **Data Not Collected**
 
 ## Required URLs (GitHub Pages)
 
@@ -17,7 +17,11 @@
 
 ## Subtitle (30 characters max)
 
-Daily scent picks · wear log · layering
+```
+Daily picks · wardrobe · layering
+```
+
+_Char count: 30_
 
 ## Keywords (100 characters max)
 
@@ -29,23 +33,19 @@ _Char count: 97_
 
 ## Promotional Text (170 characters, optional)
 
-Office Safe mode keeps work-day picks desk-friendly. Your entire wardrobe, wear log, and layering combos stay on your device — no account required.
+Offline catalog of real bottles. Weather-aware picks, Office Safe for work days, and a wear log that never leaves your phone — no account required.
 
-## Short Description (~80 words)
-
-ScentCap is your private fragrance operating system. Add the bottles you own, get a daily scent pick matched to weather and occasion, log wears with ratings, and build layering combos in the Lab. **Office Safe** filters work-day recommendations to low-projection, conference-room-friendly scents — a feature competitors like ScentMax and Aromoshelf don't offer. Everything stays on your device. Export anytime.
-
-## Full Description
+## Description
 
 **Stop guessing. Start wearing.**
 
-ScentCap turns your fragrance collection into a daily decision engine. No social feed, no cloud account, no ads — just your wardrobe, your rules, your data on your phone.
+ScentCap is your private fragrance operating system. Browse a bundled offline catalog of real bottles, add what you own, get a daily scent pick matched to weather and occasion, log wears, and build layering combos in the Lab. Everything stays on your device.
 
-**Today's pick**
-Every morning, ScentCap analyzes your collection against weather, occasion, and your profile to recommend exactly what to wear — with spray count and body placement map.
+**Today’s pick**
+Every morning, ScentCap recommends what to wear from your wardrobe — with spray count and placement guidance — using optional weather context when you allow location.
 
-**Office Safe — our hero feature**
-Enable Office Safe and work-day picks automatically filter to low-projection, desk-friendly scents. Set a max spray limit for the office. Perfect for open-plan floors and client meetings. Unlike generic collection apps, ScentCap is built for real-world professional wear.
+**Office Safe**
+Enable Office Safe and work-day picks filter to low-projection, desk-friendly scents. Set a max spray limit for open-plan floors and client meetings.
 
 **Scent Advisor**
 Customize time, occasion, dress code, and vibe for a fresh recommendation with backup picks and reasoning.
@@ -57,14 +57,14 @@ Pick a base from your wardrobe and discover compatible partners. Save combos for
 Track every wear with ratings, compliments, and notes. Spot neglected bottles and rotation gaps.
 
 **Analytics & travel kit**
-Collection value, seasonality insights, and a travel decant planner.
+Collection insights and a travel decant planner.
 
 **Private by design**
-Your wardrobe, photos, and history never leave your device unless you export them. No analytics SDKs. No third-party data collection. See our privacy policy for details.
+Your wardrobe, photos, and history never leave your device unless you export them. No analytics SDKs. No accounts. App Privacy: Data Not Collected.
+
+Bottle images © their respective brands, via Parfumo. ScentCap is not affiliated with any fragrance house.
 
 Built for collectors who want clarity, not clutter.
-
----
 
 ## Screenshot Captions (6 screens)
 
@@ -77,60 +77,58 @@ Built for collectors who want clarity, not clutter.
 | 5 | **Analytics** | Rotation health, value, and wear patterns |
 | 6 | **Travel** | Pack the right decants for any trip |
 
-## Privacy Nutrition Label Notes
+## Age rating (App Store Connect answers)
 
-| Data type | Collected | Linked to user | Used for tracking |
-|-----------|-----------|----------------|-------------------|
-| Contact info | No | — | — |
-| Health & fitness | No | — | — |
-| Financial info | No | — | — |
-| Location | Optional, on-device only (weather) | No | No |
-| User content (wardrobe, photos, wear log) | Yes, **local only** | No | No |
-| Identifiers | No | — | — |
-| Usage data | No | — | — |
-| Diagnostics | No | — | — |
+| Question | Answer |
+|----------|--------|
+| Unrestricted web access | No |
+| Gambling / contests | No |
+| Mature / suggestive themes | No |
+| Violence / horror | No |
+| Medical / drug info beyond fragrance wear | No |
+| **Suggested rating** | **4+** |
 
-**Summary for App Store Connect:** Data Not Collected off device. Location is requested optionally for weather-aware picks and is not transmitted to ScentCap servers (there are none). Users can export JSON/CSV backups manually.
+## App Privacy — Data Not Collected
 
-## Competitive Positioning
+Declare **Data Not Collected** in App Store Connect. ScentCap is local-first:
 
-| Feature | ScentCap | ScentMax | Aromoshelf |
-|---------|----------|----------|------------|
-| Local-first / no account | ✅ | ❌ | ❌ |
-| Daily scent pick | ✅ | Partial | ❌ |
-| Office Safe mode | ✅ **Hero** | ❌ | ❌ |
-| Spray body map | ✅ | ❌ | ❌ |
-| Layering lab | ✅ | ❌ | Partial |
-| Wear calendar | ✅ | ✅ | ✅ |
-| Offline PWA | ✅ | ❌ | ❌ |
+| Data type | Collected off-device? |
+|-----------|----------------------|
+| Contact info | No |
+| Health & fitness | No |
+| Financial info | No |
+| Location | No (optional on-device use for Open-Meteo weather only; not linked to you; not used for tracking) |
+| User content | No (wardrobe / photos / wear log stay on device) |
+| Identifiers | No |
+| Usage data | No |
+| Diagnostics | No |
+| Tracking | No |
 
-**Tagline for marketing:** _The fragrance OS that respects your nose — and your privacy._
+Optional network calls (user-initiated): Open-Meteo (city or coordinates for weather), Fraganty (catalog search queries). No ScentCap backend stores wardrobe data.
 
-## What's New (2.0.9)
+## Privacy nutrition (detail)
 
-- Real Fraganty bottle photos on demo wardrobe; stricter backup import; advisor race guards
+See also [`store/PRIVACY-LABELS.md`](./store/PRIVACY-LABELS.md) and the privacy manifest at `ios/App/App/PrivacyInfo.xcprivacy`.
 
-## What's New (2.0.1)
+## Competitive positioning
 
-- Completely free: removed Stripe/IAP/Pro paywall, bottle limits, and payment docs theater
+| Feature | ScentCap | Typical cloud wardrobe apps |
+|---------|----------|----------------------------|
+| Local-first / no account | ✅ | Often ❌ |
+| Bundled offline bottle catalog | ✅ | Rare |
+| Daily scent pick + Office Safe | ✅ | Partial / missing |
+| Layering lab + wear calendar | ✅ | Partial |
+| Offline PWA + iOS shell | ✅ | Rare |
 
-## What's New (1.0.8)
+**Tagline:** _The fragrance OS that respects your nose — and your privacy._
 
-- Pre-launch: App Store screenshots automation, Terms/Support legal pages
-- iOS polish: privacy usage strings, app icon generation, version 1.0.8 sync
-- E2E: delete bottle test, shared helpers
-- Docs: PRE-LAUNCH.md day-1 checklist, SCREENSHOTS.md, expanded IOS-BUILD.md
+## What’s New (3.0.0)
 
-## What's New (1.0.7)
+- ScentCap 3 redesign + bundled offline catalog of real bottles
+- App Store hardening: privacy manifest, usage strings, mark-only launch, version 3.0.0
 
-- Catalog search upgrade: fuzzy brand/name match, Recent additions
-- Wishlist tabs: Owned / Want / Tested (local IndexedDB)
-- Capacitor iOS wrapper — see [IOS-BUILD.md](./IOS-BUILD.md)
+## Related
 
-## What's New (1.0.6)
-
-- Office Safe surfaced in onboarding and Advisor
-- Square & story share cards (Cap Neutral styling)
-- Save Advisor layering combos to Layering Lab
-- Privacy badge in Settings with export reminder
-- Calendar navigation and share export QA
+- Native build: [`IOS-BUILD.md`](./IOS-BUILD.md)
+- Store pack: [`store/APP-STORE.md`](./store/APP-STORE.md)
+- TestFlight: [`store/TESTFLIGHT.md`](./store/TESTFLIGHT.md)

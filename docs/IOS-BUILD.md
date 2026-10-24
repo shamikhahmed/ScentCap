@@ -1,6 +1,6 @@
 # ScentCap — iOS Build Guide
 
-> Version 2.2.0 · Capacitor 8 · App Store / TestFlight readiness (no submission in finish program)
+> Version 3.0.0 (build 300) · Capacitor 8 · App Store / TestFlight readiness (no submission in finish program)
 
 ## Prerequisites
 
@@ -62,15 +62,20 @@ xcodebuild -project ios/App/App.xcodeproj -scheme App \
 ## Info.plist (pre-configured)
 
 - `CFBundleDisplayName`: ScentCap
-- `MARKETING_VERSION`: 2.2.0 · `CURRENT_PROJECT_VERSION`: 220
-- `NSCameraUsageDescription` — bottle photos
-- `NSPhotoLibraryUsageDescription` — photo picker
-- `NSLocationWhenInUseUsageDescription` — weather (Open-Meteo)
+- `MARKETING_VERSION`: 3.0.0 · `CURRENT_PROJECT_VERSION`: 300
+- `NSCameraUsageDescription` — bottle photos (plain language; local only)
+- `NSPhotoLibraryUsageDescription` — photo picker (plain language; local only)
+- `NSLocationWhenInUseUsageDescription` — weather picks via Open-Meteo
 - `ITSAppUsesNonExemptEncryption`: false
 
 ## Privacy manifest
 
-`ios/App/App/PrivacyInfo.xcprivacy` — no tracking; UserDefaults / File Timestamp / Disk Space reason APIs declared.
+`ios/App/App/PrivacyInfo.xcprivacy` — `NSPrivacyTracking` false; empty collected data types; UserDefaults (CA92.1) / File Timestamp (C617.1) / Disk Space (E174.1) required-reason APIs declared for Capacitor.
+
+## Launch & icon
+
+- App icon: single 1024×1024 in `AppIcon.appiconset` synced from `public/icon-1024.png`
+- Launch screen: mark-only (`LaunchMark` + system background) — no branding text (HIG)
 
 ## Pricing
 
