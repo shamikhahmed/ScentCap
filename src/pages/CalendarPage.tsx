@@ -89,7 +89,7 @@ export function CalendarPage() {
     <div className="ui-page">
       <PageHeader
         eyebrow="Journal"
-        title="Wear calendar"
+        title="Diary"
         subtitle={`${wearStreak(history)}d streak · ${wearsThisMonth(history)} this month`}
         trailing={
           !loggedToday && collection.length > 0 ? (
@@ -154,9 +154,11 @@ export function CalendarPage() {
                   {format(day, 'd')}
                 </span>
                 {primary && (
-                  <span className="text-[var(--t-caption2)] leading-tight px-0.5 mt-0.5 line-clamp-2 text-[var(--label-2)] max-w-full">
-                    {labels[primary]?.name.split(' ').slice(-1)[0]}
-                  </span>
+                  <span
+                    className="mt-1 w-1.5 h-1.5 rounded-full bg-[var(--tint)]"
+                    aria-hidden
+                    title={labels[primary]?.name}
+                  />
                 )}
               </div>
             );

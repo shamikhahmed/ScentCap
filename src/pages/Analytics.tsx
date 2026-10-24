@@ -127,10 +127,13 @@ export function AnalyticsPage() {
 
   return (
     <div className="ui-page">
-      <PageHeader eyebrow="Insights" title="Analytics" subtitle="Wardrobe health, value, and wear patterns." />
+      <PageHeader eyebrow="Insights" title="Insights" subtitle="Wardrobe health, value, and wear patterns." />
 
       <div className="ui-card flex items-center gap-4 mb-4">
-        <Ring value={stats.rotation} size={64} label={`Rotation ${stats.rotation}%`} />
+        <div className="relative shrink-0 grid place-items-center">
+          <Ring value={stats.rotation} size={64} label={`Rotation ${stats.rotation}%`} />
+          <span className="absolute text-[var(--t-footnote)] font-bold tabular-nums">{stats.rotation}</span>
+        </div>
         <div>
           <p className="font-semibold">Rotation health</p>
           <p className="ui-footnote mt-1">Share of wardrobe worn at least once.</p>

@@ -3,6 +3,7 @@
 ## Requests for Claude
 
 - **A11y budget:** Mobile Lighthouse on `vite preview` scores **accessibility 92** (budget 95). Likely in locked UI (`src/components/**`, `src/pages/**`, `src/index.css`). Phase 1 LHCI job fails soft (`continue-on-error`); please clear contrast/label issues with the 3.0 design system.
+- **HIG chrome (locked):** Tab bar labels are **10.5px** (`min-font` fails all 8 matrix cells) and axe **serious** `color-contrast` on the glass tab/demo shell — fix in `src/design/system.css` / AppShell. Also Cap BP: AppShell still uses Tailwind `md:` (768) while DESIGN says 700px.
 - Do not bump `package.json` / `VERSION.json` to 3.0.0 from Cursor until your `release: ScentCap 3.0.0` — iOS marketing version is already **3.0.0 (300)** for store pack readiness.
 
 ## Phase log

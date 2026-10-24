@@ -46,15 +46,18 @@ export function LayeringLab() {
       }),
     ).then((rows) => {
       const loaded = rows.filter(Boolean) as { id: string; f: Fragrance }[];
-      setItems(loaded);
-      void enrichFragranceImages(loaded.map((i) => i.id)).then(async () => {
+      const deduped = [...new Map(loaded.map((row) => [row.id, row])).values()];
+      setItems(deduped);
+      void enrichFragranceImages(deduped.map((i) => i.id)).then(async () => {
         const refreshed = await Promise.all(
-          loaded.map(async ({ id }) => {
+          deduped.map(async ({ id }) => {
             const f = await getFragrance(id);
             return f ? { id, f } : null;
           }),
         );
-        setItems(refreshed.filter(Boolean) as { id: string; f: Fragrance }[]);
+        setItems(
+          [...new Map((refreshed.filter(Boolean) as { id: string; f: Fragrance }[]).map((row) => [row.id, row])).values()],
+        );
       });
     });
     loadSaved();

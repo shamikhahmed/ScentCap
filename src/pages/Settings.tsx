@@ -84,6 +84,7 @@ export function SettingsPage() {
   const [importError, setImportError] = useState<string | null>(null);
   const [demoConfirmOpen, setDemoConfirmOpen] = useState(false);
   const [wipeStep, setWipeStep] = useState<0 | 1 | 2>(0);
+  const [profileOpen, setProfileOpen] = useState(false);
   const [cityInput, setCityInput] = useState(
     profile?.cityLabel && profile.cityLabel !== 'Current location' ? profile.cityLabel : '',
   );
@@ -246,15 +247,13 @@ export function SettingsPage() {
         </button>
       </Sheet>
 
-      {/* Profile */}
-      <p className="ui-list-header">Profile</p>
-      <div className="ui-list">
+      <Sheet open={profileOpen} title="Profile" onClose={() => setProfileOpen(false)} done={{ label: 'Done', onClick: () => setProfileOpen(false) }}>
         {profile ? (
-          PROFILE_FIELDS.map((f) => (
-            <div key={f.key} className="ui-row !items-start !py-3" role="radiogroup" aria-label={f.label}>
-              <div className="ui-row__main">
-                <p className="ui-row__title">{f.label}</p>
-                <div className="flex flex-wrap gap-2 mt-2">
+          <div className="space-y-5 px-1 pb-4">
+            {PROFILE_FIELDS.map((f) => (
+              <div key={f.key} role="radiogroup" aria-label={f.label}>
+                <p className="ui-footnote font-semibold mb-2">{f.label}</p>
+                <div className="flex flex-wrap gap-2">
                   {f.options.map((o) => {
                     const selected = String(profile[f.key]) === o.v;
                     return (
@@ -273,44 +272,40 @@ export function SettingsPage() {
                   })}
                 </div>
               </div>
+            ))}
+            <div className="ui-row !px-0" role="radiogroup" aria-label="Fragrance sensitivity">
+              <div className="ui-row__main">
+                <p className="ui-row__title">Sensitive to fragrance</p>
+                <p className="ui-row__sub">Advisor prefers softer projection when on</p>
+              </div>
+              <div className="ui-segmented shrink-0">
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={!profile.sensitivity}
+                  aria-pressed={!profile.sensitivity}
+                  onClick={() => updateProfile('sensitivity', 'false')}
+                >
+                  No
+                </button>
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={!!profile.sensitivity}
+                  aria-pressed={!!profile.sensitivity}
+                  onClick={() => updateProfile('sensitivity', 'true')}
+                >
+                  Yes
+                </button>
+              </div>
             </div>
-          ))
+          </div>
         ) : (
-          <div className="ui-row">
-            <p className="ui-row__title">Finish onboarding to set your profile</p>
-          </div>
+          <p className="ui-secondary px-1 pb-4">Finish onboarding to set your profile.</p>
         )}
-        {profile && (
-          <div className="ui-row" role="radiogroup" aria-label="Fragrance sensitivity">
-            <div className="ui-row__main">
-              <p className="ui-row__title">Sensitive to fragrance</p>
-              <p className="ui-row__sub">Advisor prefers softer projection when on</p>
-            </div>
-            <div className="ui-segmented shrink-0" role="presentation">
-              <button
-                type="button"
-                role="radio"
-                aria-checked={!profile.sensitivity}
-                aria-pressed={!profile.sensitivity}
-                onClick={() => updateProfile('sensitivity', 'false')}
-              >
-                No
-              </button>
-              <button
-                type="button"
-                role="radio"
-                aria-checked={!!profile.sensitivity}
-                aria-pressed={!!profile.sensitivity}
-                onClick={() => updateProfile('sensitivity', 'true')}
-              >
-                Yes
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
+      </Sheet>
 
-      {/* Preferences */}
+      {/* Preferences first (Claude review) */}
       <p className="ui-list-header">Preferences</p>
       <div className="ui-list">
         <div className="ui-row" role="group" aria-label="Theme">
@@ -451,6 +446,21 @@ export function SettingsPage() {
             )}
           </div>
         </div>
+      </div>
+
+      <p className="ui-list-header">Profile</p>
+      <div className="ui-list">
+        <button type="button" className="ui-row ui-row--media w-full text-left" onClick={() => setProfileOpen(true)}>
+          <div className="ui-row__main">
+            <p className="ui-row__title">Profile</p>
+            <p className="ui-row__sub">
+              {profile
+                ? `${PROFILE_FIELDS[0].options.find((o) => o.v === profile.gender)?.l ?? 'Set'} · advisor identity`
+                : 'Finish onboarding to set your profile'}
+            </p>
+          </div>
+          <ChevronRight className="ui-chevron" size={18} aria-hidden />
+        </button>
       </div>
 
       <p className="ui-list-header">Tools</p>
