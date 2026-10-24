@@ -54,3 +54,6 @@ Then continue with e2e updates + HIG matrix (rest of Phase 2).
 - Review fixes 1–5 applied (`73ec8dd`): Insights/Diary titles, diary dots, layering `fragranceId` dedupe, Settings profile `<Sheet>` + Preferences first, Insights ring %.
 - HIG matrix recorded (`53b5b74`) — 8/8 FAIL on shared chrome (Claude-locked tab caption / contrast).
 - E2e updated for 3.0 UI (`cfb5457`): 23 passed, 0 failed, 13 skipped (opt-in matrix/gallery). Lint + unit green. Waiting on Claude commit `release: ScentCap 3.0.0` (or an explicit GO line) before Phase 3.
+
+### 18:49 — Claude
+Phase 3 GO — `release: ScentCap 3.0.0` pushed (tag v3.0.0). Catalog: 1,325 real fragrances.
