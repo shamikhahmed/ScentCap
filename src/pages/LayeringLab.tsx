@@ -1,12 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Bookmark, Layers, ArrowRight, Trash2, Plus, Sparkles } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { PressableDiv } from '@/components/ui/PressableScale';
-import { GlassCard } from '@/components/premium/GlassCard';
+import { AlertTriangle, ArrowRight, Bookmark, Trash2 } from 'lucide-react';
+import { EmptyState } from '@/components/ui/EmptyState';
 import { FragranceThumb } from '@/components/collection/FragranceThumb';
-import { ScoreRing } from '@/components/home/ScoreRing';
+import { BottleCard, PageHeader, Ring, Section } from '@/components/kit';
 import { useApp } from '@/context/AppContext';
 import { deleteLayeringProfile, getFragrance, getSavedLayeringProfiles, saveLayeringProfile } from '@/db';
 import { findBestLayering } from '@/engines/layering';
@@ -18,12 +14,10 @@ import { enrichFragranceImages } from '@/services/seed';
 import type { Fragrance, LayeringProfile } from '@/types';
 import { uid } from '@/lib/utils';
 import { hapticLight, hapticSuccess } from '@/lib/premium/haptics';
-import { textSubtle } from '@/lib/ui-classes';
-import { fragranceDisplayName } from '@/services/onlineCatalog';
+import { fragranceDisplayName } from '@/lib/fragranceName';
 
 export function LayeringLab() {
   const { collection, profile, prefs } = useApp();
-  const navigate = useNavigate();
   const [items, setItems] = useState<{ id: string; f: Fragrance }[]>([]);
   const [primaryId, setPrimaryId] = useState<string | null>(null);
   const [result, setResult] = useState<ReturnType<typeof findBestLayering> | null>(null);
@@ -152,177 +146,164 @@ export function LayeringLab() {
 
   if (!items.length) {
     return (
-      <div className="atelier-page">
-        <header>
-          <p className="atelier-page__brand">Lab</p>
-          <h1 className="atelier-page__title">Layering Lab</h1>
-          <p className="atelier-page__sub">Stack two scents — find pairings that work.</p>
-        </header>
-        <GlassCard className="mt-10 text-center py-12" delay={0.1}>
-          <div className="w-14 h-14 mx-auto mb-5 rounded-2xl glass-premium flex items-center justify-center">
-            <Layers size={24} className="text-[var(--color-accent)]" />
-          </div>
-          <p className="text-subhead font-medium">Your wardrobe is empty</p>
-          <p className={`text-sm mt-2 max-w-[16rem] mx-auto ${textSubtle}`}>
-            Add at least two bottles to experiment with layering combos.
-          </p>
-          <Button className="mt-8 min-w-[200px]" onClick={() => navigate('/add')} haptic="medium">
-            <Plus size={18} />
-            Add fragrance
-          </Button>
-        </GlassCard>
-      </div>
+      <EmptyState
+        eyebrow="Lab"
+        title="Layering Lab"
+        description="Add at least two bottles to your wardrobe and we will find pairings that work together."
+        action={{ label: 'Add fragrance', to: '/add' }}
+      />
     );
   }
 
+  const needTwo = items.length < 2;
+
   return (
-    <div className="atelier-page space-y-8">
-      <header className="flex items-start justify-between gap-3">
-        <div>
-          <p className="atelier-page__brand">Lab</p>
-          <h1 className="atelier-page__title">Layering Lab</h1>
-          <p className="atelier-page__sub">Pick a base — find the best partner.</p>
-        </div>
-        <Sparkles size={22} className="text-[var(--sc-accent)] opacity-80 mt-1 shrink-0" />
-      </header>
+    <div className="ui-page">
+      <PageHeader eyebrow="Lab" title="Layering Lab" subtitle="Pick a base and find the best partner from your wardrobe." />
 
       {saved.length > 0 && (
-        <GlassCard delay={0.05}>
-          <p className="text-caption text-[var(--color-text-tertiary)] mb-3">Saved combos</p>
-          <div className="space-y-2">
+        <Section title="Saved combos" id="layering-saved">
+          <div className="ui-list">
             {saved.map((p) => (
-              <div key={p.id} className="flex items-center gap-2 p-2.5 rounded-2xl bg-[var(--sc-surface)] border border-[var(--sc-border-soft)]">
-                <PressableDiv className="flex-1 min-w-0" onClick={() => loadCombo(p)} asButton>
-                  <p className="text-sm truncate">
-                    <span className="text-[var(--color-accent)] font-semibold tabular-nums">{p.score}%</span>
-                    <span className="text-[var(--color-text-tertiary)]"> · </span>
-                    {savedLabels[p.id]?.primary ?? '…'}
-                    <span className="text-[var(--color-text-tertiary)]"> + </span>
-                    {savedLabels[p.id]?.secondary ?? '…'}
-                  </p>
-                </PressableDiv>
+              <div key={p.id} className="ui-row">
                 <button
                   type="button"
-                  className="p-2 rounded-xl text-[var(--color-text-tertiary)] hover:text-[var(--sc-danger)] pressable"
-                  onClick={() => removeCombo(p.id)}
+                  className="ui-row__main bg-transparent border-0 p-0 text-left text-inherit font-[inherit] cursor-pointer min-h-[44px] flex items-center"
+                  onClick={() => void loadCombo(p)}
+                  aria-label={`Open combo ${savedLabels[p.id]?.primary ?? ''} plus ${savedLabels[p.id]?.secondary ?? ''}`}
+                >
+                  <span className="min-w-0">
+                    <span className="ui-row__title block">
+                      {savedLabels[p.id]?.primary ?? '…'} + {savedLabels[p.id]?.secondary ?? '…'}
+                    </span>
+                    <span className="ui-row__sub block">{p.score}% match</span>
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  className="ui-icon-btn"
+                  onClick={() => void removeCombo(p.id)}
                   aria-label="Delete combo"
                 >
-                  <Trash2 size={14} />
+                  <Trash2 size={18} aria-hidden />
                 </button>
               </div>
             ))}
           </div>
-        </GlassCard>
+        </Section>
       )}
 
-      <section>
-        <p className="text-caption text-[var(--color-text-tertiary)] mb-3">Choose base scent</p>
-        <div className="grid grid-cols-2 gap-3">
+      <Section title="Choose base scent" id="layering-base">
+        <div className="ui-grid">
           {items.map(({ id, f }) => (
-            <button
+            <BottleCard
               key={id}
-              type="button"
+              fragrance={f}
+              selected={primaryId === id}
               onClick={() => pickPrimary(id)}
-              className={`text-left rounded-2xl p-3 border transition-colors pressable touch-pan-y ${
-                primaryId === id
-                  ? 'border-[var(--color-accent)]/50 bg-[var(--color-accent)]/8'
-                  : 'border-[var(--sc-border-soft)] bg-[var(--sc-surface)]'
-              }`}
-            >
-              <FragranceThumb
-                brand={f.brand}
-                name={f.name}
-                family={f.family}
-                catalogImage={f.image}
-                fragrance={f}
-                size="sm"
-                selected={primaryId === id}
-                className="mb-2.5 w-full"
-              />
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--color-text-tertiary)] truncate">
-                {f.brand}
-              </p>
-              <p className="text-sm font-medium leading-tight tracking-tight mt-0.5 line-clamp-2">{fragranceDisplayName(f.name)}</p>
-            </button>
+            />
           ))}
         </div>
-      </section>
+      </Section>
 
       {primary && !result && (
-        <Button className="w-full btn-glow" onClick={analyze} disabled={items.length < 2 || analyzing} haptic="medium">
-          {items.length < 2 ? 'Need at least 2 bottles' : 'Find layering partner'}
-        </Button>
+        <div className="ui-section">
+          <button
+            type="button"
+            className="ui-btn ui-btn--primary ui-btn--block"
+            onClick={analyze}
+            disabled={needTwo || analyzing}
+          >
+            {needTwo ? 'Need at least 2 bottles' : 'Find layering partner'}
+          </button>
+        </div>
       )}
 
-      <AnimatePresence mode="wait">
-        {result && primary && (
-          <motion.div
-            ref={resultRef}
-            key={`${primaryId}-${result.secondary.id}`}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
-          >
-            <GlassCard glow="var(--color-accent)" className="space-y-5">
-              {result.warn && (
-                <p className="text-[var(--sc-warning)] text-sm rounded-xl bg-[color-mix(in_srgb,var(--sc-warning)_12%,transparent)] border border-[color-mix(in_srgb,var(--sc-warning)_25%,transparent)] px-3 py-2">
-                  {result.warn}
+      {result && primary && (
+        <section
+          ref={resultRef}
+          key={`${primaryId}-${result.secondary.id}`}
+          className="ui-section ui-rise"
+          aria-label="Layering result"
+        >
+          <div className="ui-card ui-card--lg space-y-5">
+            {result.warn && (
+              <div className="flex items-start gap-2 text-[var(--warning)]" role="status">
+                <AlertTriangle size={18} className="shrink-0 mt-0.5" aria-hidden />
+                <p className="text-[var(--t-subhead)]">{result.warn}</p>
+              </div>
+            )}
+
+            <div className="flex items-center gap-3">
+              <div className="flex-1 min-w-0 text-center space-y-2">
+                <p className="ui-eyebrow">Base</p>
+                <div className="mx-auto w-24">
+                  <FragranceThumb fragrance={primary} variant="plinth" size="sm" />
+                </div>
+                <p className="serif text-[var(--t-callout)] leading-tight line-clamp-2">{fragranceDisplayName(primary.name)}</p>
+              </div>
+
+              <ArrowRight className="text-[var(--label-3)] shrink-0" size={20} aria-hidden />
+
+              <div className="flex-1 min-w-0 text-center space-y-2">
+                <p className="ui-eyebrow">Layer</p>
+                <div className="mx-auto w-24">
+                  <FragranceThumb fragrance={result.secondary} variant="plinth" size="sm" />
+                </div>
+                <p className="serif text-[var(--t-callout)] leading-tight line-clamp-2">
+                  {fragranceDisplayName(result.secondary.name)}
                 </p>
-              )}
-
-              <div className="flex items-center gap-3">
-                <div className="flex-1 text-center space-y-2">
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--color-text-tertiary)]">Base</p>
-                  <FragranceThumb brand={primary.brand} name={primary.name} family={primary.family} catalogImage={primary.image} fragrance={primary} size="sm" className="mx-auto w-20" />
-                  <p className="text-sm font-semibold leading-tight line-clamp-2">{fragranceDisplayName(primary.name)}</p>
-                </div>
-
-                <ArrowRight className="text-[var(--color-accent)] shrink-0" size={20} />
-
-                <div className="flex-1 text-center space-y-2">
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--color-text-tertiary)]">Layer</p>
-                  <FragranceThumb brand={result.secondary.brand} name={result.secondary.name} family={result.secondary.family} catalogImage={result.secondary.image} fragrance={result.secondary} size="sm" className="mx-auto w-20" />
-                  <p className="text-sm font-semibold leading-tight line-clamp-2">{fragranceDisplayName(result.secondary.name)}</p>
-                </div>
               </div>
+            </div>
 
-              <div className="flex flex-col items-center py-2">
-                <p className="text-xs uppercase tracking-wider text-[var(--sc-text-muted)] mb-2">Suggested pairing</p>
-                <ScoreRing score={result.score} size={96} />
+            <div className="flex flex-col items-center gap-2">
+              <div className="relative" style={{ width: 96, height: 96 }}>
+                <Ring value={result.score} size={96} stroke={8} label={`${result.score}% pairing score`} />
+                <span className="absolute inset-0 flex items-center justify-center text-[var(--t-title2)] font-semibold tabular-nums">
+                  {result.score}%
+                </span>
               </div>
+              <p className="ui-secondary text-[var(--t-subhead)]">Suggested pairing</p>
+            </div>
 
-              <div className="space-y-2 text-center">
-                <p className="text-sm font-medium text-[var(--color-text-primary)]">{result.order}</p>
-                <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">{result.guidance}</p>
+            <div className="space-y-1.5 text-center">
+              <p className="font-semibold">{result.order}</p>
+              <p className="ui-secondary leading-relaxed">{result.guidance}</p>
+            </div>
+
+            {sprayPlan && profile && (
+              <div className="rounded-[var(--r-md)] bg-[var(--surface-2)] p-4">
+                <SprayBodyMap
+                  bodyVariant={sprayPlan.bodyVariant ?? genderToBodyVariant(profile.gender)}
+                  activeZones={sprayPlan.activeZones ?? []}
+                  sprays={sprayPlan.totalSprays}
+                  isLayered
+                  applicationSteps={sprayPlan.applicationSteps}
+                  techniqueNote={sprayPlan.techniqueNote}
+                />
               </div>
+            )}
 
-              {sprayPlan && profile && (
-                <div className="rounded-2xl border border-[var(--color-border-subtle)] bg-[var(--color-bg-secondary)]/40 p-4">
-                  <SprayBodyMap
-                    bodyVariant={sprayPlan.bodyVariant ?? genderToBodyVariant(profile.gender)}
-                    activeZones={sprayPlan.activeZones ?? []}
-                    sprays={sprayPlan.totalSprays}
-                    isLayered
-                    applicationSteps={sprayPlan.applicationSteps}
-                    techniqueNote={sprayPlan.techniqueNote}
-                  />
-                </div>
-              )}
-
-              <div className="flex gap-2 pt-1">
-                <Button variant="ghost" className="flex-1" onClick={() => { setResult(null); setSprayPlan(null); hapticLight(); }}>
-                  Try another base
-                </Button>
-                <Button className="flex-1" onClick={saveCombo} haptic="success">
-                  <Bookmark size={16} />
-                  Save combo
-                </Button>
-              </div>
-            </GlassCard>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                className="ui-btn ui-btn--gray flex-1"
+                onClick={() => {
+                  setResult(null);
+                  setSprayPlan(null);
+                  hapticLight();
+                }}
+              >
+                Try another base
+              </button>
+              <button type="button" className="ui-btn ui-btn--primary flex-1" onClick={() => void saveCombo()}>
+                <Bookmark size={16} aria-hidden />
+                Save combo
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

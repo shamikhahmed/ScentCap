@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Check } from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Check, ChevronRight } from 'lucide-react';
+import { FragranceThumb } from '@/components/collection/FragranceThumb';
+import { PageHeader, Section } from '@/components/kit';
+import { fragranceDisplayName } from '@/lib/fragranceName';
 import { useApp } from '@/context/AppContext';
 import { getFragrance, getTravelKitPlan, saveTravelKitPlan } from '@/db';
 import type { Fragrance } from '@/types';
-import { FamilyIcon } from '@/components/ui/FamilyIcon';
 
 function daysBetween(start: string, end: string): number {
   if (!start || !end) return 3;
@@ -98,113 +98,146 @@ export function TravelKit() {
     : null;
 
   return (
-    <div className="atelier-page space-y-6">
-      <header>
-        <p className="atelier-page__brand">Pack</p>
-        <h1 className="atelier-page__title">Travel kit</h1>
-        <p className="atelier-page__sub">Pack light — max projection, TSA-friendly picks. General guidance only — check airline rules.</p>
-      </header>
+    <div className="ui-page">
+      <PageHeader
+        eyebrow="Pack"
+        title="Travel kit"
+        subtitle="Pack light with max-projection, travel-friendly picks. General guidance only — check airline rules."
+      />
 
-      <Card className="space-y-4">
-        <div>
-          <label htmlFor="trip-name" className="text-xs uppercase text-[var(--sc-text-muted)]">Trip name</label>
-          <input
-            id="trip-name"
-            type="text"
-            value={tripName}
-            onChange={(e) => setTripName(e.target.value)}
-            placeholder="e.g. Dubai work trip"
-            className="atelier-input mt-1"
-          />
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label htmlFor="trip-start" className="text-xs uppercase text-[var(--sc-text-muted)]">Start</label>
+      <Section title="Trip" id="travel-trip">
+        <div className="ui-list">
+          <div className="ui-row">
+            <label htmlFor="trip-name" className="ui-row__title shrink-0 w-24">
+              Trip name
+            </label>
+            <input
+              id="trip-name"
+              type="text"
+              value={tripName}
+              onChange={(e) => setTripName(e.target.value)}
+              placeholder="e.g. Dubai work trip"
+              className="ui-field ui-field--left"
+              autoComplete="off"
+            />
+          </div>
+          <div className="ui-row">
+            <label htmlFor="trip-start" className="ui-row__title shrink-0 w-24">
+              Start
+            </label>
             <input
               id="trip-start"
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="atelier-input mt-1"
+              className="ui-field ui-field--left"
             />
           </div>
-          <div>
-            <label htmlFor="trip-end" className="text-xs uppercase text-[var(--sc-text-muted)]">End</label>
+          <div className="ui-row">
+            <label htmlFor="trip-end" className="ui-row__title shrink-0 w-24">
+              End
+            </label>
             <input
               id="trip-end"
               type="date"
               value={endDate}
               min={startDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="atelier-input mt-1"
+              className="ui-field ui-field--left"
             />
           </div>
+          <div className="ui-row" role="group" aria-label="Kit mode">
+            <div className="ui-segmented w-full">
+              <button type="button" aria-pressed={!manualMode} onClick={() => setManualMode(false)}>
+                Auto suggest
+              </button>
+              <button type="button" aria-pressed={manualMode} onClick={() => setManualMode(true)}>
+                Pick manually
+              </button>
+            </div>
+          </div>
         </div>
-        <div className="flex gap-2" role="group" aria-label="Kit mode">
-          <Button size="sm" className="min-h-[44px]" aria-pressed={!manualMode} variant={!manualMode ? 'default' : 'ghost'} onClick={() => setManualMode(false)}>
-            Auto suggest
-          </Button>
-          <Button size="sm" className="min-h-[44px]" aria-pressed={manualMode} variant={manualMode ? 'default' : 'ghost'} onClick={() => setManualMode(true)}>
-            Pick manually
-          </Button>
-        </div>
-        <p className="text-sm text-[var(--sc-text-soft)]">
-          {tripName ? <strong className="text-[var(--sc-text)]">{tripName}</strong> : 'Your trip'}
+        <p className="ui-list-footer" aria-live="polite">
+          {tripName || 'Your trip'}
           {dateLabel ? ` · ${dateLabel}` : ''}
           {' · '}
-          <strong className="text-[var(--sc-text)]">{days} days</strong>
+          {days} {days === 1 ? 'day' : 'days'}
           {' · '}
           {picked.length} bottle{picked.length !== 1 ? 's' : ''} {manualMode ? 'picked' : 'recommended'}
         </p>
-      </Card>
+      </Section>
 
       {manualMode && (
-        <Card className="space-y-2">
-          <p className="text-xs uppercase text-[var(--sc-text-muted)] mb-2">Your collection</p>
-          {allBottles.map(({ f, itemId }) => {
-            const selected = pickedIds.includes(itemId);
-            return (
-              <button
-                key={itemId}
-                type="button"
-                onClick={() => togglePick(itemId)}
-                className={`w-full flex items-center gap-3 py-2 px-2 rounded-xl text-left transition-colors ${
-                  selected ? 'bg-[var(--color-accent)]/15 border border-[var(--color-accent)]/40' : 'hover:bg-[var(--sc-surface)]'
-                }`}
-              >
-                <span className={`w-6 h-6 rounded-full flex items-center justify-center border ${selected ? 'bg-[var(--color-accent)] border-[var(--color-accent)]' : 'border-[var(--sc-border)]'}`}>
-                  {selected && <Check size={14} className="text-white" />}
-                </span>
-                <FamilyIcon family={f.family} size={16} />
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs text-[var(--sc-text-muted)]">{f.brand}</p>
-                  <p className="font-medium truncate text-sm">{f.name}</p>
-                </div>
-              </button>
-            );
-          })}
-          {!allBottles.length && <p className="text-sm text-[var(--sc-text-muted)]">Add bottles to your wardrobe first.</p>}
-        </Card>
+        <Section title="Your collection" id="travel-collection">
+          {allBottles.length > 0 ? (
+            <div className="ui-list">
+              {allBottles.map(({ f, itemId }) => {
+                const selected = pickedIds.includes(itemId);
+                return (
+                  <button
+                    key={itemId}
+                    type="button"
+                    className="ui-row ui-row--media"
+                    aria-pressed={selected}
+                    onClick={() => togglePick(itemId)}
+                  >
+                    <div className="w-12 shrink-0">
+                      <FragranceThumb fragrance={f} variant="plinth" size="sm" />
+                    </div>
+                    <div className="ui-row__main">
+                      <p className="ui-row__sub">{f.brand}</p>
+                      <p className="ui-row__title serif">{fragranceDisplayName(f.name)}</p>
+                    </div>
+                    <span
+                      className={`shrink-0 w-6 h-6 rounded-full flex items-center justify-center border ${
+                        selected
+                          ? 'bg-[var(--tint)] border-[var(--tint)] text-[var(--on-tint)]'
+                          : 'border-[var(--label-4)]'
+                      }`}
+                      aria-hidden
+                    >
+                      {selected && <Check size={14} />}
+                    </span>
+                    <span className="sr-only">{selected ? 'Selected' : 'Not selected'}</span>
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="ui-secondary">Add bottles to your wardrobe first.</p>
+          )}
+        </Section>
       )}
 
-      <div className="space-y-3">
-        {picked.map(({ f, itemId }, i) => (
-          <Link key={itemId} to={`/fragrance/${itemId}`}>
-            <Card className="flex items-center gap-4 py-4">
-              <span className="text-2xl font-bold text-[var(--sc-text-muted)]">{i + 1}</span>
-              <FamilyIcon family={f.family} size={18} />
-              <div className="flex-1 min-w-0">
-                <p className="text-xs text-[var(--sc-text-muted)]">{f.brand}</p>
-                <p className="font-medium truncate">{f.name}</p>
-                <p className="text-xs text-[var(--color-accent)]">{f.concentration}</p>
-              </div>
-            </Card>
-          </Link>
-        ))}
-      </div>
+      <Section title={manualMode ? 'Your kit' : 'Recommended kit'} id="travel-kit">
+        {picked.length > 0 ? (
+          <div className="ui-list">
+            {picked.map(({ f, itemId }, i) => (
+              <Link key={itemId} to={`/fragrance/${itemId}`} className="ui-row ui-row--media">
+                <div className="w-12 shrink-0">
+                  <FragranceThumb fragrance={f} variant="plinth" size="sm" />
+                </div>
+                <div className="ui-row__main">
+                  <p className="ui-row__sub">
+                    {i + 1} · {f.brand}
+                  </p>
+                  <p className="ui-row__title serif">{fragranceDisplayName(f.name)}</p>
+                  <p className="ui-row__sub text-[var(--tint)]">{f.concentration}</p>
+                </div>
+                <ChevronRight className="ui-chevron" size={18} aria-hidden />
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="ui-card text-center py-8">
+            <p className="ui-secondary">Add bottles to plan a travel kit.</p>
+          </div>
+        )}
+      </Section>
 
-      {!picked.length && <Card className="text-center py-8 text-[var(--sc-text-soft)]">Add bottles to plan a travel kit.</Card>}
-      <Button to="/" variant="ghost" className="w-full">Back to Today</Button>
+      <Link to="/" className="ui-btn ui-btn--gray ui-btn--block">
+        Back to Today
+      </Link>
     </div>
   );
 }
