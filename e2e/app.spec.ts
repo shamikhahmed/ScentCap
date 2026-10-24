@@ -2,8 +2,10 @@ import { test, expect } from '@playwright/test';
 import {
   addFragranceFromSearch,
   completeOnboarding,
+  goTab,
   installTestMocks,
   loadDemoWardrobe,
+  wearTodayButton,
 } from './helpers';
 
 test.describe('ScentCap PWA', () => {
@@ -15,43 +17,48 @@ test.describe('ScentCap PWA', () => {
 
   test('onboarding flow completes', async ({ page }) => {
     await completeOnboarding(page);
-    await expect(page).toHaveURL(/\/ScentCap\/?$/);
+    // ScentCap 3 sends new users straight to the first-bottle step.
+    await expect(page).toHaveURL(/\/ScentCap\/add\/?$/);
   });
 
   test('demo flow loads sample wardrobe on home', async ({ page }) => {
     await loadDemoWardrobe(page);
     await expect(page.getByText('Bottles', { exact: true })).toBeVisible();
-    await expect(page.getByRole('button', { name: /Wear this today/i })).toBeVisible({ timeout: 20_000 });
+    await expect(wearTodayButton(page)).toBeVisible({ timeout: 20_000 });
   });
 
   test('add fragrance via search and home shows content', async ({ page }) => {
     await completeOnboarding(page);
     await addFragranceFromSearch(page, 'Dior');
 
+    await goTab(page, 'Collection');
     await expect(page.getByText(/1 bottle/i)).toBeVisible();
-    await page.getByRole('link', { name: 'Today' }).click();
-    await expect(page.getByRole('button', { name: /Wear this today/i })).toBeVisible({ timeout: 20_000 });
+    await goTab(page, 'Today');
+    await expect(wearTodayButton(page)).toBeVisible({ timeout: 20_000 });
   });
 
   test('delete bottle removes it from wardrobe', async ({ page }) => {
     await completeOnboarding(page);
     await addFragranceFromSearch(page, 'Dior');
 
-    await page.getByRole('link', { name: 'Collection' }).click();
+    await goTab(page, 'Collection');
     await expect(page.getByText(/1 bottle/i)).toBeVisible();
     await page.locator('a[href*="/fragrance/"]').first().click();
-    await expect(page.getByRole('button', { name: 'Delete' })).toBeVisible({ timeout: 10_000 });
+    const remove = page.getByRole('button', { name: /Remove from collection/i });
+    await expect(remove).toBeVisible({ timeout: 10_000 });
 
-    await page.getByRole('button', { name: 'Delete' }).click();
-    await page.getByRole('button', { name: 'Delete' }).last().click();
+    await remove.click();
+    const sheet = page.getByRole('dialog', { name: /Remove bottle/i });
+    await expect(sheet).toBeVisible();
+    await sheet.getByRole('button', { name: 'Remove', exact: true }).click();
     await expect(page).toHaveURL(/\/collection/, { timeout: 15_000 });
-    await expect(page.getByText(/Your cabinet is empty/i)).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Your shelf is empty/i })).toBeVisible();
   });
 
   test('travel kit persists trip name after reload', async ({ page }) => {
     await loadDemoWardrobe(page);
 
-    await page.getByRole('link', { name: 'You' }).click();
+    await goTab(page, 'Settings');
     await page.getByRole('link', { name: /Travel kit planner/i }).click();
     await expect(page.getByRole('heading', { name: 'Travel kit' })).toBeVisible({ timeout: 10_000 });
     await page.getByLabel(/Trip name/i).fill('Dubai work trip');
@@ -65,7 +72,7 @@ test.describe('ScentCap PWA', () => {
     await completeOnboarding(page);
     await addFragranceFromSearch(page, 'Bleu');
 
-    await page.getByRole('link', { name: 'Advisor' }).click();
+    await goTab(page, 'Advisor');
     await expect(page.getByRole('heading', { name: 'Scent Advisor' })).toBeVisible({ timeout: 10_000 });
     await page.getByRole('button', { name: 'Get recommendation' }).click();
     await expect(page.getByText(/Primary pick/i)).toBeVisible({ timeout: 15_000 });
@@ -74,8 +81,8 @@ test.describe('ScentCap PWA', () => {
   test('calendar month prev/next navigation', async ({ page }) => {
     await loadDemoWardrobe(page);
 
-    await page.getByRole('complementary').getByRole('link', { name: 'Calendar', exact: true }).click();
-    await expect(page.getByRole('heading', { name: 'Wear calendar' })).toBeVisible({ timeout: 10_000 });
+    await goTab(page, 'Diary');
+    await expect(page.getByRole('heading', { name: 'Diary', level: 1 })).toBeVisible({ timeout: 10_000 });
 
     const monthLabel = page.locator('p.text-sm.font-medium').filter({ hasText: /\w+ \d{4}/ });
     const initial = await monthLabel.textContent();
@@ -92,9 +99,9 @@ test.describe('ScentCap PWA', () => {
     page.on('pageerror', (err) => pageErrors.push(err.message));
 
     await loadDemoWardrobe(page);
-    await expect(page.getByRole('button', { name: /Wear this today/i })).toBeVisible({ timeout: 20_000 });
+    await expect(wearTodayButton(page)).toBeVisible({ timeout: 20_000 });
 
-    await page.getByRole('button', { name: 'Share' }).click();
+    await page.getByRole('button', { name: /Share today/i }).click();
     await expect(page.getByText(/Shared!|Copied to clipboard|Saved as PNG/)).toBeVisible({ timeout: 10_000 });
     expect(pageErrors).toHaveLength(0);
   });
@@ -110,37 +117,58 @@ test.describe('ScentCap PWA features', () => {
   test('Analytics and Travel Kit open for all users', async ({ page }) => {
     await loadDemoWardrobe(page);
 
-    await page.getByRole('link', { name: 'You' }).click();
+    await goTab(page, 'Settings');
     await page.getByRole('link', { name: /Travel kit planner/i }).click();
     await expect(page.getByRole('heading', { name: 'Travel kit' })).toBeVisible({ timeout: 10_000 });
 
-    await page.getByRole('link', { name: 'You' }).click();
-    await page.getByRole('link', { name: /Collection analytics|Analytics/i }).click();
-    await expect(page.getByRole('heading', { name: 'Analytics' })).toBeVisible({ timeout: 10_000 });
+    await goTab(page, 'Settings');
+    await page.getByRole('link', { name: /Collection analytics/i }).click();
+    await expect(page.getByRole('heading', { name: 'Insights', level: 1 })).toBeVisible({ timeout: 10_000 });
   });
 
   test('Settings IA groups and theme toggle', async ({ page }) => {
     await loadDemoWardrobe(page);
-    await page.getByRole('link', { name: 'You' }).click();
-    await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
+    await goTab(page, 'Settings');
+    await expect(page.getByRole('heading', { name: 'Settings', level: 1 })).toBeVisible();
 
-    for (const section of ['Account', 'Appearance', 'Advisor', 'Weather', 'Tools', 'Privacy & Data', 'About & Legal']) {
-      await expect(page.getByRole('heading', { name: section, exact: true })).toBeVisible();
+    // Inset-grouped list headers (<p class="ui-list-header">, not headings). Scoped to <main> — the sidebar
+    // also has a "Tools" header and Profile has a row with the same title.
+    const main = page.locator('main');
+    for (const section of ['Profile', 'Preferences', 'Tools', 'Data', 'About']) {
+      await expect(main.locator('.ui-list-header', { hasText: new RegExp(`^${section}$`) })).toBeVisible();
     }
 
-    await expect(page.getByRole('link', { name: 'Layering Lab' })).toBeVisible();
-    await page.getByRole('button', { name: 'Dark', exact: true }).click();
-    await expect(page.getByRole('button', { name: 'Dark', exact: true })).toHaveAttribute('aria-pressed', 'true');
+    await expect(main.getByRole('link', { name: 'Layering Lab' })).toBeVisible();
+
+    const theme = page.getByRole('group', { name: 'Theme' });
+    for (const label of ['Light', 'Dark', 'System']) {
+      await expect(theme.getByRole('button', { name: label, exact: true })).toBeVisible();
+    }
+    const pressed = async (label: string) =>
+      expect(theme.getByRole('button', { name: label, exact: true })).toHaveAttribute('aria-pressed', 'true');
+
+    await theme.getByRole('button', { name: 'Light', exact: true }).click();
+    await pressed('Light');
+    await expect(page.locator('body')).toHaveClass(/\blight\b/);
+
+    await theme.getByRole('button', { name: 'Dark', exact: true }).click();
+    await pressed('Dark');
+    await expect(theme.getByRole('button', { name: 'Light', exact: true })).toHaveAttribute('aria-pressed', 'false');
     await expect(page.locator('body')).not.toHaveClass(/\blight\b/);
+
+    await theme.getByRole('button', { name: 'System', exact: true }).click();
+    await pressed('System');
   });
 
   test('import rejects invalid JSON backup', async ({ page }) => {
     await loadDemoWardrobe(page);
-    await page.getByRole('link', { name: 'You' }).click();
+    await goTab(page, 'Settings');
 
-    page.once('dialog', async (dialog) => {
-      expect(dialog.message()).toMatch(/not valid JSON|invalid/i);
-      await dialog.accept();
+    // 3.0: failures surface in a Sheet, never a native alert().
+    let nativeDialog = false;
+    page.on('dialog', async (dialog) => {
+      nativeDialog = true;
+      await dialog.dismiss();
     });
 
     await page.getByTestId('import-backup').setInputFiles({
@@ -148,16 +176,23 @@ test.describe('ScentCap PWA features', () => {
       mimeType: 'application/json',
       buffer: Buffer.from('{not-json', 'utf-8'),
     });
-    await page.waitForTimeout(400);
+
+    const sheet = page.getByRole('dialog', { name: 'Import failed' });
+    await expect(sheet).toBeVisible({ timeout: 10_000 });
+    await expect(sheet.getByText(/not valid JSON|invalid/i)).toBeVisible();
+    await sheet.getByRole('button', { name: 'OK', exact: true }).click();
+    await expect(sheet).toBeHidden();
+    expect(nativeDialog).toBe(false);
   });
 
   test('import rejects future backup version', async ({ page }) => {
     await loadDemoWardrobe(page);
-    await page.getByRole('link', { name: 'You' }).click();
+    await goTab(page, 'Settings');
 
-    page.once('dialog', async (dialog) => {
-      expect(dialog.message()).toMatch(/newer than this app supports/i);
-      await dialog.accept();
+    let nativeDialog = false;
+    page.on('dialog', async (dialog) => {
+      nativeDialog = true;
+      await dialog.dismiss();
     });
 
     await page.getByTestId('import-backup').setInputFiles({
@@ -165,26 +200,33 @@ test.describe('ScentCap PWA features', () => {
       mimeType: 'application/json',
       buffer: Buffer.from(JSON.stringify({ version: 99, fragrances: [] }), 'utf-8'),
     });
-    await page.waitForTimeout(400);
+
+    const sheet = page.getByRole('dialog', { name: 'Import failed' });
+    await expect(sheet).toBeVisible({ timeout: 10_000 });
+    await expect(sheet.getByText(/newer than this app supports/i)).toBeVisible();
+    await sheet.getByRole('button', { name: 'OK', exact: true }).click();
+    await expect(sheet).toBeHidden();
+    expect(nativeDialog).toBe(false);
   });
 
   test('home still works offline after load', async ({ page, context }) => {
     await loadDemoWardrobe(page);
-    await expect(page.getByRole('button', { name: /Wear this today/i })).toBeVisible({ timeout: 20_000 });
+    await expect(wearTodayButton(page)).toBeVisible({ timeout: 20_000 });
     await page.waitForFunction(() => !!navigator.serviceWorker?.controller, null, { timeout: 20_000 }).catch(() => null);
     await context.setOffline(true);
-    await page.getByRole('link', { name: 'Collection', exact: true }).click();
-    await expect(page.getByRole('heading', { name: /My bottles|Wishlist|Tested/i })).toBeVisible({ timeout: 15_000 });
-    await page.getByRole('link', { name: 'Today', exact: true }).click();
-    await expect(page.getByRole('button', { name: /Wear this today/i })).toBeVisible({ timeout: 20_000 });
+    await goTab(page, 'Collection');
+    await expect(page.getByRole('heading', { name: 'Collection', level: 1 })).toBeVisible({ timeout: 15_000 });
+    await goTab(page, 'Today');
+    await expect(wearTodayButton(page)).toBeVisible({ timeout: 20_000 });
     await context.setOffline(false);
   });
 
-  test('demo wardrobe ships baked bottle art offline (no Fraganty)', async ({ page }) => {
-    // Demo is intentionally offline for cold-path LH — SVG data URIs, not live catalog HTTPS.
+  test('demo wardrobe ships bundled bottle art offline (no Fraganty)', async ({ page }) => {
+    // Demo is intentionally offline: bottle art is bundled (`bottles/*.webp`) or an inline data URI —
+    // never a live catalog https:// URL.
     test.setTimeout(60_000);
     await loadDemoWardrobe(page);
-    await expect(page.getByRole('button', { name: /Wear this today/i })).toBeVisible({ timeout: 20_000 });
+    await expect(wearTodayButton(page)).toBeVisible({ timeout: 20_000 });
 
     await expect
       .poll(async () => {
@@ -202,7 +244,7 @@ test.describe('ScentCap PWA features', () => {
           });
           db.close();
           return all.filter(
-            (f) => typeof f.image === 'string' && /^data:image\//.test(f.image),
+            (f) => typeof f.image === 'string' && /^(data:image\/|bottles\/)/.test(f.image),
           ).length;
         });
       }, { timeout: 15_000 })

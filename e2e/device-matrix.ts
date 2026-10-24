@@ -40,7 +40,7 @@ export const BROWSER: DeviceDef[] = [
 
 export const ALL_DEVICES = [...IPHONE, ...IPAD, ...BROWSER];
 
-/** Cap shell: tabs ≤699 · sidebar ≥700 */
+/** ScentCap 3 shell: tabs ≤699 · sidebar ≥700 (Tailwind `md:` via `--breakpoint-md: 700px` in src/index.css). */
 export const SHELL_BP = 700;
 
 export type MajorScreen = {
@@ -54,7 +54,7 @@ export const MAJOR_SCREENS: MajorScreen[] = [
   { id: 'lock', label: 'Welcome / onboarding', kind: 'welcome', route: '/onboarding' },
   { id: 'dashboard', label: 'Today (home)', kind: 'page', route: '/' },
   { id: 'collection', label: 'Collection (dense list)', kind: 'page', route: '/collection' },
-  { id: 'settings', label: 'Settings / You', kind: 'page', route: '/settings' },
+  { id: 'settings', label: 'Settings', kind: 'page', route: '/settings' },
   { id: 'advisor', label: 'Advisor (secondary hub)', kind: 'page', route: '/advisor' },
   { id: 'add-sheet', label: 'Add bottle (form)', kind: 'page', route: '/add' },
 ];
@@ -90,21 +90,16 @@ export async function applyDeviceChrome(
         --sat: ${safeTop}px;
         --sab: ${safeBottom}px;
       }
-      .cap-demo-banner {
-        padding-top: max(0.375rem, ${safeTop}px) !important;
+      [data-testid="demo-banner"] {
+        padding-top: max(0.25rem, ${safeTop}px) !important;
       }
-      .atelier-tabbar {
-        padding-bottom: calc(0.4rem + ${safeBottom}px) !important;
+      .ui-tabbar {
+        bottom: max(10px, ${safeBottom}px) !important;
       }
-      .atelier-fab {
-        bottom: calc(4.85rem + ${safeBottom}px) !important;
-      }
-      .atelier-main {
-        padding-bottom: calc(7.5rem + ${safeBottom}px) !important;
-      }
-      @media (min-width: 700px) {
-        .atelier-main { padding-bottom: 2rem !important; }
-        .atelier-tabbar, .atelier-fab { display: none !important; }
+      @media (max-width: 699.98px) {
+        main .ui-page {
+          padding-bottom: calc(var(--tabbar-h) + 40px + ${safeBottom}px) !important;
+        }
       }
       .sc-offline-banner {
         padding-top: max(0.5rem, ${safeTop}px) !important;
@@ -116,7 +111,7 @@ export async function applyDeviceChrome(
 
 export async function probeLayout(page: import('@playwright/test').Page) {
   return page.evaluate(() => {
-    const tabs = document.querySelector('.atelier-tabbar');
+    const tabs = document.querySelector('.ui-tabbar');
     const sidebar = document.querySelector('[data-testid="desktop-sidebar"]');
     const tabsVisible = !!(
       tabs &&
@@ -130,15 +125,15 @@ export async function probeLayout(page: import('@playwright/test').Page) {
     );
     const overflow = document.documentElement.scrollWidth > document.documentElement.clientWidth + 2;
     const tabRect = tabsVisible && tabs ? tabs.getBoundingClientRect() : null;
-    const verMatch = sidebar?.textContent?.match(/v\d+\.\d+\.\d+/);
-    const sidebarVer = verMatch ? verMatch[0] : null;
+    const verMatch = sidebar?.textContent?.match(/ScentCap\s+v?(\d+\.\d+\.\d+)/);
+    const sidebarVer = verMatch ? verMatch[1] : null;
     let layout: 'mobile-tabs' | 'sidebar' | 'hybrid-both' | 'neither' = 'neither';
     if (tabsVisible && !sideVisible) layout = 'mobile-tabs';
     else if (sideVisible && !tabsVisible) layout = 'sidebar';
     else if (sideVisible && tabsVisible) layout = 'hybrid-both';
 
     const cta = [...document.querySelectorAll('button')].find((b) =>
-      /Wear this today/i.test(b.textContent || ''),
+      /^Wear today$/i.test((b.textContent || '').trim()),
     );
     let wearClearOfTabs: boolean | null = null;
     let wearTabGap: number | null = null;
@@ -166,7 +161,7 @@ export async function probeLayout(page: import('@playwright/test').Page) {
 /** Switch to dark via Settings UI (keeps React/IDB in sync). */
 export async function forceDarkTheme(page: import('@playwright/test').Page) {
   await page.goto('./settings');
-  const dark = page.getByRole('button', { name: /^Dark$/i });
+  const dark = page.getByRole('group', { name: 'Theme' }).getByRole('button', { name: 'Dark', exact: true });
   await dark.waitFor({ state: 'visible', timeout: 20_000 });
   if ((await dark.getAttribute('aria-pressed')) !== 'true') {
     await dark.click();

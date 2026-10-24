@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { installTestMocks, loadDemoWardrobe } from './helpers';
+import { goTab, installTestMocks, loadDemoWardrobe, wearTodayButton } from './helpers';
 
 const SCREENSHOT_DIR = join(process.cwd(), 'docs', 'screenshots');
 const IPHONE_15_PRO = { width: 393, height: 852 };
@@ -37,24 +37,24 @@ test.describe('App Store screenshots', () => {
     await loadDemoWardrobe(page);
 
     // 1 — Today / Home
-    await expect(page.getByRole('button', { name: /Wear this today/i })).toBeVisible({ timeout: 20_000 });
+    await expect(wearTodayButton(page)).toBeVisible({ timeout: 20_000 });
     await page.screenshot({ path: join(SCREENSHOT_DIR, SHOTS[0].file), fullPage: true });
 
     // 2 — Office Safe visible on home
-    await page.getByRole('link', { name: /You|Settings|More/i }).first().click();
-    await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible({ timeout: 10_000 });
-    const officeBtn = page.getByRole('button', { name: /Office-safe/i });
-    await expect(officeBtn).toBeVisible();
-    if ((await officeBtn.textContent())?.includes('OFF')) {
-      await officeBtn.click();
+    await goTab(page, 'Settings');
+    await expect(page.getByRole('heading', { name: 'Settings', level: 1 })).toBeVisible({ timeout: 10_000 });
+    const officeSwitch = page.getByRole('checkbox', { name: 'Office Safe', exact: true });
+    await expect(officeSwitch).toBeVisible();
+    if (!(await officeSwitch.isChecked())) {
+      await officeSwitch.click(); // async IDB-backed toggle: don't use .check() (it asserts state synchronously)
     }
-    await expect(officeBtn).toContainText('ON', { timeout: 5_000 });
-    await page.getByRole('link', { name: 'Today' }).click();
-    await expect(page.getByText('Office Safe')).toBeVisible({ timeout: 10_000 });
+    await expect(officeSwitch).toBeChecked({ timeout: 5_000 });
+    await goTab(page, 'Today');
+    await expect(page.getByText(/Office Safe is on/i)).toBeVisible({ timeout: 10_000 });
     await page.screenshot({ path: join(SCREENSHOT_DIR, SHOTS[1].file), fullPage: true });
 
     // 3 — Advisor spray / body map
-    await page.getByRole('link', { name: 'Advisor' }).click();
+    await goTab(page, 'Advisor');
     await expect(page.getByRole('heading', { name: 'Scent Advisor' })).toBeVisible();
     await page.getByRole('button', { name: 'Get recommendation' }).click();
     await expect(page.getByText(/Primary pick|Where to spray|Layering placement/i).first()).toBeVisible({ timeout: 15_000 });
@@ -62,12 +62,12 @@ test.describe('App Store screenshots', () => {
 
     // 4 — Layering Lab (not in mobile tab bar)
     await page.goto('./layering');
-    await expect(page.getByText('Layering Lab')).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByRole('heading', { name: 'Layering Lab', level: 1 })).toBeVisible({ timeout: 10_000 });
     await page.screenshot({ path: join(SCREENSHOT_DIR, SHOTS[3].file), fullPage: true });
 
     // 5 — Analytics
     await page.goto('./analytics');
-    await expect(page.getByRole('heading', { name: 'Analytics' })).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByRole('heading', { name: 'Insights', level: 1 })).toBeVisible({ timeout: 10_000 });
     await page.screenshot({ path: join(SCREENSHOT_DIR, SHOTS[4].file), fullPage: true });
 
     // 6 — Travel Kit

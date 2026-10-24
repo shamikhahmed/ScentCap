@@ -40,7 +40,7 @@ test.describe('Device matrix visual QA', () => {
     await loadDemoWardrobe(page);
     await forceDarkTheme(page);
     await page.goto('./');
-    await expect(page.getByText(/Wear this today|sample wardrobe|Sample wardrobe/i).first()).toBeVisible({
+    await expect(page.getByText(/Wear today|sample wardrobe/i).first()).toBeVisible({
       timeout: 30_000,
     });
 
@@ -56,7 +56,7 @@ test.describe('Device matrix visual QA', () => {
 
         if (screen.kind === 'welcome') {
           await page.goto('./onboarding');
-          await expect(page.getByRole('heading', { name: /Your scent (counter|wardrobe)/i })).toBeVisible({
+          await expect(page.getByRole('heading', { name: /Your fragrance wardrobe, beautifully kept/i })).toBeVisible({
             timeout: 20_000,
           });
         } else {
@@ -64,11 +64,11 @@ test.describe('Device matrix visual QA', () => {
           await page.waitForTimeout(450);
           const main = page.locator('#main');
           if (screen.id === 'dashboard') {
-            await expect(main.getByRole('button', { name: /Wear this today/i })).toBeVisible({ timeout: 25_000 });
+            await expect(main.getByRole('button', { name: /^Wear today$/i })).toBeVisible({ timeout: 25_000 });
           } else if (screen.id === 'collection') {
             await expect(main).toBeVisible({ timeout: 20_000 });
           } else if (screen.id === 'settings') {
-            await expect(main.getByText(/Appearance|About & Legal/i).first()).toBeVisible({ timeout: 20_000 });
+            await expect(main.getByText(/^(Preferences|About)$/).first()).toBeVisible({ timeout: 20_000 });
           } else if (screen.id === 'advisor') {
             await expect(main).toBeVisible({ timeout: 20_000 });
           } else if (screen.id === 'add-sheet') {

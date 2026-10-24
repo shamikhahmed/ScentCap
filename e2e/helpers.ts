@@ -1,9 +1,24 @@
-import { expect, type Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
 
-export const ONBOARDING_STEPS = [
-  { heading: /Where do you spend most days/i, choice: 'Office daily' },
-  { heading: /How bold should scents be/i, choice: 'Moderate' },
-] as const;
+/** ScentCap 3 onboarding: welcome → "About your days" → "Your weather". */
+export const ONBOARDING_WELCOME = /Your fragrance wardrobe, beautifully kept/i;
+
+/** Primary navigation (sidebar >= md/700px, floating `.ui-tabbar` below). Only the visible one resolves. */
+export function navLink(page: Page, label: string): Locator {
+  return page
+    .locator('[data-testid="desktop-sidebar"], nav.ui-tabbar')
+    .getByRole('link', { name: label, exact: true });
+}
+
+/** Click a primary tab (Today · Collection · Advisor · Diary · Settings) in whichever shell is visible. */
+export async function goTab(page: Page, label: 'Today' | 'Collection' | 'Advisor' | 'Diary' | 'Settings') {
+  await navLink(page, label).click();
+}
+
+/** The Today hero's single primary action. */
+export function wearTodayButton(page: Page): Locator {
+  return page.getByRole('button', { name: /^Wear today$/i });
+}
 
 export async function installTestMocks(page: Page) {
   await page.addInitScript(() => {
@@ -162,52 +177,53 @@ export async function installTestMocks(page: Page) {
 
 export async function loadDemoWardrobe(page: Page) {
   await page.goto('./onboarding');
-  await expect(page.getByRole('heading', { name: /Your scent (counter|wardrobe)/i })).toBeVisible();
-  await page.getByRole('button', { name: /Try demo collection/i }).click();
-  await expect(page.getByRole('button', { name: /Try demo collection/i })).toBeHidden({ timeout: 60_000 });
+  await expect(page.getByRole('heading', { name: ONBOARDING_WELCOME })).toBeVisible();
+  await page.getByRole('button', { name: /Explore a sample wardrobe/i }).click();
+  await expect(page.getByRole('button', { name: /Explore a sample wardrobe/i })).toBeHidden({ timeout: 60_000 });
   await expect(page).not.toHaveURL(/onboarding/, { timeout: 60_000 });
-  await expect(page.getByText(/demo mode|sample wardrobe/i)).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByTestId('demo-banner')).toBeVisible({ timeout: 15_000 });
 }
 
+/** Quick onboarding (Office, Balanced, skip city). Lands on /add — the first-bottle step. */
 export async function completeOnboarding(page: Page) {
   await page.goto('./onboarding');
-  await expect(page.getByRole('heading', { name: /Your scent (counter|wardrobe)/i })).toBeVisible();
-  await page.getByRole('button', { name: /Quick setup/i }).click({ force: true });
-  await expect(page.getByRole('heading', { name: ONBOARDING_STEPS[0].heading })).toBeVisible();
+  await expect(page.getByRole('heading', { name: ONBOARDING_WELCOME })).toBeVisible();
+  await page.getByRole('button', { name: /^Get started$/i }).click();
 
-  for (const step of ONBOARDING_STEPS) {
-    await expect(page.getByRole('heading', { name: step.heading })).toBeVisible();
-    await page.getByRole('button', { name: step.choice, exact: true }).click();
-  }
+  await expect(page.getByRole('heading', { name: /About your days/i })).toBeVisible();
+  await page.getByRole('button', { name: 'Office', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Office', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('radio', { name: /Balanced/i }).click();
+  await expect(page.getByRole('radio', { name: /Balanced/i })).toHaveAttribute('aria-checked', 'true');
+  // Office Safe defaults on for Office; turn it off so a freshly-added bottle is never filtered from Today.
+  const officeSafe = page.getByRole('checkbox', { name: /Office Safe/i });
+  if (await officeSafe.isChecked()) await officeSafe.click();
+  await expect(officeSafe).not.toBeChecked();
+  await page.getByRole('button', { name: /^Continue$/i }).click();
 
-  await expect(page.getByRole('heading', { name: /Your city/i })).toBeVisible({ timeout: 10_000 });
-  await page.getByRole('button', { name: /Skip for now/i }).click();
+  await expect(page.getByRole('heading', { name: /Your weather/i })).toBeVisible({ timeout: 10_000 });
+  await page.getByRole('button', { name: /Add my first bottles/i }).click();
 
-  await expect(page.getByRole('heading', { name: /Office Safe/i })).toBeVisible();
-  const officeOn = page.getByRole('button', { name: /Office Safe is on/i });
-  if (await officeOn.isVisible()) {
-    await officeOn.click();
-  }
-  await page.getByRole('button', { name: /Get started/i }).click();
-
-  await expect(page).not.toHaveURL(/onboarding/, { timeout: 30_000 });
-  await expect(
-    page.getByRole('heading', { name: /Your wardrobe awaits|Keep it airy|Balanced weather|Rich scents|Let longevity/i }),
-  ).toBeVisible({ timeout: 20_000 });
-  await expect(page.getByRole('link', { name: /Add first bottle|Add bottle/i }).first()).toBeVisible({ timeout: 15_000 });
+  await expect(page).toHaveURL(/\/add/, { timeout: 30_000 });
+  await expect(page.getByRole('heading', { name: /Add fragrance/i })).toBeVisible({ timeout: 15_000 });
 }
 
+/** Add one bottle through the "Add manually" sheet. Lands on the new bottle's detail page. */
 export async function addFragranceFromSearch(page: Page, query: string) {
-  await page.getByRole('link', { name: /Add first bottle|Add bottle/i }).first().click({ timeout: 15_000 });
+  if (!/\/add/.test(page.url())) {
+    await page.goto('./add');
+  }
   await expect(page.getByRole('heading', { name: /Add fragrance/i })).toBeVisible({ timeout: 15_000 });
 
   await page.getByRole('button', { name: /Add manually/i }).click();
   const brand = /bleu/i.test(query) ? 'Chanel' : 'Dior';
   const name = /bleu/i.test(query) ? 'Bleu de Chanel' : 'Sauvage';
 
-  await page.getByLabel(/Fragrance name/i).fill(name);
-  await page.getByLabel(/^Brand$/i).fill(brand);
-  await page.getByRole('button', { name: /Save to wardrobe/i }).click();
-  await expect(page).toHaveURL(/\/collection/, { timeout: 20_000 });
-  await expect(page.getByText(/\d+ bottle/i)).toBeVisible({ timeout: 15_000 });
+  const sheet = page.getByRole('dialog', { name: /Add manually/i });
+  await expect(sheet).toBeVisible();
+  await sheet.getByLabel('Brand', { exact: true }).fill(brand);
+  await sheet.getByLabel('Name', { exact: true }).fill(name);
+  await sheet.getByRole('button', { name: 'Save', exact: true }).click();
+
+  await expect(page).toHaveURL(/\/fragrance\//, { timeout: 20_000 });
 }

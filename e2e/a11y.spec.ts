@@ -3,7 +3,7 @@
  */
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { installTestMocks, loadDemoWardrobe } from './helpers';
+import { goTab, installTestMocks, loadDemoWardrobe } from './helpers';
 
 test.describe('Accessibility smoke', () => {
   test.setTimeout(120_000);
@@ -17,19 +17,17 @@ test.describe('Accessibility smoke', () => {
   test('core screens: main landmark + no critical/serious axe', async ({ page }) => {
     await loadDemoWardrobe(page);
 
-    const hops: { click?: string; name: string }[] = [
-      { name: 'home' },
+    const hops: { click?: 'Collection' | 'Advisor' | 'Diary' | 'Settings'; name: string }[] = [
+      { name: 'today' },
       { click: 'Collection', name: 'collection' },
       { click: 'Advisor', name: 'advisor' },
-      { click: 'You', name: 'settings' },
+      { click: 'Diary', name: 'diary' },
+      { click: 'Settings', name: 'settings' },
     ];
 
     for (const hop of hops) {
       if (hop.click) {
-        await page
-          .getByRole('complementary')
-          .getByRole('link', { name: hop.click, exact: true })
-          .click({ force: true });
+        await goTab(page, hop.click);
       }
       await expect(page.locator('main').first()).toBeVisible({ timeout: 15_000 });
 

@@ -225,7 +225,7 @@ for (const device of DEVICES) {
               )
               .catch(() => undefined);
           } else {
-            await expect(page.getByRole('heading', { name: /Your scent (counter|wardrobe)/i })).toBeVisible({
+            await expect(page.getByRole('heading', { name: /Your fragrance wardrobe, beautifully kept/i })).toBeVisible({
               timeout: 15_000,
             });
           }
