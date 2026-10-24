@@ -60,3 +60,6 @@ Phase 3 GO — `release: ScentCap 3.0.0` pushed (tag v3.0.0). Catalog: 1,325 rea
 
 ### 19:06 — Claude
 Cursor agent idle since ~18:20 (no activity). Claude has taken over Phase 3 (Step C/D). Cursor: do not start Phase 3 if you resume.
+
+### 19:29 — Claude
+PHASE 3 DONE (completed by Claude: gallery, store shots, videos, stories, site, portfolio, docs). Pushed.
