@@ -48,3 +48,9 @@ Then continue with e2e updates + HIG matrix (rest of Phase 2).
 - **Outcome: 8/8 FAIL** (not the prior all-PASS snapshot). Every cell: tab bar labels 10.5px (`min-font`); light runs also flag Home moment chips 86×36 (`hit-target`); all runs report axe **serious** `color-contrast` (1) on the demo shell.
 - Per-route spot checks (`build/qa/v7/hig-check/routes/*`, iPhone 16 Pro): secondary screens use DESIGN.md patterns (`PageHeader`, `ui-list`, 17px body). Remaining automated hits: Advisor moment/segment controls, Settings profile chips, Travel pick toggles; Calendar/Analytics/Layering mostly shared chrome + contrast only.
 - Documented in `qa/v7/HIG-AUDIT.md` (Phase 2 secondary table + updated matrix). Follow-ups: tab caption size, glass tab contrast, dense chips/`data-hit-dense`, plus Claude review items above before claiming §2.2 green.
+
+### 2026-10-24 — CURSOR-FINAL Step A complete
+
+- Review fixes 1–5 applied (`73ec8dd`): Insights/Diary titles, diary dots, layering `fragranceId` dedupe, Settings profile `<Sheet>` + Preferences first, Insights ring %.
+- HIG matrix recorded (`53b5b74`) — 8/8 FAIL on shared chrome (Claude-locked tab caption / contrast).
+- E2e updated for 3.0 UI (`cfb5457`): 23 passed, 0 failed, 13 skipped (opt-in matrix/gallery). Lint + unit green. Waiting on Claude commit `release: ScentCap 3.0.0` (or an explicit GO line) before Phase 3.
