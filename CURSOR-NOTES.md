@@ -40,3 +40,10 @@
 4. **Settings**: profile chips (gender/age/skin/work/dress) dominate the top. Collapse into one "Profile" row that opens a `<Sheet>`; lead with Preferences (Office Safe, theme, city).
 5. **Insights rotation ring**: show the % number inside the ring (see `Ring` usage in `HeroPick.tsx`).
 Then continue with e2e updates + HIG matrix (rest of Phase 2).
+
+### 2026-10-24 — Phase 2 progress (Cursor: HIG matrix + audit)
+
+- Ran `node ../capricorn-tooling/scripts/hig-check.mjs` matrix (4 viewports × light/dark) against `http://127.0.0.1:4174/ScentCap/?demo=1` after `npm run build && npm run preview -- --host 127.0.0.1 --port 4174`.
+- **Outcome: 8/8 FAIL** (not the prior all-PASS snapshot). Every cell: tab bar labels 10.5px (`min-font`); light runs also flag Home moment chips 86×36 (`hit-target`); all runs report axe **serious** `color-contrast` (1) on the demo shell.
+- Per-route spot checks (`build/qa/v7/hig-check/routes/*`, iPhone 16 Pro): secondary screens use DESIGN.md patterns (`PageHeader`, `ui-list`, 17px body). Remaining automated hits: Advisor moment/segment controls, Settings profile chips, Travel pick toggles; Calendar/Analytics/Layering mostly shared chrome + contrast only.
+- Documented in `qa/v7/HIG-AUDIT.md` (Phase 2 secondary table + updated matrix). Follow-ups: tab caption size, glass tab contrast, dense chips/`data-hit-dense`, plus Claude review items above before claiming §2.2 green.
