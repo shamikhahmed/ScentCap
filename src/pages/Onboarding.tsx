@@ -139,7 +139,7 @@ export function Onboarding() {
       <div className="flex-1 w-full max-w-md mx-auto px-5 pt-[max(16px,env(safe-area-inset-top))] pb-[max(24px,env(safe-area-inset-bottom))] flex flex-col">
         {step === 0 && (
           <div className="flex-1 flex flex-col ui-rise">
-            <div className="relative h-[300px] mt-4 mb-8" aria-hidden>
+            <div className="relative h-[260px] mt-2 mb-6" aria-hidden>
               {hero.slice(0, 5).map((f, i) => {
                 const pos = [
                   'left-1/2 -translate-x-1/2 top-4 w-[46%] z-30',

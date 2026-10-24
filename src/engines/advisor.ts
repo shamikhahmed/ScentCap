@@ -59,6 +59,7 @@ export async function runAdvisor(
       )
     : computeSprayGuidance(top.fragrance, input, profile, prefs.officeMaxSprays);
   const reasoning = [
+    summarizePick(top.fragrance, input, weather, history, top.item.id),
     `${top.fragrance.brand} ${top.fragrance.name} scored ${top.breakdown.total}/100`,
     ...top.breakdown.reasons,
     `Occasion fit: ${top.breakdown.occasion}/25`,
@@ -100,4 +101,44 @@ export function defaultAdvisorInput(): AdvisorInput {
     dressLevel: 'smart_casual',
     vibe: 'fresh',
   };
+}
+
+const OCCASION_PHRASE: Record<AdvisorInput['occasion'], string> = {
+  work: 'at work',
+  casual: 'for an easy day',
+  date: 'for a date',
+  event: 'for the event',
+  home: 'around the house',
+  gym: 'after the gym',
+};
+
+/** One human sentence explaining the pick (first line of reasoning; shown on the Today card). */
+export function summarizePick(
+  f: Fragrance,
+  input: AdvisorInput,
+  weather: WeatherCache | null,
+  history: WearRecord[],
+  collectionId: string,
+): string {
+  const character =
+    f.family === 'Fresh' ? 'Bright and clean' :
+    f.family === 'Floral' ? 'Soft and floral' :
+    f.family === 'Woody' ? 'Warm, dry woods' :
+    f.family === 'Gourmand' ? 'Rich and inviting' :
+    'Warm and spiced';
+  let when = `${input.timeOfDay}`;
+  if (weather) {
+    const t = Math.round(weather.tempC);
+    const feel = t >= 28 ? 'hot' : t >= 20 ? 'warm' : t >= 12 ? 'mild' : 'cold';
+    when = `a ${feel} ${t}° ${input.timeOfDay}`;
+  }
+  const last = history
+    .filter((h) => h.collectionId === collectionId)
+    .sort((a, b) => b.wornAt.localeCompare(a.wornAt))[0];
+  const days = last ? Math.floor((Date.now() - new Date(last.wornAt).getTime()) / 86_400_000) : null;
+  const tail =
+    days === null ? ' — and you haven’t worn it yet.' :
+    days >= 10 ? ` — last worn ${days} days ago.` :
+    '.';
+  return `${character}, right for ${when} ${OCCASION_PHRASE[input.occasion]}${tail}`;
 }
