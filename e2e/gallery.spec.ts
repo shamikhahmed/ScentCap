@@ -18,7 +18,7 @@ import { installTestMocks } from './helpers';
 
 const GALLERY_DIR = join(process.cwd(), 'docs', 'screenshots', 'gallery');
 const MANIFEST = join(GALLERY_DIR, 'gallery-manifest.json');
-const ACCENT = '#0a84ff';
+const ACCENT = '#9a6a2f';
 
 const SCREENS = [
   {
@@ -26,7 +26,7 @@ const SCREENS = [
     group: 'First run',
     screen: 'Onboarding',
     state: 'welcome',
-    caption: 'Your scent wardrobe starts here.',
+    caption: 'Your fragrance wardrobe, beautifully kept.',
     skipDemo: true,
   },
   {
@@ -34,63 +34,63 @@ const SCREENS = [
     group: 'Daily',
     screen: 'Today',
     state: 'demo',
-    caption: 'Weather-aware pick for today.',
+    caption: 'A pick for the weather, your plans and your mood.',
   },
   {
     route: './collection?demo=1',
     group: 'Wardrobe',
     screen: 'Collection',
     state: 'demo',
-    caption: 'Every bottle in your collection.',
+    caption: 'Every bottle, with its real photo.',
   },
   {
     route: './add?demo=1',
     group: 'Wardrobe',
     screen: 'Add fragrance',
     state: 'demo',
-    caption: 'Add by search or scan.',
+    caption: 'Search 1,300+ real fragrances and add in a tap.',
   },
   {
     route: './advisor?demo=1',
     group: 'Insights',
     screen: 'Advisor',
     state: 'demo',
-    caption: 'Office-safe suggestions.',
+    caption: 'Fine-tune a pick for any occasion.',
   },
   {
     route: './calendar?demo=1',
     group: 'Insights',
-    screen: 'Calendar',
+    screen: 'Diary',
     state: 'demo',
-    caption: 'Wear history on a calendar.',
+    caption: 'Your wear diary, day by day.',
   },
   {
     route: './analytics?demo=1',
     group: 'Insights',
-    screen: 'Analytics',
+    screen: 'Insights',
     state: 'demo',
-    caption: 'Rotation and spend insights.',
+    caption: 'Rotation, value and habits.',
   },
   {
     route: './layering?demo=1',
     group: 'Lab',
     screen: 'Layering lab',
     state: 'demo',
-    caption: 'Build and save layering stacks.',
+    caption: 'Find the best pairing for any bottle.',
   },
   {
     route: './travel?demo=1',
     group: 'Travel',
     screen: 'Travel kit',
     state: 'demo',
-    caption: 'Decants and travel rules.',
+    caption: 'Pack the right bottles for a trip.',
   },
   {
     route: './settings?demo=1',
     group: 'System',
     screen: 'Settings',
     state: 'demo',
-    caption: 'Theme, demo mode, export.',
+    caption: 'Preferences, data and privacy.',
   },
 ] as const;
 
@@ -133,7 +133,7 @@ async function setAppTheme(page: import('@playwright/test').Page, theme: 'light'
     document.body.classList.toggle('light', t === 'light');
     document.documentElement.style.colorScheme = t;
     const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute('content', t === 'light' ? '#f5f5f7' : '#0a0a0c');
+    if (meta) meta.setAttribute('content', t === 'light' ? '#f2f2f7' : '#000000');
   }, theme);
 }
 

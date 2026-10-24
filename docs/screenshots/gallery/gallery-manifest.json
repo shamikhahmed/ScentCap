@@ -1,8 +1,8 @@
 {
   "app": "ScentCap",
-  "version": "2.2.0",
+  "version": "3.0.0",
   "capturedAt": "2026-10-14T09:41:00Z",
-  "accent": "#0a84ff",
+  "accent": "#9a6a2f",
   "schema": 2,
   "shots": [
     {
@@ -14,7 +14,7 @@
       "device": "ipad",
       "file": "dark/ipad/daily--today--demo.webp",
       "route": "/?demo=1",
-      "caption": "Weather-aware pick for today.",
+      "caption": "A pick for the weather, your plans and your mood.",
       "w": 2360,
       "h": 1640
     },
@@ -27,7 +27,7 @@
       "device": "ipad",
       "file": "dark/ipad/first-run--onboarding--welcome.webp",
       "route": "/onboarding",
-      "caption": "Your scent wardrobe starts here.",
+      "caption": "Your fragrance wardrobe, beautifully kept.",
       "w": 2360,
       "h": 1640
     },
@@ -40,7 +40,7 @@
       "device": "ipad",
       "file": "dark/ipad/insights--advisor--demo.webp",
       "route": "/advisor?demo=1",
-      "caption": "Office-safe suggestions.",
+      "caption": "Fine-tune a pick for any occasion.",
       "w": 2360,
       "h": 1640
     },
@@ -71,6 +71,32 @@
       "h": 1640
     },
     {
+      "id": "insights-diary-demo",
+      "group": "Insights",
+      "screen": "Diary",
+      "state": "demo",
+      "theme": "dark",
+      "device": "ipad",
+      "file": "dark/ipad/insights--diary--demo.webp",
+      "route": "/calendar?demo=1",
+      "caption": "Your wear diary, day by day.",
+      "w": 2360,
+      "h": 1640
+    },
+    {
+      "id": "insights-insights-demo",
+      "group": "Insights",
+      "screen": "Insights",
+      "state": "demo",
+      "theme": "dark",
+      "device": "ipad",
+      "file": "dark/ipad/insights--insights--demo.webp",
+      "route": "/analytics?demo=1",
+      "caption": "Rotation, value and habits.",
+      "w": 2360,
+      "h": 1640
+    },
+    {
       "id": "lab-layering-lab-demo",
       "group": "Lab",
       "screen": "Layering lab",
@@ -79,7 +105,7 @@
       "device": "ipad",
       "file": "dark/ipad/lab--layering-lab--demo.webp",
       "route": "/layering?demo=1",
-      "caption": "Build and save layering stacks.",
+      "caption": "Find the best pairing for any bottle.",
       "w": 2360,
       "h": 1640
     },
@@ -92,7 +118,7 @@
       "device": "ipad",
       "file": "dark/ipad/system--settings--demo.webp",
       "route": "/settings?demo=1",
-      "caption": "Theme, demo mode, export.",
+      "caption": "Preferences, data and privacy.",
       "w": 2360,
       "h": 1640
     },
@@ -105,7 +131,7 @@
       "device": "ipad",
       "file": "dark/ipad/travel--travel-kit--demo.webp",
       "route": "/travel?demo=1",
-      "caption": "Decants and travel rules.",
+      "caption": "Pack the right bottles for a trip.",
       "w": 2360,
       "h": 1640
     },
@@ -118,7 +144,7 @@
       "device": "ipad",
       "file": "dark/ipad/wardrobe--add-fragrance--demo.webp",
       "route": "/add?demo=1",
-      "caption": "Add by search or scan.",
+      "caption": "Search 1,300+ real fragrances and add in a tap.",
       "w": 2360,
       "h": 1640
     },
@@ -131,7 +157,7 @@
       "device": "ipad",
       "file": "dark/ipad/wardrobe--collection--demo.webp",
       "route": "/collection?demo=1",
-      "caption": "Every bottle in your collection.",
+      "caption": "Every bottle, with its real photo.",
       "w": 2360,
       "h": 1640
     },
@@ -144,7 +170,7 @@
       "device": "iphone",
       "file": "dark/iphone/daily--today--demo.webp",
       "route": "/?demo=1",
-      "caption": "Weather-aware pick for today.",
+      "caption": "A pick for the weather, your plans and your mood.",
       "w": 1170,
       "h": 2532
     },
@@ -157,7 +183,7 @@
       "device": "iphone",
       "file": "dark/iphone/first-run--onboarding--welcome.webp",
       "route": "/onboarding",
-      "caption": "Your scent wardrobe starts here.",
+      "caption": "Your fragrance wardrobe, beautifully kept.",
       "w": 1170,
       "h": 2532
     },
@@ -170,7 +196,7 @@
       "device": "iphone",
       "file": "dark/iphone/insights--advisor--demo.webp",
       "route": "/advisor?demo=1",
-      "caption": "Office-safe suggestions.",
+      "caption": "Fine-tune a pick for any occasion.",
       "w": 1170,
       "h": 2532
     },
@@ -201,6 +227,32 @@
       "h": 2532
     },
     {
+      "id": "insights-diary-demo",
+      "group": "Insights",
+      "screen": "Diary",
+      "state": "demo",
+      "theme": "dark",
+      "device": "iphone",
+      "file": "dark/iphone/insights--diary--demo.webp",
+      "route": "/calendar?demo=1",
+      "caption": "Your wear diary, day by day.",
+      "w": 1170,
+      "h": 2532
+    },
+    {
+      "id": "insights-insights-demo",
+      "group": "Insights",
+      "screen": "Insights",
+      "state": "demo",
+      "theme": "dark",
+      "device": "iphone",
+      "file": "dark/iphone/insights--insights--demo.webp",
+      "route": "/analytics?demo=1",
+      "caption": "Rotation, value and habits.",
+      "w": 1170,
+      "h": 2532
+    },
+    {
       "id": "lab-layering-lab-demo",
       "group": "Lab",
       "screen": "Layering lab",
@@ -209,7 +261,7 @@
       "device": "iphone",
       "file": "dark/iphone/lab--layering-lab--demo.webp",
       "route": "/layering?demo=1",
-      "caption": "Build and save layering stacks.",
+      "caption": "Find the best pairing for any bottle.",
       "w": 1170,
       "h": 2532
     },
@@ -222,7 +274,7 @@
       "device": "iphone",
       "file": "dark/iphone/system--settings--demo.webp",
       "route": "/settings?demo=1",
-      "caption": "Theme, demo mode, export.",
+      "caption": "Preferences, data and privacy.",
       "w": 1170,
       "h": 2532
     },
@@ -235,7 +287,7 @@
       "device": "iphone",
       "file": "dark/iphone/travel--travel-kit--demo.webp",
       "route": "/travel?demo=1",
-      "caption": "Decants and travel rules.",
+      "caption": "Pack the right bottles for a trip.",
       "w": 1170,
       "h": 2532
     },
@@ -248,7 +300,7 @@
       "device": "iphone",
       "file": "dark/iphone/wardrobe--add-fragrance--demo.webp",
       "route": "/add?demo=1",
-      "caption": "Add by search or scan.",
+      "caption": "Search 1,300+ real fragrances and add in a tap.",
       "w": 1170,
       "h": 2532
     },
@@ -261,7 +313,7 @@
       "device": "iphone",
       "file": "dark/iphone/wardrobe--collection--demo.webp",
       "route": "/collection?demo=1",
-      "caption": "Every bottle in your collection.",
+      "caption": "Every bottle, with its real photo.",
       "w": 1170,
       "h": 2532
     },
@@ -274,7 +326,7 @@
       "device": "mac",
       "file": "dark/mac/daily--today--demo.webp",
       "route": "/?demo=1",
-      "caption": "Weather-aware pick for today.",
+      "caption": "A pick for the weather, your plans and your mood.",
       "w": 2880,
       "h": 1800
     },
@@ -287,7 +339,7 @@
       "device": "mac",
       "file": "dark/mac/first-run--onboarding--welcome.webp",
       "route": "/onboarding",
-      "caption": "Your scent wardrobe starts here.",
+      "caption": "Your fragrance wardrobe, beautifully kept.",
       "w": 2880,
       "h": 1800
     },
@@ -300,7 +352,7 @@
       "device": "mac",
       "file": "dark/mac/insights--advisor--demo.webp",
       "route": "/advisor?demo=1",
-      "caption": "Office-safe suggestions.",
+      "caption": "Fine-tune a pick for any occasion.",
       "w": 2880,
       "h": 1800
     },
@@ -331,6 +383,32 @@
       "h": 1800
     },
     {
+      "id": "insights-diary-demo",
+      "group": "Insights",
+      "screen": "Diary",
+      "state": "demo",
+      "theme": "dark",
+      "device": "mac",
+      "file": "dark/mac/insights--diary--demo.webp",
+      "route": "/calendar?demo=1",
+      "caption": "Your wear diary, day by day.",
+      "w": 2880,
+      "h": 1800
+    },
+    {
+      "id": "insights-insights-demo",
+      "group": "Insights",
+      "screen": "Insights",
+      "state": "demo",
+      "theme": "dark",
+      "device": "mac",
+      "file": "dark/mac/insights--insights--demo.webp",
+      "route": "/analytics?demo=1",
+      "caption": "Rotation, value and habits.",
+      "w": 2880,
+      "h": 1800
+    },
+    {
       "id": "lab-layering-lab-demo",
       "group": "Lab",
       "screen": "Layering lab",
@@ -339,7 +417,7 @@
       "device": "mac",
       "file": "dark/mac/lab--layering-lab--demo.webp",
       "route": "/layering?demo=1",
-      "caption": "Build and save layering stacks.",
+      "caption": "Find the best pairing for any bottle.",
       "w": 2880,
       "h": 1800
     },
@@ -352,7 +430,7 @@
       "device": "mac",
       "file": "dark/mac/system--settings--demo.webp",
       "route": "/settings?demo=1",
-      "caption": "Theme, demo mode, export.",
+      "caption": "Preferences, data and privacy.",
       "w": 2880,
       "h": 1800
     },
@@ -365,7 +443,7 @@
       "device": "mac",
       "file": "dark/mac/travel--travel-kit--demo.webp",
       "route": "/travel?demo=1",
-      "caption": "Decants and travel rules.",
+      "caption": "Pack the right bottles for a trip.",
       "w": 2880,
       "h": 1800
     },
@@ -378,7 +456,7 @@
       "device": "mac",
       "file": "dark/mac/wardrobe--add-fragrance--demo.webp",
       "route": "/add?demo=1",
-      "caption": "Add by search or scan.",
+      "caption": "Search 1,300+ real fragrances and add in a tap.",
       "w": 2880,
       "h": 1800
     },
@@ -391,7 +469,7 @@
       "device": "mac",
       "file": "dark/mac/wardrobe--collection--demo.webp",
       "route": "/collection?demo=1",
-      "caption": "Every bottle in your collection.",
+      "caption": "Every bottle, with its real photo.",
       "w": 2880,
       "h": 1800
     },
@@ -404,7 +482,7 @@
       "device": "ipad",
       "file": "light/ipad/daily--today--demo.webp",
       "route": "/?demo=1",
-      "caption": "Weather-aware pick for today.",
+      "caption": "A pick for the weather, your plans and your mood.",
       "w": 2360,
       "h": 1640
     },
@@ -417,7 +495,7 @@
       "device": "ipad",
       "file": "light/ipad/first-run--onboarding--welcome.webp",
       "route": "/onboarding",
-      "caption": "Your scent wardrobe starts here.",
+      "caption": "Your fragrance wardrobe, beautifully kept.",
       "w": 2360,
       "h": 1640
     },
@@ -430,7 +508,7 @@
       "device": "ipad",
       "file": "light/ipad/insights--advisor--demo.webp",
       "route": "/advisor?demo=1",
-      "caption": "Office-safe suggestions.",
+      "caption": "Fine-tune a pick for any occasion.",
       "w": 2360,
       "h": 1640
     },
@@ -461,6 +539,32 @@
       "h": 1640
     },
     {
+      "id": "insights-diary-demo",
+      "group": "Insights",
+      "screen": "Diary",
+      "state": "demo",
+      "theme": "light",
+      "device": "ipad",
+      "file": "light/ipad/insights--diary--demo.webp",
+      "route": "/calendar?demo=1",
+      "caption": "Your wear diary, day by day.",
+      "w": 2360,
+      "h": 1640
+    },
+    {
+      "id": "insights-insights-demo",
+      "group": "Insights",
+      "screen": "Insights",
+      "state": "demo",
+      "theme": "light",
+      "device": "ipad",
+      "file": "light/ipad/insights--insights--demo.webp",
+      "route": "/analytics?demo=1",
+      "caption": "Rotation, value and habits.",
+      "w": 2360,
+      "h": 1640
+    },
+    {
       "id": "lab-layering-lab-demo",
       "group": "Lab",
       "screen": "Layering lab",
@@ -469,7 +573,7 @@
       "device": "ipad",
       "file": "light/ipad/lab--layering-lab--demo.webp",
       "route": "/layering?demo=1",
-      "caption": "Build and save layering stacks.",
+      "caption": "Find the best pairing for any bottle.",
       "w": 2360,
       "h": 1640
     },
@@ -482,7 +586,7 @@
       "device": "ipad",
       "file": "light/ipad/system--settings--demo.webp",
       "route": "/settings?demo=1",
-      "caption": "Theme, demo mode, export.",
+      "caption": "Preferences, data and privacy.",
       "w": 2360,
       "h": 1640
     },
@@ -495,7 +599,7 @@
       "device": "ipad",
       "file": "light/ipad/travel--travel-kit--demo.webp",
       "route": "/travel?demo=1",
-      "caption": "Decants and travel rules.",
+      "caption": "Pack the right bottles for a trip.",
       "w": 2360,
       "h": 1640
     },
@@ -508,7 +612,7 @@
       "device": "ipad",
       "file": "light/ipad/wardrobe--add-fragrance--demo.webp",
       "route": "/add?demo=1",
-      "caption": "Add by search or scan.",
+      "caption": "Search 1,300+ real fragrances and add in a tap.",
       "w": 2360,
       "h": 1640
     },
@@ -521,7 +625,7 @@
       "device": "ipad",
       "file": "light/ipad/wardrobe--collection--demo.webp",
       "route": "/collection?demo=1",
-      "caption": "Every bottle in your collection.",
+      "caption": "Every bottle, with its real photo.",
       "w": 2360,
       "h": 1640
     },
@@ -534,7 +638,7 @@
       "device": "iphone",
       "file": "light/iphone/daily--today--demo.webp",
       "route": "/?demo=1",
-      "caption": "Weather-aware pick for today.",
+      "caption": "A pick for the weather, your plans and your mood.",
       "w": 1170,
       "h": 2532
     },
@@ -547,7 +651,7 @@
       "device": "iphone",
       "file": "light/iphone/first-run--onboarding--welcome.webp",
       "route": "/onboarding",
-      "caption": "Your scent wardrobe starts here.",
+      "caption": "Your fragrance wardrobe, beautifully kept.",
       "w": 1170,
       "h": 2532
     },
@@ -560,7 +664,7 @@
       "device": "iphone",
       "file": "light/iphone/insights--advisor--demo.webp",
       "route": "/advisor?demo=1",
-      "caption": "Office-safe suggestions.",
+      "caption": "Fine-tune a pick for any occasion.",
       "w": 1170,
       "h": 2532
     },
@@ -591,6 +695,32 @@
       "h": 2532
     },
     {
+      "id": "insights-diary-demo",
+      "group": "Insights",
+      "screen": "Diary",
+      "state": "demo",
+      "theme": "light",
+      "device": "iphone",
+      "file": "light/iphone/insights--diary--demo.webp",
+      "route": "/calendar?demo=1",
+      "caption": "Your wear diary, day by day.",
+      "w": 1170,
+      "h": 2532
+    },
+    {
+      "id": "insights-insights-demo",
+      "group": "Insights",
+      "screen": "Insights",
+      "state": "demo",
+      "theme": "light",
+      "device": "iphone",
+      "file": "light/iphone/insights--insights--demo.webp",
+      "route": "/analytics?demo=1",
+      "caption": "Rotation, value and habits.",
+      "w": 1170,
+      "h": 2532
+    },
+    {
       "id": "lab-layering-lab-demo",
       "group": "Lab",
       "screen": "Layering lab",
@@ -599,7 +729,7 @@
       "device": "iphone",
       "file": "light/iphone/lab--layering-lab--demo.webp",
       "route": "/layering?demo=1",
-      "caption": "Build and save layering stacks.",
+      "caption": "Find the best pairing for any bottle.",
       "w": 1170,
       "h": 2532
     },
@@ -612,7 +742,7 @@
       "device": "iphone",
       "file": "light/iphone/system--settings--demo.webp",
       "route": "/settings?demo=1",
-      "caption": "Theme, demo mode, export.",
+      "caption": "Preferences, data and privacy.",
       "w": 1170,
       "h": 2532
     },
@@ -625,7 +755,7 @@
       "device": "iphone",
       "file": "light/iphone/travel--travel-kit--demo.webp",
       "route": "/travel?demo=1",
-      "caption": "Decants and travel rules.",
+      "caption": "Pack the right bottles for a trip.",
       "w": 1170,
       "h": 2532
     },
@@ -638,7 +768,7 @@
       "device": "iphone",
       "file": "light/iphone/wardrobe--add-fragrance--demo.webp",
       "route": "/add?demo=1",
-      "caption": "Add by search or scan.",
+      "caption": "Search 1,300+ real fragrances and add in a tap.",
       "w": 1170,
       "h": 2532
     },
@@ -651,7 +781,7 @@
       "device": "iphone",
       "file": "light/iphone/wardrobe--collection--demo.webp",
       "route": "/collection?demo=1",
-      "caption": "Every bottle in your collection.",
+      "caption": "Every bottle, with its real photo.",
       "w": 1170,
       "h": 2532
     },
@@ -664,7 +794,7 @@
       "device": "mac",
       "file": "light/mac/daily--today--demo.webp",
       "route": "/?demo=1",
-      "caption": "Weather-aware pick for today.",
+      "caption": "A pick for the weather, your plans and your mood.",
       "w": 2880,
       "h": 1800
     },
@@ -677,7 +807,7 @@
       "device": "mac",
       "file": "light/mac/first-run--onboarding--welcome.webp",
       "route": "/onboarding",
-      "caption": "Your scent wardrobe starts here.",
+      "caption": "Your fragrance wardrobe, beautifully kept.",
       "w": 2880,
       "h": 1800
     },
@@ -690,7 +820,7 @@
       "device": "mac",
       "file": "light/mac/insights--advisor--demo.webp",
       "route": "/advisor?demo=1",
-      "caption": "Office-safe suggestions.",
+      "caption": "Fine-tune a pick for any occasion.",
       "w": 2880,
       "h": 1800
     },
@@ -721,6 +851,32 @@
       "h": 1800
     },
     {
+      "id": "insights-diary-demo",
+      "group": "Insights",
+      "screen": "Diary",
+      "state": "demo",
+      "theme": "light",
+      "device": "mac",
+      "file": "light/mac/insights--diary--demo.webp",
+      "route": "/calendar?demo=1",
+      "caption": "Your wear diary, day by day.",
+      "w": 2880,
+      "h": 1800
+    },
+    {
+      "id": "insights-insights-demo",
+      "group": "Insights",
+      "screen": "Insights",
+      "state": "demo",
+      "theme": "light",
+      "device": "mac",
+      "file": "light/mac/insights--insights--demo.webp",
+      "route": "/analytics?demo=1",
+      "caption": "Rotation, value and habits.",
+      "w": 2880,
+      "h": 1800
+    },
+    {
       "id": "lab-layering-lab-demo",
       "group": "Lab",
       "screen": "Layering lab",
@@ -729,7 +885,7 @@
       "device": "mac",
       "file": "light/mac/lab--layering-lab--demo.webp",
       "route": "/layering?demo=1",
-      "caption": "Build and save layering stacks.",
+      "caption": "Find the best pairing for any bottle.",
       "w": 2880,
       "h": 1800
     },
@@ -742,7 +898,7 @@
       "device": "mac",
       "file": "light/mac/system--settings--demo.webp",
       "route": "/settings?demo=1",
-      "caption": "Theme, demo mode, export.",
+      "caption": "Preferences, data and privacy.",
       "w": 2880,
       "h": 1800
     },
@@ -755,7 +911,7 @@
       "device": "mac",
       "file": "light/mac/travel--travel-kit--demo.webp",
       "route": "/travel?demo=1",
-      "caption": "Decants and travel rules.",
+      "caption": "Pack the right bottles for a trip.",
       "w": 2880,
       "h": 1800
     },
@@ -768,7 +924,7 @@
       "device": "mac",
       "file": "light/mac/wardrobe--add-fragrance--demo.webp",
       "route": "/add?demo=1",
-      "caption": "Add by search or scan.",
+      "caption": "Search 1,300+ real fragrances and add in a tap.",
       "w": 2880,
       "h": 1800
     },
@@ -781,7 +937,7 @@
       "device": "mac",
       "file": "light/mac/wardrobe--collection--demo.webp",
       "route": "/collection?demo=1",
-      "caption": "Every bottle in your collection.",
+      "caption": "Every bottle, with its real photo.",
       "w": 2880,
       "h": 1800
     }
