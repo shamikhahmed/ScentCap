@@ -1,3 +1,14 @@
+## [3.0.1] — 2026-10-25
+
+**iPhone (Safari + Home Screen app) fixes.**
+
+- No more "refresh" on taps: screen chunks load inside the shell (tab bar never blanks) and are prefetched after launch.
+- Updates no longer reload the app mid-use — a new version installs quietly and applies on the next launch.
+- No scroll jumps: new screens open at the top (Back keeps position); sheets keep the page where it was (iOS-safe scroll lock, focus without scrolling); Today keeps its card while re-scoring; Safari's toolbar collapsing no longer changes page padding.
+- Tab bar lifted out of the home-indicator / Safari gesture zone; instant taps (no double-tap delay), no stuck hover states, no long-press callouts on controls.
+- Inputs are ≥16px so iOS never zooms on focus; no sideways wobble; heavy full-screen texture overlay removed for smoother scrolling.
+- `npm run check:ios` — WebKit iPhone behaviour check (tappability, overflow, scroll/sheet/navigation stability, input sizes).
+
 ## [3.0.0] — 2026-10-24
 
 **Redesign + real bottles.**

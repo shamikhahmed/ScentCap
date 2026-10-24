@@ -1,21 +1,54 @@
 import { Suspense, lazy, useEffect, useState } from 'react';
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigationType } from 'react-router-dom';
 import { AppProvider, useApp } from '@/context/AppContext';
 import { AppShell } from '@/components/layout/AppShell';
 import { Home } from '@/pages/Home';
 import { CenteredLoader } from '@/components/layout/CenteredLoader';
 import { hardResetApp } from '@/components/ErrorBoundary';
 
-const Onboarding = lazy(() => import('@/pages/Onboarding').then((m) => ({ default: m.Onboarding })));
-const CollectionPage = lazy(() => import('@/pages/Collection').then((m) => ({ default: m.CollectionPage })));
-const AddFragrance = lazy(() => import('@/pages/AddFragrance').then((m) => ({ default: m.AddFragrance })));
-const AdvisorPage = lazy(() => import('@/pages/Advisor').then((m) => ({ default: m.AdvisorPage })));
-const CalendarPage = lazy(() => import('@/pages/CalendarPage').then((m) => ({ default: m.CalendarPage })));
-const AnalyticsPage = lazy(() => import('@/pages/Analytics').then((m) => ({ default: m.AnalyticsPage })));
-const SettingsPage = lazy(() => import('@/pages/Settings').then((m) => ({ default: m.SettingsPage })));
-const FragranceDetail = lazy(() => import('@/pages/FragranceDetail').then((m) => ({ default: m.FragranceDetail })));
-const LayeringLab = lazy(() => import('@/pages/LayeringLab').then((m) => ({ default: m.LayeringLab })));
-const TravelKit = lazy(() => import('@/pages/TravelKit').then((m) => ({ default: m.TravelKit })));
+// Route chunks: one loader per screen so we can prefetch them all after boot (no blank flash on first visit).
+const loaders = {
+  Onboarding: () => import('@/pages/Onboarding').then((m) => ({ default: m.Onboarding })),
+  CollectionPage: () => import('@/pages/Collection').then((m) => ({ default: m.CollectionPage })),
+  AddFragrance: () => import('@/pages/AddFragrance').then((m) => ({ default: m.AddFragrance })),
+  AdvisorPage: () => import('@/pages/Advisor').then((m) => ({ default: m.AdvisorPage })),
+  CalendarPage: () => import('@/pages/CalendarPage').then((m) => ({ default: m.CalendarPage })),
+  AnalyticsPage: () => import('@/pages/Analytics').then((m) => ({ default: m.AnalyticsPage })),
+  SettingsPage: () => import('@/pages/Settings').then((m) => ({ default: m.SettingsPage })),
+  FragranceDetail: () => import('@/pages/FragranceDetail').then((m) => ({ default: m.FragranceDetail })),
+  LayeringLab: () => import('@/pages/LayeringLab').then((m) => ({ default: m.LayeringLab })),
+  TravelKit: () => import('@/pages/TravelKit').then((m) => ({ default: m.TravelKit })),
+};
+const Onboarding = lazy(loaders.Onboarding);
+const CollectionPage = lazy(loaders.CollectionPage);
+const AddFragrance = lazy(loaders.AddFragrance);
+const AdvisorPage = lazy(loaders.AdvisorPage);
+const CalendarPage = lazy(loaders.CalendarPage);
+const AnalyticsPage = lazy(loaders.AnalyticsPage);
+const SettingsPage = lazy(loaders.SettingsPage);
+const FragranceDetail = lazy(loaders.FragranceDetail);
+const LayeringLab = lazy(loaders.LayeringLab);
+const TravelKit = lazy(loaders.TravelKit);
+
+function usePrefetchRoutes(ready: boolean) {
+  useEffect(() => {
+    if (!ready) return;
+    const run = () => Object.values(loaders).forEach((load) => void load().catch(() => undefined));
+    const w = window as Window & { requestIdleCallback?: (cb: () => void) => number };
+    if (w.requestIdleCallback) w.requestIdleCallback(run);
+    else window.setTimeout(run, 1200);
+  }, [ready]);
+}
+
+/** New screens open at the top; Back/Forward (POP) keeps the browser's restored position. */
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  const navType = useNavigationType();
+  useEffect(() => {
+    if (navType !== 'POP') window.scrollTo(0, 0);
+  }, [pathname, navType]);
+  return null;
+}
 
 const basename = import.meta.env.BASE_URL.replace(/\/$/, '') || undefined;
 
@@ -107,9 +140,12 @@ function TitleSync() {
 }
 
 function AppRoutes() {
+  const { ready } = useApp();
+  usePrefetchRoutes(ready);
   return (
     <Suspense fallback={null}>
       <TitleSync />
+      <ScrollToTop />
       <Routes>
         <Route path="/onboarding" element={<Onboarding />} />
         <Route

@@ -1,7 +1,7 @@
 {
   "name": "scentcap",
   "private": true,
-  "version": "3.0.0",
+  "version": "3.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -24,7 +24,8 @@
     "test:matrix": "npm run build && FINISH_MATRIX=1 playwright test e2e/finish-matrix.spec.ts",
     "tier1": "node ../capricorn-tooling/shared/testing/tier1.mjs",
     "lhci": "node scripts/lhci-mobile.mjs",
-    "catalog": "node scripts/build-catalog.mjs"
+    "catalog": "node scripts/build-catalog.mjs",
+    "check:ios": "node scripts/ios-behaviour-check.mjs"
   },
   "dependencies": {
     "@capacitor/cli": "^8.4.0",

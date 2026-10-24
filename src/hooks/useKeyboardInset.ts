@@ -9,8 +9,13 @@ export function useKeyboardInset() {
     if (!vv) return;
 
     const update = () => {
+      // Only a real keyboard counts: Safari's toolbar collapsing during a normal scroll also shrinks the
+      // visual viewport (~50–100px), which used to change page padding mid-scroll and make the page jump.
+      const el = document.activeElement as HTMLElement | null;
+      const typing = !!el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable);
       const overlap = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
-      setInset(Math.round(overlap));
+      const next = typing && overlap > 150 ? Math.round(overlap) : 0;
+      setInset((prev) => (prev === next ? prev : next));
     };
 
     vv.addEventListener('resize', update);

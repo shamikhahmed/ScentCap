@@ -54,6 +54,7 @@ export function Home() {
   const [heroPhotoUrl, setHeroPhotoUrl] = useState<string | null>(null);
   const [wearRatingImage, setWearRatingImage] = useState<string | null>(null);
   const pickSeq = useRef(0);
+  const resultRef = useRef<AdvisorResult | null>(null);
 
   const greeting = timeGreeting();
   const streak = wearStreak(history);
@@ -64,7 +65,8 @@ export function Home() {
   const runPick = useCallback(async (input: AdvisorInput) => {
     if (!profile || !collection.length) return;
     const seq = ++pickSeq.current;
-    setLoading(true);
+    // Only show the skeleton on first load; re-scoring after an action keeps the current card (no layout jump).
+    setLoading((prevLoading) => prevLoading && !resultRef.current);
     setLogged(false);
     setShareMsg(null);
     const raw = await runAdvisor(collection, input, profile, prefs, weather, history);
@@ -75,6 +77,7 @@ export function Home() {
       return;
     }
     setResult(raw);
+    resultRef.current = raw;
     void hydrateAdvisorResult(raw).then((next) => {
       if (seq !== pickSeq.current) return;
       setResult(next);

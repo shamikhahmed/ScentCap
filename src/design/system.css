@@ -147,6 +147,66 @@ body {
   border-radius: 8px;
 }
 
+/* ---------- iOS / PWA touch behaviour ---------- */
+
+/* No sideways wobble: clip (unlike hidden) doesn't create a scroll container, so sticky + scroll keep working. */
+html,
+body {
+  overflow-x: clip;
+}
+
+/* Native rubber-band vertically; no accidental horizontal back-swipe bounce. */
+body {
+  overscroll-behavior-x: none;
+  overscroll-behavior-y: auto;
+}
+
+/* 2.x paper-grain overlay: full-screen blend layer costs scroll smoothness on iPhone. */
+body::before {
+  display: none !important;
+}
+
+/* iOS zooms (and shifts the page) when focusing inputs under 16px. */
+input,
+select,
+textarea {
+  font-size: max(16px, 1em);
+}
+
+/* Instant taps (no double-tap-zoom delay), no grey flash, no long-press callouts on controls. */
+a,
+button,
+input,
+select,
+textarea,
+label,
+summary,
+[role="button"],
+[role="radio"],
+[role="tab"] {
+  touch-action: manipulation;
+}
+
+button,
+.ui-tab,
+.ui-chip,
+.ui-btn,
+.ui-plinth img {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Hover styles only where a pointer can hover (prevents "stuck" hovered buttons after a tap on iPhone). */
+@media (hover: none) {
+  .ui-btn--primary:hover {
+    background: var(--tint);
+  }
+  .ui-side-link:hover {
+    background: transparent;
+  }
+}
+
 ::selection {
   background: var(--tint-soft);
 }
@@ -160,7 +220,7 @@ body {
 /* ---------- Layout ---------- */
 
 .ui-page {
-  padding: max(12px, env(safe-area-inset-top)) var(--gutter) calc(var(--tabbar-h) + 40px + env(safe-area-inset-bottom));
+  padding: max(12px, env(safe-area-inset-top)) var(--gutter) calc(var(--tabbar-h) + 48px + env(safe-area-inset-bottom));
   max-width: 1100px;
   margin: 0 auto;
 }
@@ -797,7 +857,8 @@ select.ui-field {
   position: fixed;
   left: 12px;
   right: 12px;
-  bottom: max(10px, env(safe-area-inset-bottom));
+  /* Clear of the home indicator and Safari's bottom gesture zone so taps land on the tabs. */
+  bottom: max(14px, calc(env(safe-area-inset-bottom) + 6px));
   z-index: 40;
   height: var(--tabbar-h);
   display: grid;

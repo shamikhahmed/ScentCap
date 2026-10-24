@@ -1,7 +1,7 @@
 {
   "name": "ScentCap",
-  "version": "3.0.0",
-  "swCache": "scentcap-v300",
-  "updated": "2026-10-24",
-  "notes": "ScentCap 3.0 \u2014 Apple HIG redesign, offline catalog of real fragrances with bundled bottle photos"
+  "version": "3.0.1",
+  "swCache": "scentcap-v301",
+  "updated": "2026-10-25",
+  "notes": "3.0.1 \u2014 iPhone fixes: no reload/blank on navigation, no scroll jumps, tappable tab bar, no zoom-on-focus"
 }

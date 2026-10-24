@@ -139,15 +139,24 @@ export function Sheet({
   useEffect(() => {
     if (!open) return;
     const prev = document.activeElement as HTMLElement | null;
-    ref.current?.focus();
+    // preventScroll: iOS Safari otherwise scrolls the page to the focused sheet (the "jump").
+    ref.current?.focus({ preventScroll: true });
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
     document.addEventListener('keydown', onKey);
-    const overflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    // iOS-safe scroll lock: overflow:hidden on body is ignored by iOS and can jump to top,
+    // so pin the body in place and restore the exact scroll position on close.
+    const y = window.scrollY;
+    const body = document.body.style;
+    const saved = { position: body.position, top: body.top, width: body.width, overflow: body.overflow };
+    body.position = 'fixed';
+    body.top = `-${y}px`;
+    body.width = '100%';
+    body.overflow = 'hidden';
     return () => {
       document.removeEventListener('keydown', onKey);
-      document.body.style.overflow = overflow;
-      prev?.focus?.();
+      Object.assign(body, saved);
+      window.scrollTo(0, y);
+      prev?.focus?.({ preventScroll: true });
     };
   }, [open, onClose]);
 

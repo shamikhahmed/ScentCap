@@ -16,7 +16,8 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
-      registerType: 'autoUpdate',
+      // 'prompt' + no UI: an update waits until the app is fully closed, instead of reloading mid-use.
+      registerType: 'prompt',
       includeAssets: [
         'favicon.svg',
         'mark.svg',
@@ -55,6 +56,8 @@ export default defineConfig({
         globIgnores: ['**/bottles/**', 'data/fragrances.seed.json'],
         maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
         cacheId: versionManifest.swCache,
+        skipWaiting: false,
+        clientsClaim: false,
         navigateFallback: `${base}index.html`,
         navigateFallbackDenylist: [/^\/api\//, /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/],
         runtimeCaching: [

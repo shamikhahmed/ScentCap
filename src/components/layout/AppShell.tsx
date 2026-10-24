@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import { BarChart3, CalendarDays, Layers, LayoutGrid, Luggage, Plus, Settings, Sparkles, Sun } from 'lucide-react';
 import { DemoBanner } from '@/components/layout/DemoBanner';
@@ -65,10 +66,13 @@ export function AppShell() {
         <p className="mt-auto px-3 ui-footnote">ScentCap {APP_VERSION}</p>
       </aside>
 
-      <main id="main" tabIndex={-1} className="flex-1 min-w-0 overflow-x-hidden outline-none">
+      <main id="main" tabIndex={-1} className="flex-1 min-w-0 overflow-x-clip outline-none">
         <DemoBanner />
         <CapRouteTransition>
-          <Outlet />
+          {/* Local boundary: a loading screen chunk never blanks the shell/tab bar. */}
+          <Suspense fallback={<div className="ui-page" aria-busy="true" />}>
+            <Outlet />
+          </Suspense>
         </CapRouteTransition>
       </main>
 
