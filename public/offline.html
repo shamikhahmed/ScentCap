@@ -18,13 +18,16 @@
       color: #fafaf9;
       text-align: center;
     }
-    .card {
+    .panel {
       max-width: 360px;
       width: 100%;
       padding: 32px 24px;
-      border-radius: 20px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .mark {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 16px;
+      background: url('./mark.svg') center / contain no-repeat;
     }
     h1 { font-size: 1.35rem; margin-bottom: 8px; font-weight: 700; }
     p { color: rgba(250,250,249,0.65); line-height: 1.55; font-size: 0.95rem; margin-bottom: 20px; }
@@ -33,20 +36,20 @@
       padding: 0 20px;
       border: none;
       border-radius: 12px;
-      background: #d97706;
-      color: #fff;
+      background: #c9a87c;
+      color: #0c0a09;
       font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
     }
-    button:focus-visible { outline: 2px solid #fbbf24; outline-offset: 2px; }
+    button:focus-visible { outline: 2px solid #f4f0e8; outline-offset: 2px; }
   </style>
 </head>
 <body>
-  <main class="card">
-    <div style="font-size:2.5rem;margin-bottom:12px" aria-hidden="true">🌸</div>
-    <h1>You&apos;re offline</h1>
-    <p>ScentCap needs a connection for some features. Your saved wardrobe is still available when you reopen the app.</p>
+  <main class="panel">
+    <div class="mark" aria-hidden="true"></div>
+    <h1>You’re offline</h1>
+    <p>Your wardrobe and the bundled bottle catalog still work in the app. Reconnect for live weather or online catalog search.</p>
     <button type="button" onclick="location.reload()">Try again</button>
   </main>
 </body>

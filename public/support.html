@@ -6,65 +6,58 @@
 <meta name="theme-color" content="#c9a87c">
 <title>Support — ScentCap</title>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:#1a1614;color:#f5f0e8;line-height:1.65;padding:24px;max-width:720px;margin:0 auto}
-a{color:#c9a87c}
-nav{margin-bottom:28px;font-size:14px}
-nav a{margin-right:12px;color:#a89888}
-h1{font-size:1.75rem;margin:24px 0 12px;letter-spacing:-.02em}
-h2{font-size:1.15rem;margin:20px 0 8px;color:#c9a87c}
-p,li{font-size:15px;color:#a89888;margin-bottom:10px}
-ul{margin:8px 0 16px 20px}
-.card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px;margin:16px 0}
-footer{margin-top:40px;padding-top:20px;border-top:1px solid rgba(255,255,255,.08);font-size:13px;color:#a89888}
+  :root { color-scheme: light dark; }
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:#f5f0e8;color:#1a1614;line-height:1.65;padding:24px;max-width:40rem;margin:0 auto}
+  @media (prefers-color-scheme: dark){
+    body{background:#1a1614;color:#f5f0e8}
+    a{color:#c9a87c}
+    p,li{color:#a89888}
+    .card{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08)}
+  }
+  a{color:#8a6a3c}
+  nav{margin-bottom:28px;font-size:14px}
+  nav a{margin-right:12px}
+  h1{font-size:1.75rem;margin:0 0 12px;letter-spacing:-.02em}
+  h2{font-size:1.1rem;margin:20px 0 8px}
+  p,li{font-size:15px;margin-bottom:10px}
+  ul{margin:8px 0 16px 20px}
+  .card{background:rgba(0,0,0,.03);border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:16px;margin:16px 0}
+  footer{margin-top:40px;padding-top:20px;border-top:1px solid rgba(0,0,0,.08);font-size:13px}
 </style>
-
-  <link rel="stylesheet" href="../css/tokens.css">
-  <link rel="stylesheet" href="../css/capricorn-core.css">
 </head>
 <body>
-<div class="cap-scroll-progress" aria-hidden="true"></div>
 <nav>
-  <a href="landing.html">← ScentCap</a>
-  <a href="index.html">App</a>
+  <a href="./">← ScentCap</a>
   <a href="privacy.html">Privacy</a>
   <a href="terms.html">Terms</a>
 </nav>
 <article>
-<h1>ScentCap Support</h1>
-<p>Need help with your wardrobe, exports, or the iOS shell? We're here to help.</p>
+  <h1>ScentCap Support</h1>
+  <p>Need help with your wardrobe, the offline catalog, exports, or the iOS shell? We’re here to help.</p>
 
-<div class="card">
-  <h2>Contact</h2>
-  <p><strong>Email:</strong> <a href="mailto:support@scentcap.app">support@scentcap.app</a></p>
-  <p class="text-sm" style="font-size:13px;color:#7a6f62"><em>Note: Update this address to your live support inbox before any store submission.</em></p>
-  <p><strong>Portfolio:</strong> <a href="https://shamikhahmed.github.io/">shamikhahmed.github.io</a></p>
-  <p><strong>Bug reports:</strong> <a href="https://github.com/shamikhahmed/ScentCap/issues">GitHub Issues</a></p>
-</div>
+  <div class="card">
+    <h2>Contact</h2>
+    <p><strong>Email:</strong> <a href="mailto:support@scentcap.app">support@scentcap.app</a></p>
+    <p><strong>Portfolio:</strong> <a href="https://shamikhahmed.github.io/">shamikhahmed.github.io</a></p>
+    <p><strong>Bug reports:</strong> <a href="https://github.com/shamikhahmed/ScentCap/issues">GitHub Issues</a></p>
+  </div>
 
-<h2>Common topics</h2>
-<ul>
-<li><strong>Lost data:</strong> Export JSON from Settings before switching phones. Data is local-only.</li>
-<li><strong>Weather picks:</strong> Grant location in Settings → Update location & weather.</li>
-<li><strong>Pricing:</strong> ScentCap is completely free — no Pro, Stripe, or IAP.</li>
-<li><strong>Office Safe:</strong> Toggle in Settings → Office mode for desk-friendly recommendations.</li>
-</ul>
+  <h2>Common topics</h2>
+  <ul>
+    <li><strong>Lost data:</strong> Export JSON from Settings before switching phones. Data is local-only.</li>
+    <li><strong>Offline catalog:</strong> Real bottles ship with the app for browsing without a network. Optional Fraganty search needs connectivity.</li>
+    <li><strong>Weather picks:</strong> Grant location or enter a city for Open-Meteo weather context.</li>
+    <li><strong>Pricing:</strong> ScentCap is completely free — no Pro, Stripe, or IAP.</li>
+    <li><strong>Office Safe:</strong> Toggle in Settings for desk-friendly recommendations.</li>
+    <li><strong>Bottle images:</strong> Bottle images © their respective brands, via Parfumo.</li>
+  </ul>
 
-<h2>Response time</h2>
-<p>We aim to reply within 2 business days.</p>
+  <h2>Response time</h2>
+  <p>We aim to reply within 2 business days.</p>
 
-<h2>Legal</h2>
-<p><a href="privacy.html">Privacy Policy</a> · <a href="terms.html">Terms of Use</a></p>
+  <h2>Legal</h2>
+  <p><a href="privacy.html">Privacy Policy</a> · <a href="terms.html">Terms of Use</a></p>
 </article>
-<footer>© 2026 Shamikh Ahmed · ScentCap v2.0.10</footer>
-
-  <canvas id="cap-scene" class="cap-scene-canvas cap-scene-canvas--subtle" aria-hidden="true"></canvas>
-
-  <script src="../js/vendor/gsap.min.js"></script>
-  <script src="../js/vendor/ScrollTrigger.min.js"></script>
-  <script src="../js/capricorn-scene.js"></script>
-  <script src="../js/capricorn-motion.js"></script>
-  <script src="../js/capricorn-cinematic.js"></script>
-  <script>document.addEventListener('DOMContentLoaded',function(){if(window.CapCinematic)CapCinematic.init({canvas:'#cap-scene'});});</script>
+<footer>© 2026 Capricorn Systems · ScentCap 3.0</footer>
 </body>
 </html>

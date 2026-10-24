@@ -1,0 +1,23 @@
+{
+  "url": "http://127.0.0.1:4175/ScentCap/",
+  "generatedAt": "2026-10-24T12:34:35.945Z",
+  "scores": {
+    "performance": 98,
+    "accessibility": 92,
+    "best-practices": 100,
+    "seo": 100
+  },
+  "budgets": {
+    "performance": 90,
+    "accessibility": 95,
+    "best-practices": 95,
+    "seo": 95
+  },
+  "perfWarnFloor": 85,
+  "warnings": [],
+  "failures": [
+    "accessibility=92 (budget 95)"
+  ],
+  "status": "FAIL",
+  "report": "qa/lighthouse/mobile-preview.json"
+}

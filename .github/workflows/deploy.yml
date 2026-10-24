@@ -33,6 +33,31 @@ jobs:
           path: playwright-report
           retention-days: 7
 
+  lighthouse:
+    needs: test
+    runs-on: ubuntu-latest
+    # Soft gate: failures here do not block deploy (deploy only needs build → test).
+    # Perf below 85 warns inside the script; a11y/BP/SEO below budget fail this job only.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Install Lighthouse
+        run: npm install --no-save lighthouse@12 chrome-launcher
+      - name: Lighthouse CI (mobile / vite preview)
+        run: npm run lhci
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse-mobile
+          path: qa/lighthouse/
+          retention-days: 14
+
   build:
     needs: test
     runs-on: ubuntu-latest

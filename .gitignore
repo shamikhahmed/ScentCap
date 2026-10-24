@@ -36,6 +36,12 @@ qa/device-matrix/**/*.png
 
 qa/finish-loop/shots/
 
+# Lighthouse full LHR is large; keep SUMMARY.json committed
+qa/lighthouse/mobile-preview.json
+
 # v3 evidence screenshots stay local
 qa/perfection/**/*.png
 build/
+
+# bottle crawler cache
+scripts/.cache/

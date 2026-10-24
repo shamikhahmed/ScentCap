@@ -35,16 +35,17 @@
 </nav>
 <article>
   <h1>ScentCap Privacy</h1>
-  <p class="meta">Effective 14 September 2026 · Capricorn Systems, Karachi, Pakistan</p>
+  <p class="meta">Effective 24 October 2026 · Version 3.0 · Capricorn Systems, Karachi, Pakistan</p>
 
   <h2>Summary</h2>
-  <p>ScentCap is offline-first. Your wardrobe stays on your device. There are no accounts, analytics SDKs, ads, or trackers in the shipped app.</p>
+  <p>ScentCap 3.0 is offline-first. Your wardrobe stays on your device. There are no accounts, analytics SDKs, ads, or trackers. App Store privacy label: <strong>Data Not Collected</strong>.</p>
 
   <h2>What stays on your device</h2>
   <ul>
     <li>Collection, wear logs, notes, and preferences (IndexedDB / localStorage)</li>
     <li>Bottle photos you add</li>
-    <li>Cached catalog snippets and weather results you requested</li>
+    <li>The bundled offline catalog of real bottles (shipped with the app)</li>
+    <li>Cached optional weather or live-catalog results you requested</li>
   </ul>
 
   <h2>What may leave your device</h2>
@@ -52,25 +53,26 @@
     <thead><tr><th>Service</th><th>What is sent</th><th>Why</th><th>When</th></tr></thead>
     <tbody>
       <tr>
-        <td>Open-Meteo (weather + geocoding)</td>
+        <td>Open-Meteo (optional)</td>
         <td>City name or coordinates</td>
         <td>Weather-aware picks</td>
         <td>Only after you enter a city or tap <strong>Use my location</strong></td>
       </tr>
       <tr>
-        <td>Fraganty (optional catalog)</td>
+        <td>Fraganty (optional)</td>
         <td>Search queries</td>
-        <td>Bottle lookup / catalog art</td>
-        <td>When you search the catalog</td>
+        <td>Live bottle lookup beyond the bundled catalog</td>
+        <td>When you search the online catalog</td>
       </tr>
       <tr>
-        <td>GitHub Pages</td>
+        <td>GitHub Pages / App Store CDN</td>
         <td>Normal static asset requests</td>
-        <td>Serve the app</td>
+        <td>Serve or update the app</td>
         <td>On load / update</td>
       </tr>
     </tbody>
   </table>
+  <p>ScentCap does not operate a backend that stores your wardrobe.</p>
 
   <h2>Permissions</h2>
   <ul>
@@ -78,15 +80,18 @@
     <li><strong>Camera / Photos</strong> — optional bottle photos. If denied, you can still add bottles without a photo.</li>
   </ul>
 
+  <h2>Images &amp; attribution</h2>
+  <p>Bottle images © their respective brands, via Parfumo. Capricorn does not claim ownership of those images. ScentCap is not affiliated with any fragrance house.</p>
+
   <h2>Your controls</h2>
-  <p>Export and erase from Settings. Clearing site data removes your wardrobe.</p>
+  <p>Export and erase from Settings. Clearing site data or uninstalling removes your wardrobe.</p>
 
   <h2>Payments</h2>
   <p>ScentCap is free. No payments or subscriptions.</p>
 
   <h2>Contact</h2>
-  <p><a href="https://shamikhahmed.github.io/support.html">Support</a> · <a href="terms.html">Terms</a> · <a href="https://github.com/shamikhahmed/ScentCap">GitHub</a></p>
+  <p><a href="support.html">Support</a> · <a href="terms.html">Terms</a> · <a href="https://github.com/shamikhahmed/ScentCap">GitHub</a></p>
 </article>
-<footer>© 2026 Capricorn Systems</footer>
+<footer>© 2026 Capricorn Systems · ScentCap 3.0</footer>
 </body>
 </html>

@@ -1,0 +1,186 @@
+{
+  "recordedAt": "2026-10-24T12:33:21.484Z",
+  "phase": "cursor-phase-1",
+  "command": "npm run tier1",
+  "path": "../capricorn-tooling/shared/testing/tier1.mjs",
+  "runnable": true,
+  "status": "FAIL",
+  "summary": {
+    "pass": 24,
+    "fail": 12,
+    "warn": 1
+  },
+  "note": "Full Tier1 still FAIL — freshness/gallery/docs-truth/minisite LH and CSS kill gates are largely Claude/Phase-3 owned. Phase 1 only required runnable + recorded result.",
+  "finishLoopCopy": "qa/finish-loop/TIER1.json",
+  "tier1": {
+    "app": "scentcap",
+    "version": "2.2.2",
+    "swCache": "scentcap-v222",
+    "generatedAt": "2026-10-24T12:33:11.171Z",
+    "status": "FAIL",
+    "pass": [
+      {
+        "id": "version:field",
+        "detail": "2.2.2"
+      },
+      {
+        "id": "version:sw-cache-match",
+        "detail": "dist/sw.js contains scentcap-v222"
+      },
+      {
+        "id": "records:BASELINE.md",
+        "detail": "present"
+      },
+      {
+        "id": "records:LOG.md",
+        "detail": "present"
+      },
+      {
+        "id": "records:STATES.md",
+        "detail": "present"
+      },
+      {
+        "id": "records:APP-REPORT.md",
+        "detail": "present"
+      },
+      {
+        "id": "records:DOCS-INVENTORY.md",
+        "detail": "present"
+      },
+      {
+        "id": "records:APP-REPORT-size",
+        "detail": "2904 bytes (need ≥1024)"
+      },
+      {
+        "id": "suppressions",
+        "detail": "none"
+      },
+      {
+        "id": "test-skip",
+        "detail": "none"
+      },
+      {
+        "id": "app-ready",
+        "detail": "window.__APP_READY__ assigned in product code"
+      },
+      {
+        "id": "ci:main",
+        "detail": "Deploy to GitHub Pages @ bae2a63 → success https://github.com/shamikhahmed/ScentCap/actions/runs/39754959110"
+      },
+      {
+        "id": "tag",
+        "detail": "found v2.2.2"
+      },
+      {
+        "id": "matrix:spec",
+        "detail": "e2e/finish-matrix.spec.ts"
+      },
+      {
+        "id": "matrix:failures",
+        "detail": "0"
+      },
+      {
+        "id": "matrix:shot-count",
+        "detail": "6 shots (need routes×viewports×themes = 6)"
+      },
+      {
+        "id": "axe:serious-critical",
+        "detail": "3 JSON clean"
+      },
+      {
+        "id": "live:VERSION.json",
+        "detail": "https://shamikhahmed.github.io/ScentCap/VERSION.json → 200"
+      },
+      {
+        "id": "sinks:SINKS.md",
+        "detail": "present"
+      },
+      {
+        "id": "g16:device-qa",
+        "detail": "qa/perfection/baseline/device-qa.json: 0 hard / tap / text / page / hub-console (7 runs)"
+      },
+      {
+        "id": "kill:native-dialogs",
+        "detail": "0"
+      },
+      {
+        "id": "kill:console.log",
+        "detail": "0"
+      },
+      {
+        "id": "kill:google-fonts",
+        "detail": "0"
+      },
+      {
+        "id": "kill:innerHTML-classified",
+        "detail": "3 sinks; SINKS.md ok"
+      }
+    ],
+    "fail": [
+      {
+        "id": "matrix:freshness",
+        "detail": "matrix 2026-09-23T09:04:45.420Z before last UI commit 2026-10-21T23:43:40+05:00"
+      },
+      {
+        "id": "lighthouse:home-demo-desktop.json",
+        "detail": "fetchTime 2026-09-23T09:03:49.211Z before last UI commit 2026-10-21T23:43:40+05:00"
+      },
+      {
+        "id": "lighthouse:home-demo-mobile.json",
+        "detail": "fetchTime 2026-09-23T09:03:34.673Z before last UI commit 2026-10-21T23:43:40+05:00"
+      },
+      {
+        "id": "lighthouse:passing",
+        "detail": "0/2 files meet thresholds"
+      },
+      {
+        "id": "gallery:freshness",
+        "detail": "gallery 2026-10-14T17:03:21+05:00 before last UI commit 2026-10-21T23:43:40+05:00"
+      },
+      {
+        "id": "g17:gallery-v3",
+        "detail": "FAIL via check-completeness.mjs: Manifest version 2.2.0 !== app VERSION.json 2.2.2; Manifest capturedAt 2026-10-14T09:41:00Z is older than VERSION.json updated 2026-10-21; Shot older than version: dark/ipad/daily--today--demo.webp (mtime 2026-10-14T12:02:20.038Z < VERSION updated); Shot older than version: dark/ipad/first-run--onboarding--welcome.webp (mtime 2026-10-14T12:02:18.772Z < VERSION updated); Shot older than version: dark/ipad/insights--advisor--demo.webp (mtime 2026-10-14T12:02:23.182Z < VERSION updated); Shot older than version: dark/ipad/insights--analytics--demo.webp (mtime 2026-10-14T12:02:26.147Z < VERSION updated); Shot older than version: dark/ipad/insights--calendar--demo.webp (mtime 2026-10-14T12:02:24.600Z < VERSION updated); Shot older than version: dark/ipad/lab--layering-lab--demo.webp (mtime 2026-10-14T12:02:27.327Z < VERSION updated)"
+      },
+      {
+        "id": "g18:docs-truth",
+        "detail": "index.html: broken link %BASE_URL%favicon.svg; index.html: broken link %BASE_URL%apple-touch-icon-180.png; public/landing.html: broken link index.html; public/landing.html: broken link index.html; public/landing.html: broken link index.html"
+      },
+      {
+        "id": "g19:minisite-lh",
+        "detail": "mini-site live at https://shamikhahmed.github.io/apps/scentcap/ but no LH JSON under qa/perfection/minisite/lighthouse | qa/finish-loop/lighthouse-minisite | qa/finish-loop/minisite-lighthouse — run Lighthouse and save evidence"
+      },
+      {
+        "id": "kill:raw-hex",
+        "detail": "65"
+      },
+      {
+        "id": "kill:sub-11px",
+        "detail": "4"
+      },
+      {
+        "id": "kill:important",
+        "detail": "1"
+      },
+      {
+        "id": "kill:outline-none",
+        "detail": "1"
+      }
+    ],
+    "warn": [
+      {
+        "id": "g15:architecture",
+        "detail": "map not present (docs/architecture or architecture/) — soft until per-app map lands; tooling pilots use npm run architecture:check"
+      }
+    ],
+    "killList": {
+      "rawHex": 65,
+      "sub11": 4,
+      "important": 1,
+      "nativeDialog": 0,
+      "outlineNone": 1,
+      "consoleLog": 0,
+      "googleFonts": 0,
+      "innerHTML": 3
+    }
+  }
+}

@@ -1,17 +1,17 @@
 {
   "app": "scentcap",
-  "version": "2.1.4",
-  "swCache": "scentcap-v215",
-  "generatedAt": "2026-09-23T09:06:07.571Z",
-  "status": "PASS",
+  "version": "2.2.2",
+  "swCache": "scentcap-v222",
+  "generatedAt": "2026-10-24T12:33:11.171Z",
+  "status": "FAIL",
   "pass": [
     {
       "id": "version:field",
-      "detail": "2.1.4"
+      "detail": "2.2.2"
     },
     {
       "id": "version:sw-cache-match",
-      "detail": "dist/sw.js contains scentcap-v215"
+      "detail": "dist/sw.js contains scentcap-v222"
     },
     {
       "id": "records:BASELINE.md",
@@ -51,11 +51,11 @@
     },
     {
       "id": "ci:main",
-      "detail": "Deploy to GitHub Pages @ 868cf34 → success https://github.com/shamikhahmed/ScentCap/actions/runs/35086544739"
+      "detail": "Deploy to GitHub Pages @ bae2a63 → success https://github.com/shamikhahmed/ScentCap/actions/runs/39754959110"
     },
     {
       "id": "tag",
-      "detail": "found v2.1.4"
+      "detail": "found v2.2.2"
     },
     {
       "id": "matrix:spec",
@@ -70,51 +70,23 @@
       "detail": "6 shots (need routes×viewports×themes = 6)"
     },
     {
-      "id": "matrix:freshness",
-      "detail": "2026-09-23T09:04:45.420Z"
-    },
-    {
-      "id": "lighthouse:home-demo-desktop.json",
-      "detail": "perf 100 a11y 100 bp 100 LCP 505.0801 TBT 0 CLS 0.05650404180530019"
-    },
-    {
-      "id": "lighthouse:home-demo-mobile.json",
-      "detail": "perf 97 a11y 100 bp 100 LCP 1851.1504 TBT 22.5 CLS 0.07372146069698357"
-    },
-    {
-      "id": "lighthouse:passing",
-      "detail": "2/2 files meet thresholds"
-    },
-    {
       "id": "axe:serious-critical",
       "detail": "3 JSON clean"
     },
     {
-      "id": "gallery:freshness",
-      "detail": "docs/screenshots/gallery/gallery-manifest.json @ 2026-09-23T14:05:59+05:00"
+      "id": "live:VERSION.json",
+      "detail": "https://shamikhahmed.github.io/ScentCap/VERSION.json → 200"
     },
     {
       "id": "sinks:SINKS.md",
       "detail": "present"
     },
     {
-      "id": "kill:raw-hex",
-      "detail": "0"
-    },
-    {
-      "id": "kill:sub-11px",
-      "detail": "0"
-    },
-    {
-      "id": "kill:important",
-      "detail": "0"
+      "id": "g16:device-qa",
+      "detail": "qa/perfection/baseline/device-qa.json: 0 hard / tap / text / page / hub-console (7 runs)"
     },
     {
       "id": "kill:native-dialogs",
-      "detail": "0"
-    },
-    {
-      "id": "kill:outline-none",
       "detail": "0"
     },
     {
@@ -127,28 +99,73 @@
     },
     {
       "id": "kill:innerHTML-classified",
-      "detail": "1 sinks; SINKS.md ok"
+      "detail": "3 sinks; SINKS.md ok"
     }
   ],
-  "fail": [],
-  "warn": [
+  "fail": [
     {
-      "id": "live:VERSION.json",
-      "detail": "https://shamikhahmed.github.io/ScentCap/VERSION.json → 404"
+      "id": "matrix:freshness",
+      "detail": "matrix 2026-09-23T09:04:45.420Z before last UI commit 2026-10-21T23:43:40+05:00"
     },
+    {
+      "id": "lighthouse:home-demo-desktop.json",
+      "detail": "fetchTime 2026-09-23T09:03:49.211Z before last UI commit 2026-10-21T23:43:40+05:00"
+    },
+    {
+      "id": "lighthouse:home-demo-mobile.json",
+      "detail": "fetchTime 2026-09-23T09:03:34.673Z before last UI commit 2026-10-21T23:43:40+05:00"
+    },
+    {
+      "id": "lighthouse:passing",
+      "detail": "0/2 files meet thresholds"
+    },
+    {
+      "id": "gallery:freshness",
+      "detail": "gallery 2026-10-14T17:03:21+05:00 before last UI commit 2026-10-21T23:43:40+05:00"
+    },
+    {
+      "id": "g17:gallery-v3",
+      "detail": "FAIL via check-completeness.mjs: Manifest version 2.2.0 !== app VERSION.json 2.2.2; Manifest capturedAt 2026-10-14T09:41:00Z is older than VERSION.json updated 2026-10-21; Shot older than version: dark/ipad/daily--today--demo.webp (mtime 2026-10-14T12:02:20.038Z < VERSION updated); Shot older than version: dark/ipad/first-run--onboarding--welcome.webp (mtime 2026-10-14T12:02:18.772Z < VERSION updated); Shot older than version: dark/ipad/insights--advisor--demo.webp (mtime 2026-10-14T12:02:23.182Z < VERSION updated); Shot older than version: dark/ipad/insights--analytics--demo.webp (mtime 2026-10-14T12:02:26.147Z < VERSION updated); Shot older than version: dark/ipad/insights--calendar--demo.webp (mtime 2026-10-14T12:02:24.600Z < VERSION updated); Shot older than version: dark/ipad/lab--layering-lab--demo.webp (mtime 2026-10-14T12:02:27.327Z < VERSION updated)"
+    },
+    {
+      "id": "g18:docs-truth",
+      "detail": "index.html: broken link %BASE_URL%favicon.svg; index.html: broken link %BASE_URL%apple-touch-icon-180.png; public/landing.html: broken link index.html; public/landing.html: broken link index.html; public/landing.html: broken link index.html"
+    },
+    {
+      "id": "g19:minisite-lh",
+      "detail": "mini-site live at https://shamikhahmed.github.io/apps/scentcap/ but no LH JSON under qa/perfection/minisite/lighthouse | qa/finish-loop/lighthouse-minisite | qa/finish-loop/minisite-lighthouse — run Lighthouse and save evidence"
+    },
+    {
+      "id": "kill:raw-hex",
+      "detail": "65"
+    },
+    {
+      "id": "kill:sub-11px",
+      "detail": "4"
+    },
+    {
+      "id": "kill:important",
+      "detail": "1"
+    },
+    {
+      "id": "kill:outline-none",
+      "detail": "1"
+    }
+  ],
+  "warn": [
     {
       "id": "g15:architecture",
       "detail": "map not present (docs/architecture or architecture/) — soft until per-app map lands; tooling pilots use npm run architecture:check"
     }
   ],
   "killList": {
-    "rawHex": 0,
-    "sub11": 0,
-    "important": 0,
+    "rawHex": 65,
+    "sub11": 4,
+    "important": 1,
     "nativeDialog": 0,
-    "outlineNone": 0,
+    "outlineNone": 1,
     "consoleLog": 0,
     "googleFonts": 0,
-    "innerHTML": 1
+    "innerHTML": 3
   }
 }
