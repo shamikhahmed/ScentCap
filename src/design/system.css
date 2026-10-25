@@ -155,6 +155,11 @@ body {
   overflow-x: clip;
 }
 
+/* Programmatic scrolls (scroll-to-top, restore) must be instant — smooth reads as auto-scroll on iPhone. */
+html {
+  scroll-behavior: auto !important;
+}
+
 /* Native rubber-band vertically; no accidental horizontal back-swipe bounce. */
 body {
   overscroll-behavior-x: none;

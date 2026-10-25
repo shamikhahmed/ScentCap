@@ -83,6 +83,15 @@ const y1 = await page.evaluate(() => scrollY);
 check('occasion switch keeps card (no skeleton flash)', skeleton === 0, `skeletons ${skeleton}`);
 check('occasion switch keeps scroll', Math.abs(y1 - y0) < 4, `${y0} → ${y1}`);
 
+// 5b. Programmatic scroll lands instantly (no smooth-scroll animation)
+await page.goto(BASE + 'collection');
+await page.waitForTimeout(800);
+const { landed, max } = await page.evaluate(() => {
+  window.scrollTo(0, 300);
+  return { landed: Math.round(scrollY), max: Math.round(document.documentElement.scrollHeight - innerHeight) };
+});
+check('scrollTo lands instantly', landed === Math.min(300, max), `scrollY ${landed}`);
+
 // 6. Inputs ≥16px (no iOS zoom-on-focus)
 await page.goto(BASE + 'add');
 await page.waitForTimeout(800);
