@@ -63,3 +63,6 @@ Gaps are tracked as tasks in `ROADMAP.md`.
 - Motion contract: re-synced `capricorn-core.css` + `capricorn-motion.js` from `capricorn-tooling/shared/design-system` (tokens `--cap-dur-*`, splash, view transitions). App shells keep `data-cap-app="1"` instant reveals (no marketing scrub). See `docs/MOTION.md`.
 
 Source: `../capricorn-tooling/shared/design-system/` via `node scripts/sync-design-system.mjs`.
+
+## Gallery (2026-11-26)
+- Wave 2 real Playwright gallery — 6/6 viewport suites passed (light/dark × iphone/ipad/mac). Preview kept alive via reuseExistingServer.
