@@ -1,7 +1,7 @@
 {
   "app": "ScentCap",
   "version": "3.0.1",
-  "capturedAt": "2026-10-14T09:41:00Z",
+  "capturedAt": "2026-11-25T20:21:45.000Z",
   "accent": "#9a6a2f",
   "schema": 2,
   "shots": [
@@ -785,5 +785,6 @@
       "w": 2880,
       "h": 1800
     }
-  ]
+  ],
+  "generated": "2026-11-25T20:21:45.000Z"
 }

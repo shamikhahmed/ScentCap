@@ -64,5 +64,8 @@ Gaps are tracked as tasks in `ROADMAP.md`.
 
 Source: `../capricorn-tooling/shared/design-system/` via `node scripts/sync-design-system.mjs`.
 
-## Gallery (2026-11-26)
-- Wave 2 real Playwright gallery — 6/6 viewport suites passed (light/dark × iphone/ipad/mac). Preview kept alive via reuseExistingServer.
+## Gallery (2026-11-26 Wave 2)
+- Real Playwright gallery regen — **60** webp shots (10 screens × light/dark × iphone/ipad/mac); 6/6 suites passed.
+- Manifest `capturedAt` **2026-11-25T20:21:45.000Z** → `docs/screenshots/gallery/gallery-manifest.json`.
+- Preview kept alive via `reuseExistingServer` (playwright.config.ts).
+

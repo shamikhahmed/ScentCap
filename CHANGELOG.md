@@ -1,3 +1,8 @@
+## Gallery regen — 2026-11-26 (Wave 2)
+
+- Real Playwright capture via `CAPTURE_GALLERY=1` — **60** webp shots under `docs/screenshots/gallery/`.
+- Manifest `capturedAt` **2026-11-25T20:21:45.000Z**.
+
 ## Motion craft — 2026-11-26
 
 - Motion contract: re-synced `capricorn-core.css` + `capricorn-motion.js` from `capricorn-tooling/shared/design-system` (tokens `--cap-dur-*`, splash, view transitions). App shells keep `data-cap-app="1"` instant reveals (no marketing scrub). See `docs/MOTION.md`.

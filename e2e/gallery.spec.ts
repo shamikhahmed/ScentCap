@@ -176,7 +176,7 @@ function writeManifest(shots: ReturnType<typeof shotEntry>[]) {
       {
         app: 'ScentCap',
         version,
-        capturedAt: '2026-10-14T09:41:00Z',
+        capturedAt: new Date().toISOString(),
         accent: ACCENT,
         schema: 2,
         shots: merged,
