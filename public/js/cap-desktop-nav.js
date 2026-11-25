@@ -4,7 +4,7 @@
 // Toggle body.cap-desktop-nav + html.cap-desktop-bg at ≥900px (shared by vanilla Cap apps)
 (function () {
   'use strict';
-  var MQ = window.matchMedia('(min-width: 900px)');
+  var MQ = window.matchMedia('(min-width: 700px)');
   function sync() {
     document.body.classList.toggle('cap-desktop-nav', MQ.matches);
     document.documentElement.classList.toggle('cap-desktop-bg', MQ.matches);

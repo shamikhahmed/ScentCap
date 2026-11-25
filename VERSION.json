@@ -2,6 +2,7 @@
   "name": "ScentCap",
   "version": "3.0.1",
   "swCache": "scentcap-v301",
-  "updated": "2026-10-25",
-  "notes": "3.0.1 \u2014 iPhone fixes: no reload/blank on navigation, no scroll jumps, tappable tab bar, no zoom-on-focus"
+  "updated": "2026-11-26",
+  "notes": "3.0.1 — iPhone fixes: no reload/blank on navigation, no scroll jumps, tappable tab bar, no zoom-on-focus",
+  "motionContract": "capricorn-tooling/shared/design-system/MOTION.md"
 }

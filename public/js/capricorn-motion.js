@@ -154,7 +154,36 @@
     updateParallax();
   }
 
+  /* Skippable splash — storageKey default cap.splash.v1; autoMs default 3100 */
+  function bindSplash(opts) {
+    opts = opts || {};
+    var el = document.querySelector(opts.selector || '.cap-splash, #cap-splash');
+    if (!el) return;
+    var key = opts.storageKey || 'cap.splash.v1';
+    var autoMs = typeof opts.autoMs === 'number' ? opts.autoMs : 3100;
+    try {
+      if (!opts.force && sessionStorage.getItem(key) === '1') {
+        el.classList.add('is-done');
+        el.setAttribute('aria-hidden', 'true');
+        return;
+      }
+    } catch (_) {}
+    function dismiss() {
+      if (el.classList.contains('is-done')) return;
+      el.classList.add('is-done');
+      el.setAttribute('aria-hidden', 'true');
+      try { sessionStorage.setItem(key, '1'); } catch (_) {}
+      document.dispatchEvent(new CustomEvent('cap:splash-done'));
+    }
+    ['keydown', 'pointerdown', 'wheel', 'touchstart'].forEach(function (evt) {
+      window.addEventListener(evt, dismiss, { once: true, passive: true });
+    });
+    if (!reduced && autoMs > 0) setTimeout(dismiss, autoMs);
+    else if (reduced) dismiss();
+  }
+
   function init() {
+    bindSplash();
     if (isAppShell()) {
       revealInstant('.cap-reveal, .cap-reveal-scale, .cap-reveal-lines, .cap-kinetic, .cap-stagger, .cap-stagger > *');
       return;
@@ -172,6 +201,7 @@
 
   window.CapricornMotion = {
     init: init,
+    bindSplash: bindSplash,
     refresh: function () {
       if (isAppShell()) {
         revealInstant('.cap-reveal:not(.is-visible), .cap-reveal-scale:not(.is-visible), .cap-kinetic:not(.is-visible)');

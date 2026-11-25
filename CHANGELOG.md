@@ -1,3 +1,7 @@
+## Motion craft — 2026-11-26
+
+- Motion contract: re-synced `capricorn-core.css` + `capricorn-motion.js` from `capricorn-tooling/shared/design-system` (tokens `--cap-dur-*`, splash, view transitions). App shells keep `data-cap-app="1"` instant reveals (no marketing scrub). See `docs/MOTION.md`.
+
 ## [3.0.1] — 2026-10-25
 
 **iPhone (Safari + Home Screen app) fixes.**
